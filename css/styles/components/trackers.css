@@ -18,6 +18,32 @@
   margin: 6px 0;
 }
 
+/* Inline frame to visualize each tracker row area */
+.dh-tracker {
+  position: relative;
+  border: 1px dashed var(--background-modifier-border);
+  border-left: 6px solid var(--background-modifier-border);
+  border-radius: 8px;
+  padding: 8px 10px 8px 16px;
+}
+.dh-tracker::before{
+  content: "📊 Tracker";
+  position: absolute;
+  left: 6px;
+  top: -9px;
+  padding: 0 6px;
+  font-size: 10px;
+  line-height: 1.2;
+  background: var(--background-primary);
+  color: var(--text-faint);
+}
+
+/* Accent the left border by tracker kind */
+.dh-tracker:has(.dh-track-hp)     { border-left-color: var(--dh-red); }
+.dh-tracker:has(.dh-track-stress) { border-left-color: var(--dh-blue); }
+.dh-tracker:has(.dh-track-armor)  { border-left-color: var(--dh-gray); }
+.dh-tracker:has(.dh-track-hope)   { border-left-color: var(--dh-gold); }
+
 /* Label */
 .dh-tracker-head {
   font-weight: 700;
@@ -110,3 +136,6 @@
   .dh-track-box { width: 16px; height: 16px; border-radius: 5px; }
   .dh-track-diamond .dh-track-box { width: 14px; height: 14px; border-radius: 4px; }
 }
+
+/* Override corrupted label text from earlier builds */
+.dh-tracker::before { content: "Tracker"; }

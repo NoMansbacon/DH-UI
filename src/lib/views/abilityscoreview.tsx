@@ -3,7 +3,7 @@ import React from "react";
 import { createRoot, Root } from "react-dom/client";
 import type { App, MarkdownPostProcessorContext } from "obsidian";
 
-import { AbilityView } from "../components/ability-cards";
+import { AbilityView } from "../components/traits";
 import { buildCards } from "../domains/abilities";
 
 /**
@@ -20,16 +20,15 @@ export class AbilityScoreView {
     this.app = app;
   }
 
-  public render(src: string, el: HTMLElement, ctx: MarkdownPostProcessorContext): void {
-    const filePath = ctx.sourcePath || "unknown";
+  public render(src: string, el: HTMLElement, ctx: MarkdownPostProcessorContext, filePathOverride?: string): void {
+    const filePath = (filePathOverride ?? ctx.sourcePath) || "unknown";
     const cards = buildCards(filePath, src);
 
     // Mount React into this codeblock’s container
     let root = this.roots.get(el);
-    if (!root) {
-      root = createRoot(el);
-      this.roots.set(el, root);
-    }
+    // If something external cleared the container, recreate the root to avoid React warnings
+    if (root && (el.childElementCount === 0)) { try { root.unmount(); } catch {} this.roots.delete(el); root = undefined as any; }
+    if (!root) { root = createRoot(el); this.roots.set(el, root); }
     root.render(<AbilityView data={cards} />);
   }
 }

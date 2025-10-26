@@ -1,5 +1,25 @@
 /* Inline damage row */
-.dh-damage-inline { margin: 8px 0 10px; }
+.dh-damage-inline {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 6px 0;
+  position: relative;
+  border: 1px dashed var(--background-modifier-border);
+  border-left: 6px solid #d85a56;
+  border-radius: 8px;
+  padding: 10px 12px 10px 16px;         /* room for icon */
+}
+.dh-damage-inline::before {
+  content: "Consumables";
+  position: absolute;
+  left: 6px; top: -9px;
+  padding: 0 6px;
+  font-size: 10px;
+  line-height: 1.2;
+  background: var(--background-primary);
+  color: var(--text-faint);
+}
 .dh-dmg-row {
   display: flex;
   gap: 10px;

@@ -5,6 +5,22 @@
   grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   gap: 10px;
   margin: 8px 0 6px;
+  position: relative;
+  border: 1px dashed var(--background-modifier-border);
+  border-left: 6px solid #a78bfa; /* traits accent */
+  border-radius: 8px;
+  padding: 10px 12px 10px 16px;
+}
+
+.dh-ability-cards::before{
+  content: "🧬 Traits";
+  position: absolute;
+  left: 6px; top: -9px;
+  padding: 0 6px;
+  font-size: 10px;
+  line-height: 1.2;
+  background: var(--background-primary);
+  color: var(--text-faint);
 }
 
 /* Floating card look (compact width, same height/fonts) */

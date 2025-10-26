@@ -1,9 +1,14 @@
 // src/lib/components/trackers-block.ts
 import type DaggerheartPlugin from "../../main";
-import { MarkdownPostProcessorContext, MarkdownRenderChild, TFile } from "obsidian";
-import yaml from "js-yaml";
+import { MarkdownPostProcessorContext } from "obsidian";
+import { parseYamlSafe } from "../utils/yaml";
 import { processTemplate, createTemplateContext } from "../utils/template";
-
+import React from "react";
+import { createRoot, Root } from "react-dom/client";
+import { TrackerRowView } from "./trackers-view";
+import { registerLiveCodeBlock } from "../liveBlock";
+import * as store from "../services/stateStore";
+const roots = new WeakMap<HTMLElement, Root>();
 /**
  * Trackers: hp | stress | armor | hope
  * - Accept either type-specific key or generic `uses:`
@@ -20,11 +25,12 @@ type TrackerYaml = {
   stress?: number | string;
   armor?: number | string;
   hope?: number | string;
+  class?: string;
 };
 
 function parseYaml(src: string): TrackerYaml {
   try {
-    return (yaml.load(src) as TrackerYaml) ?? {};
+    return parseYamlSafe<TrackerYaml>(src) ?? {};
   } catch (e) {
     console.error("[DH-UI] tracker YAML error:", e);
     return {};
@@ -52,135 +58,51 @@ function resolveCount(
   }
 }
 
-function readState(key: string, max: number): number {
-  try {
-    const raw = localStorage.getItem(`dh:tracker:${key}`);
-    if (!raw) return 0;
-    const n = Number(JSON.parse(raw));
-    if (!Number.isFinite(n)) return 0;
-    return Math.max(0, Math.min(max, n));
-  } catch {
-    return 0;
-  }
+async function readState(key: string, max: number): Promise<number> {
+  const n = Number(await store.get<number>(`tracker:${key}`, 0) ?? 0);
+  if (!Number.isFinite(n)) return 0;
+  return Math.max(0, Math.min(max, n));
 }
 
-function writeState(key: string, v: number) {
-  try {
-    localStorage.setItem(`dh:tracker:${key}`, JSON.stringify(v));
-  } catch {}
+async function writeState(key: string, v: number) {
+  await store.set<number>(`tracker:${key}`, Math.max(0, v|0));
 }
-
 /** Registers one tracker code block (hp | stress | armor | hope). */
 function registerOneTracker(
   plugin: DaggerheartPlugin,
   blockName: "hp" | "stress" | "armor" | "hope",
   extraBoxCls: string
 ) {
-  plugin.registerMarkdownCodeBlockProcessor(
-    blockName,
-    (src: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
-      el.empty();
+  registerLiveCodeBlock(plugin, blockName, async (el: HTMLElement, src: string, ctx: MarkdownPostProcessorContext) => {
+    const app = plugin.app;
+    let root: Root | null = null;
 
-      const app = plugin.app;
-      const filePath = ctx.sourcePath || "unknown";
+    const y = parseYaml(src);
+    const klass = String(y.class ?? '').trim().split(/\s+/).filter(Boolean)[0];
+    el.addClass('dh-tracker-block');
+    if (klass) el.addClass(klass);
+    const labelText = (y.label || blockName.toUpperCase()).toString();
+    const stateKey = (y.state_key || "").toString().trim();
 
-      const wrap = el.createEl("div", { cls: "dh-tracker" });
-      const head = wrap.createEl("div", { cls: "dh-tracker-head" });
-      // IMPORTANT: class names determine shape and color
-      const boxes = wrap.createEl("div", { cls: `dh-tracker-boxes ${extraBoxCls}` });
+    let rawCount: number | string | undefined =
+      y.uses !== undefined
+        ? y.uses
+        : blockName === "hp" ? y.hp
+        : blockName === "stress" ? y.stress
+        : blockName === "armor" ? y.armor
+        : y.hope;
 
-      const rebuild = () => {
-        const y = parseYaml(src);
-
-        const labelText = (y.label || blockName.toUpperCase()).toString();
-        const stateKey = (y.state_key || "").toString().trim();
-
-        let rawCount: number | string | undefined =
-          y.uses !== undefined
-            ? y.uses
-            : blockName === "hp"
-            ? y.hp
-            : blockName === "stress"
-            ? y.stress
-            : blockName === "armor"
-            ? y.armor
-            : y.hope;
-
-        if (blockName === "hope" && (rawCount === undefined || String(rawCount).trim() === "")) {
-          rawCount = 6;
-        }
-
-        const count = resolveCount(rawCount, el, app, ctx);
-
-        head.empty();
-        head.createSpan({ text: labelText });
-
-        boxes.empty();
-
-        if (!stateKey) {
-          head.createSpan({ text: " (missing state_key)", cls: "dh-tracker-missing" });
-          return;
-        }
-        if (count <= 0) {
-          head.createSpan({ text: " (0)", cls: "dh-tracker-missing" });
-          return;
-        }
-
-        let filled = readState(stateKey, count);
-
-        for (let i = 0; i < count; i++) {
-          boxes.createDiv({ cls: "dh-track-box", attr: { "data-idx": String(i) } });
-        }
-
-        const paint = () => {
-          if (filled > count) filled = count;
-          const children = boxes.children;
-          for (let i = 0; i < children.length; i++) {
-            const d = children[i] as HTMLDivElement;
-            d.classList.toggle("on", i < filled);
-          }
-        };
-        paint();
-
-        boxes.onclick = (ev) => {
-          const t = ev.target as HTMLElement;
-          if (!t || !t.classList.contains("dh-track-box")) return;
-          const idx = Number(t.getAttr("data-idx") ?? -1);
-          if (!Number.isFinite(idx) || idx < 0) return;
-
-          const next = idx + 1;
-          filled = next === filled ? idx : next;
-          writeState(stateKey, filled);
-          paint();
-        };
-      };
-
-      rebuild();
-
-      // Auto-refresh when frontmatter of this file changes
-      const offChanged = plugin.app.metadataCache.on("changed", (file: TFile) => {
-        if (file && file.path === filePath) rebuild();
-      });
-      const offResolved = plugin.app.metadataCache.on("resolved", () => {
-        const active = plugin.app.workspace.getActiveFile();
-        if (active && active.path === filePath) rebuild();
-      });
-      const offOpen = plugin.app.workspace.on("file-open", (file) => {
-        if (file && file.path === filePath) rebuild();
-      });
-
-      const child = new MarkdownRenderChild(el);
-      child.onunload = () => {
-        // @ts-ignore Obsidian offref
-        plugin.app.metadataCache.offref(offChanged);
-        // @ts-ignore
-        plugin.app.metadataCache.offref(offResolved);
-        // @ts-ignore
-        plugin.app.workspace.offref(offOpen);
-      };
-      ctx.addChild(child);
+    if (blockName === "hope" && (rawCount === undefined || String(rawCount).trim() === "")) {
+      rawCount = 6;
     }
-  );
+
+    const count = resolveCount(rawCount, el, app, ctx);
+    const saved = await readState(stateKey, count);
+    const shape = extraBoxCls.includes("dh-track-diamond") ? "diamond" : "rect";
+    root = roots.get(el) || null;
+    if (!root) { root = createRoot(el); roots.set(el, root); }
+    root.render(React.createElement(TrackerRowView, { label: labelText + (!stateKey || count<=0 ? " (0)" : ""), kind: blockName as any, shape: shape as any, total: count, initialFilled: (stateKey && count>0) ? saved : 0, stateKey: (stateKey && count>0)? stateKey: undefined, onChange: async (v:number)=> { if (!stateKey) return; await writeState(stateKey, v); try { window.dispatchEvent(new CustomEvent('dh:tracker:changed', { detail: { key: stateKey, filled: v } })); } catch {} } }));
+  });
 }
 
 export function registerTrackersBlocks(plugin: DaggerheartPlugin) {

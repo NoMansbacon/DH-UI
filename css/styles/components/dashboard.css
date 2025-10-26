@@ -1,0 +1,51 @@
+/* Dashboard grid layout */
+.dh-dashboard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-auto-rows: auto;
+  gap: 1em;
+  width: 100%;
+  max-width: 100%;
+  grid-template-areas:
+    "badges"
+    "traits"
+    "vitals";
+  container-type: inline-size;
+  container-name: dhdash;
+  background-color: transparent;
+}
+
+@media (min-width: 900px) {
+  .dh-dashboard {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "badges badges"
+      "traits traits"
+      "vitals vitals";
+  }
+}
+
+.dh-dash-badges  { grid-area: badges; }
+.dh-dash-traits  { grid-area: traits; }
+.dh-dash-vitals  { grid-area: vitals; }
+.dh-dash-actions { display: none !important; }
+
+/* Removes other CSS from standalone version */
+.dh-dashboard .dh-badges,
+.dh-dashboard .dh-vitals,
+.dh-dashboard .dh-ability-cards,
+.dh-dashboard .dh-tracker,
+.dh-dashboard .dh-rest-row,
+.dh-dashboard .dh-damage-inline {
+  border: none !important;
+  border-left: none !important;
+  padding-left: 0 !important;
+}
+.dh-dashboard .dh-badges::before,
+.dh-dashboard .dh-ability-cards::before,
+.dh-dashboard .dh-tracker::before,
+.dh-dashboard .dh-rest-row::before,
+.dh-dashboard .dh-damage-inline::before {
+  content: none !important;
+}
+

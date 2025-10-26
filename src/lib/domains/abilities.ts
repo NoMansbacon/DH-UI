@@ -1,5 +1,5 @@
 // src/lib/domains/abilities.ts
-import { parse as yamlParse } from "yaml";
+import { parseYamlSafe } from "../utils/yaml";
 
 export type AbilityName =
   | "Agility"
@@ -43,11 +43,21 @@ export interface AbilityCard {
 function normalizeMap(obj: any): AbilityMap {
   const out: AbilityMap = {};
   if (!obj || typeof obj !== "object") return out;
-  for (const k of ABILITIES_ORDER) {
-    const raw = (obj as any)[k];
-    const num = Number(raw ?? 0);
-    if (!isNaN(num)) out[k] = num;
+
+  // Accept canonical names (Agility) and case-insensitive keys (agility)
+  const lowerToCanon = new Map<string, AbilityName>(
+    ABILITIES_ORDER.map((n) => [n.toLowerCase(), n])
+  );
+
+  // Iterate provided keys for flexibility
+  for (const key of Object.keys(obj)) {
+    const canon = lowerToCanon.get(key.toLowerCase());
+    if (!canon) continue;
+    const num = Number((obj as any)[key] ?? 0);
+    if (!Number.isNaN(num)) out[canon] = num;
   }
+
+  // Ensure missing keys are treated as 0 downstream (handled by callers)
   return out;
 }
 
@@ -64,7 +74,7 @@ function addMaps(a: AbilityMap, b: AbilityMap): AbilityMap {
 export function parseTraitsYaml(src: string): { base: AbilityMap; traitSum: AbilityMap } {
   let doc: TraitsBlock = {};
   try {
-    doc = (yamlParse(src) as TraitsBlock) ?? {};
+    doc = (parseYamlSafe<TraitsBlock>(src)) ?? {};
   } catch {
     doc = {};
   }

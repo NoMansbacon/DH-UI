@@ -1,0 +1,87 @@
+/* === Style Kit: cleaner default/alt demo classes for each block type === */
+
+/*
+  Approach
+  - Each block default sets --kit-accent; a shared .dh-style-default rule uses it for a subtle surface.
+  - Alt style provides a slightly stronger accent for quick visual verification.
+*/
+
+/* Shared default surface using --kit-accent */
+.dh-style-default {
+  border: 1px solid color-mix(in oklab, var(--background-modifier-border), var(--kit-accent, var(--text-accent)) 24%);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--background-secondary), var(--kit-accent, var(--text-accent)) 7%) 0%,
+      color-mix(in oklab, var(--background-secondary), #000 9%) 100%
+    );
+  border-radius: 12px;
+  box-shadow: var(--shadow-s);
+}
+
+/* Badges */
+.dh-badges-block.dh-style-default { --kit-accent: #7a7f87; }
+.dh-badges-block.dh-style-alt     { border: 1px solid color-mix(in oklab, var(--background-modifier-border), #a78bfa 28%); background: color-mix(in oklab, var(--background-secondary), #a78bfa 10%); border-radius: 12px; box-shadow: var(--shadow-s); }
+
+/* Consumables */
+.dh-consumables-block.dh-style-default { --kit-accent: #4caf50; }
+.dh-consumables-block.dh-style-alt     { border: 1px solid color-mix(in oklab, var(--background-modifier-border), #ff9800 26%); background: color-mix(in oklab, var(--background-secondary), #ff9800 10%); border-radius: 12px; box-shadow: var(--shadow-s); }
+
+/* Single tracker codeblock container */
+.dh-tracker-block.dh-style-default { --kit-accent: #607d8b; }
+.dh-tracker-block.dh-style-alt     { border: 1px solid color-mix(in oklab, var(--background-modifier-border), #e6c14f 28%); background: color-mix(in oklab, var(--background-secondary), #e6c14f 10%); border-radius: 12px; box-shadow: var(--shadow-s); }
+
+/* Rest row block */
+.dh-rest-block.dh-style-default { --kit-accent: #2e7d32; }
+.dh-rest-block.dh-style-alt     { border: 1px solid color-mix(in oklab, var(--background-modifier-border), #8bc34a 28%); background: color-mix(in oklab, var(--background-secondary), #8bc34a 10%); border-radius: 12px; box-shadow: var(--shadow-s); }
+
+/* Short/Long rest button blocks */
+.dh-short-rest-block.dh-style-default, .dh-long-rest-block.dh-style-default { --kit-accent: #2e7d32; }
+.dh-short-rest-block.dh-style-alt,     .dh-long-rest-block.dh-style-alt     { border: 1px solid color-mix(in oklab, var(--background-modifier-border), #4caf50 28%); background: color-mix(in oklab, var(--background-secondary), #4caf50 10%); border-radius: 12px; box-shadow: var(--shadow-s); }
+
+/* Damage block */
+.dh-damage-block.dh-style-default { --kit-accent: #d32f2f; }
+.dh-damage-block.dh-style-alt     { border: 1px solid color-mix(in oklab, var(--background-modifier-border), #f44336 28%); background: color-mix(in oklab, var(--background-secondary), #f44336 10%); border-radius: 12px; box-shadow: var(--shadow-s); }
+
+/* Traits block (cards container) */
+.dh-ability-cards.dh-style-default { --kit-accent: #a78bfa; }
+.dh-ability-cards.dh-style-alt     { border: 1px solid color-mix(in oklab, var(--background-modifier-border), #03a9f4 28%); background: color-mix(in oklab, var(--background-secondary), #03a9f4 10%); border-radius: 12px; box-shadow: var(--shadow-s); }
+
+/* Compact layout for tighter spacing/padding */
+.dh-compact { --kit-pad: 6px; }
+.dh-badges-block.dh-compact { padding: 6px 10px 6px 12px; }
+.dh-badges-block.dh-compact .dh-badges { gap: 6px; }
+.dh-consumables-block.dh-compact { padding: 6px 10px 6px 12px; }
+.dh-consumables-block.dh-compact .dh-consumables { gap: 6px; }
+.dh-tracker-block.dh-compact { padding: 6px 10px 6px 12px; }
+.dh-tracker-block.dh-compact .dh-tracker { margin: 2px 0; }
+.dh-tracker-block.dh-compact .dh-tracker-boxes { gap: 4px; }
+.dh-rest-block.dh-compact { padding: 6px 10px 6px 12px; }
+.dh-rest-block.dh-compact .dh-rest-row { gap: 6px; }
+.dh-short-rest-block.dh-compact, .dh-long-rest-block.dh-compact { padding: 6px 10px; }
+.dh-damage-block.dh-compact .dh-damage-inline { padding: 6px 10px 6px 14px; }
+.dh-ability-cards.dh-compact { gap: 6px; padding: 6px 10px 6px 12px; }
+
+/* Card style: subtle raised surface (applies to any block when class is added) */
+.dh-style-card {
+  border: 1px solid var(--background-modifier-border);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--background-secondary), #fff 2%) 0%,
+      color-mix(in oklab, var(--background-secondary), #000 6%) 100%
+    );
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.18), var(--shadow-s);
+  transition: box-shadow .15s ease, border-color .15s ease, transform .12s ease;
+}
+
+/* Minimal style: no fill, minimal framing; lets content speak */
+.dh-style-minimal {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  outline: 1px dashed color-mix(in oklab, var(--background-modifier-border), #000 10%);
+  outline-offset: -1px;
+}

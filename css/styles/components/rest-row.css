@@ -1,0 +1,19 @@
+.dh-rest-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  position: relative;
+  border: 1px dashed var(--background-modifier-border);
+  border-left: 6px solid #2e7d32; /* rest accent */
+  border-radius: 8px;
+  padding: 8px 10px 8px 16px;
+}
+.dh-rest-row::before{
+  position: absolute;
+  left: 6px; top: -9px;
+  padding: 0 6px;
+  font-size: 10px;
+  line-height: 1.2;
+  background: var(--background-primary);
+  color: var(--text-faint);
+}

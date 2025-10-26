@@ -1,5 +1,48 @@
+/* Inline damage row */
+.dh-badges-inline {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 6px 0;
+  position: relative;
+  border: 1px dashed var(--background-modifier-border);
+  border-left: 6px solid var(--background-modifier-border);
+  border-radius: 8px;
+  padding: 10px 12px 10px 16px;          /* room for icon */
+}
+.dh-badges-inline::before {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 6px 0;
+  position: relative;
+  border: 1px dashed var(--background-modifier-border);
+  border-left: 6px solid var(--background-modifier-border);
+  border-radius: 8px;
+  padding: 10px 12px 10px 16px;
+}
 .dh-badges{
   display:flex; flex-wrap:wrap; gap:8px; margin:8px 0 6px;
+}
+
+/* Inline frame to visualize badges block area */
+.dh-badges {
+  position: relative;
+  border: 1px dashed var(--background-modifier-border);
+  border-left: 6px solid #7a7f87;
+  border-radius: 8px;
+  padding: 10px 12px 10px 20px;
+}
+.dh-badges::before {
+  content: "🏷 Badges";
+  position: absolute;
+  left: 6px;
+  top: -9px;
+  padding: 0 6px;
+  font-size: 10px;
+  line-height: 1.2;
+  background: var(--background-primary);
+  color: var(--text-faint);
 }
 .dh-badge{
   box-sizing: border-box;
@@ -13,8 +56,25 @@
   );
   border: 1px solid var(--background-modifier-border);
   box-shadow: var(--shadow-s);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px; /* space between label and value */
 }
 .dh-badge .dh-badge-label{
-  font-size:12px; letter-spacing:.8px; text-transform:uppercase; color:var(--dh-text-muted);
+  font-size:12px; 
+  letter-spacing:0; 
+  text-transform:none; 
+  color:var(--dh-text-muted);
 }
 .dh-badge .dh-badge-value{ font-size:12px; }
+/* subtle separator for readability */
+.dh-badge .dh-badge-label::after{
+  content: ":";
+  margin: 0 4px 0 2px;
+  color: var(--text-faint);
+}
+.dh-badge .dh-badge-value{ 
+  font-size:15px; 
+  font-weight:600; 
+  color: var(--text-accent); 
+}

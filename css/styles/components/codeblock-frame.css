@@ -1,0 +1,71 @@
+/* Code block framing with left accent and small icon */
+.markdown-rendered pre {
+  position: relative;
+  border: 1px solid var(--background-modifier-border);
+  border-left: 6px solid var(--code-accent, var(--text-accent));
+  border-radius: 8px;
+  padding: 8px 10px 8px 14px; /* extra left room for icon */
+  margin: 8px 0;
+}
+
+.markdown-rendered pre::before {
+  content: var(--code-icon, "");
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 16px;
+  min-width: 16px;
+  padding: 0 4px;
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 700;
+  color: var(--background-primary);
+  background: var(--code-accent, var(--text-accent));
+  border-radius: 999px;
+}
+
+.markdown-rendered pre code { display: block; }
+
+/* Language-specific accents (Chromium supports :has in Electron) */
+.markdown-rendered pre:has(> code.language-js)     { --code-accent: #f7df1e; --code-icon: "JS"; }
+.markdown-rendered pre:has(> code.language-ts)     { --code-accent: #3178c6; --code-icon: "TS"; }
+.markdown-rendered pre:has(> code.language-json)   { --code-accent: #10b981; --code-icon: "JSON"; }
+.markdown-rendered pre:has(> code.language-yaml),
+.markdown-rendered pre:has(> code.language-yml)   { --code-accent: #f2c12e; --code-icon: "YAML"; }
+.markdown-rendered pre:has(> code.language-html)   { --code-accent: #e34f26; --code-icon: "HTML"; }
+.markdown-rendered pre:has(> code.language-css)    { --code-accent: #563d7c; --code-icon: "CSS"; }
+.markdown-rendered pre:has(> code.language-md),
+.markdown-rendered pre:has(> code.language-markdown) { --code-accent: #8e8e8e; --code-icon: "MD"; }
+.markdown-rendered pre:has(> code.language-bash),
+.markdown-rendered pre:has(> code.language-sh),
+.markdown-rendered pre:has(> code.language-shell) { --code-accent: #4caf50; --code-icon: "SH"; }
+.markdown-rendered pre:has(> code.language-python),
+.markdown-rendered pre:has(> code.language-py)    { --code-accent: #3776ab; --code-icon: "PY"; }
+.markdown-rendered pre:has(> code.language-rust),
+.markdown-rendered pre:has(> code.language-rs)    { --code-accent: #dea584; --code-icon: "RS"; }
+.markdown-rendered pre:has(> code.language-cpp),
+.markdown-rendered pre:has(> code.language-c++)   { --code-accent: #00599c; --code-icon: "C++"; }
+.markdown-rendered pre:has(> code.language-csharp),
+.markdown-rendered pre:has(> code.language-cs)    { --code-accent: #239120; --code-icon: "C#"; }
+
+/* Obsidian DH-UI custom blocks: set accent + icon by block type */
+.markdown-rendered pre:has(> code.language-badges)      { --code-accent: #7a7f87; --code-icon: "BDG"; }
+.markdown-rendered pre:has(> code.language-consumables) { --code-accent: #4caf50; --code-icon: "CON"; }
+.markdown-rendered pre:has(> code.language-ability)     { --code-accent: #a78bfa; --code-icon: "ABL"; }
+.markdown-rendered pre:has(> code.language-traits)      { --code-accent: #a78bfa; --code-icon: "TRT"; }
+.markdown-rendered pre:has(> code.language-damage)      { --code-accent: #d32f2f; --code-icon: "\1F4A5"; border-color: #d32f2f; }
+.markdown-rendered pre:has(> code.language-rest),
+.markdown-rendered pre:has(> code.language-short-rest),
+.markdown-rendered pre:has(> code.language-short),
+.markdown-rendered pre:has(> code.language-long-rest),
+.markdown-rendered pre:has(> code.language-long)        { --code-accent: #2e7d32; --code-icon: "RST"; }
+.markdown-rendered pre:has(> code.language-hp)          { --code-accent: var(--dh-red, #d85a56);   --code-icon: "HP"; }
+.markdown-rendered pre:has(> code.language-stress)      { --code-accent: var(--dh-blue, #4f79e6);  --code-icon: "STR"; }
+.markdown-rendered pre:has(> code.language-armor)       { --code-accent: var(--dh-gray, #9aa0a6);  --code-icon: "ARM"; }
+.markdown-rendered pre:has(> code.language-hope)        { --code-accent: var(--dh-gold, #e6c14f);  --code-icon: "HOP"; }
+
+/* Fallback default icon if no language match */
+.markdown-rendered pre:not(:has(> code[class*="language-"])) { --code-icon: "<>"; }

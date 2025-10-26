@@ -22,8 +22,8 @@ export function processTemplate(text: string, ctx: TemplateContext): string {
   });
 }
 
-export function createTemplateContext(el: HTMLElement, app: App, mdctx: MarkdownPostProcessorContext): TemplateContext {
-  const fm = (app.metadataCache.getCache(mdctx.sourcePath || "")?.frontmatter ?? {}) as Frontmatter;
+export function createTemplateContext(el: HTMLElement, app: App, mdctx: MarkdownPostProcessorContext, fmOverride?: Frontmatter): TemplateContext {
+  const fm = (fmOverride ?? (app.metadataCache.getCache(mdctx.sourcePath || "")?.frontmatter ?? {})) as Frontmatter;
 
   let abilities: AbilityScores = { agility:0, strength:0, finesse:0, instinct:0, presence:0, knowledge:0 };
   try{

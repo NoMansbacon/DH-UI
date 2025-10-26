@@ -1,0 +1,43 @@
+/* ===== Combined Vitals (HP / Stress / Armor / Hope) ===== */
+
+/* Standalone Vitals container: dashed frame + colored left accent */
+.dh-vitals {
+  position: relative;
+  border: 1px dashed var(--background-modifier-border);
+  border-left: 6px solid #607d8b; /* vitals accent */
+  border-radius: 8px;
+  padding: 10px 12px 12px 16px;
+  background: transparent;
+}
+
+.dh-vitals-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px 12px;
+}
+
+@container dhdash (min-width: 560px) {
+  .dh-vitals-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (min-width: 560px) {
+  .dh-vitals-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* Tidy the inner tracker rows (no dashed frame inside the combined card) */
+.dh-vitals .dh-tracker {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+.dh-vitals .dh-tracker::before { content: none; }
+
+
+/* Actions row inside vitals */
+.dh-vitals-actions {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: var(--dh-dashboard-gap, clamp(10px, 1.5vw, 16px));
+  margin-top: 10px;
+}

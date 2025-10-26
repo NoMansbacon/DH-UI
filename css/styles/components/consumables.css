@@ -14,6 +14,21 @@
   flex-direction: column;
   gap: 8px;
   margin: 6px 0;
+  position: relative;
+  border: 1px dashed var(--background-modifier-border);
+  border-left: 6px solid #4caf50; /* consumables accent */
+  border-radius: 8px;
+  padding: 10px 12px 10px 16px;
+}
+.dh-consumables::before{
+  content: "🧪 Consumables";
+  position: absolute;
+  left: 6px; top: -9px;
+  padding: 0 6px;
+  font-size: 10px;
+  line-height: 1.2;
+  background: var(--background-primary);
+  color: var(--text-faint);
 }
 
 /* One consumable row: tighter to bring boxes closer to the label */

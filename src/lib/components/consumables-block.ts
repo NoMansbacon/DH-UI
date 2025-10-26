@@ -1,8 +1,13 @@
 // src/lib/components/consumables-block.ts
 import type DaggerheartPlugin from "../../main";
-import { MarkdownPostProcessorContext, MarkdownRenderChild, TFile } from "obsidian";
-import yaml from "js-yaml";
+import { MarkdownPostProcessorContext } from "obsidian";
+import { parseYamlSafe } from "../utils/yaml";
 import { processTemplate, createTemplateContext } from "../utils/template";
+import React from "react";
+import { createRoot, Root } from "react-dom/client";
+import { ConsumablesView, type ConsumableRow } from "./consumables-view";
+import { registerLiveCodeBlock } from "../liveBlock";
+const roots = new WeakMap<HTMLElement, Root>();
 
 /**
  * Supported YAML shapes:
@@ -48,7 +53,7 @@ type DocLoose =
 function parseRootToItems(src: string): ConsumableItem[] {
   let raw: DocLoose;
   try {
-    raw = (yaml.load(src) as DocLoose) ?? {};
+    raw = (parseYamlSafe<DocLoose>(src)) ?? {};
   } catch (e) {
     console.error("[DH-UI] consumables YAML error:", e);
     return [];
@@ -112,134 +117,44 @@ function writeState(key: string, filled: number) {
 }
 
 export function registerConsumablesBlock(plugin: DaggerheartPlugin) {
-  plugin.registerMarkdownCodeBlockProcessor(
-    "consumables",
-    (src: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
-      el.empty();
+  registerLiveCodeBlock(plugin, "consumables", (el: HTMLElement, src: string, ctx: MarkdownPostProcessorContext) => {
 
-      const app = plugin.app;
-      const filePath = ctx.sourcePath || "unknown";
-
-      // Build outer container
-      const wrap = el.createEl("div", { cls: "dh-consumables" });
-
-      // Keep per-row rebuilders so we can re-evaluate templates when frontmatter changes
-      const rebuilders: Array<() => void> = [];
-
-      // We recreate template context on each refresh so frontmatter/abilities helpers stay fresh
-      const makeCtx = () => createTemplateContext(el, app, ctx);
-
-      const items = parseRootToItems(src);
-      if (!items.length) {
-        el.createEl("pre", { text: "No 'items:' in ```consumables block." });
-        return;
-      }
-
-      for (const it of items) {
-        const label = (it?.label ?? "").toString() || "Consumable";
-        const key = (it?.state_key ?? "").toString().trim();
-
-        const row = wrap.createEl("div", { cls: "dh-consumable" });
-        const head = row.createEl("div", { cls: "dh-consumable-head" });
-        head.createSpan({ text: label });
-
-        const boxes = row.createEl("div", { cls: "dh-consumable-uses" });
-
-        const rebuild = () => {
-          const tctx = makeCtx();
-
-          // Resolve uses (supports templated string or number)
-          let usesNum = 0;
-          const rawUses = it?.uses ?? 0;
-          if (typeof rawUses === "string") {
-            const resolved = processTemplate(rawUses, tctx).trim();
-            const n = Number(resolved);
-            usesNum = Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0;
-          } else {
-            const n = Number(rawUses);
-            usesNum = Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0;
-          }
-
-          boxes.empty();
-
-          if (!key) {
-            head.createSpan({ text: " (missing state_key)", cls: "dh-consumable-missing" });
-            return;
-          }
-          if (usesNum <= 0) {
-            head.createSpan({ text: " (uses: 0)", cls: "dh-consumable-missing" });
-            return;
-          }
-
-          // Build exact number of boxes
-          for (let i = 0; i < usesNum; i++) {
-            boxes.createDiv({ cls: "dh-consume-box", attr: { "data-idx": String(i) } });
-          }
-
-          // Restore state (clamped)
-          let filled = readState(key, usesNum);
-
-          const paint = () => {
-            if (filled > usesNum) filled = usesNum;
-            for (let i = 0; i < boxes.children.length; i++) {
-              const d = boxes.children[i] as HTMLDivElement;
-              d.classList.toggle("on", i < filled);
-            }
-          };
-
-          paint();
-
-          // Click handler (re-bound on rebuild since we rebuild the DOM)
-          boxes.onclick = (ev) => {
-            const target = ev.target as HTMLElement;
-            if (!target || !target.classList.contains("dh-consume-box")) return;
-            const idx = Number(target.getAttr("data-idx") ?? -1);
-            if (isNaN(idx) || idx < 0) return;
-
-            const newFilled = idx + 1;
-            if (newFilled === filled) filled = idx; // step down
-            else filled = newFilled;
-
-            writeState(key, filled);
-            paint();
-          };
-        };
-
-        rebuild();
-        rebuilders.push(rebuild);
-      }
-
-      // Subscribe to frontmatter changes for THIS file and refresh in place
-      const offChanged = plugin.app.metadataCache.on("changed", (file: TFile) => {
-        if (file && file.path === filePath) {
-          for (const r of rebuilders) r();
-        }
-      });
-
-      const offResolved = plugin.app.metadataCache.on("resolved", () => {
-        const active = plugin.app.workspace.getActiveFile();
-        if (active && active.path === filePath) {
-          for (const r of rebuilders) r();
-        }
-      });
-
-      const offOpen = plugin.app.workspace.on("file-open", (file) => {
-        if (file && file.path === filePath) {
-          for (const r of rebuilders) r();
-        }
-      });
-
-      // Proper cleanup
-      const child = new MarkdownRenderChild(el);
-      child.onunload = () => {
-        // @ts-ignore offref exists
-        plugin.app.metadataCache.offref(offChanged);
-        // @ts-ignore offref exists
-        plugin.app.metadataCache.offref(offResolved);
-        // @ts-ignore offref exists
-        plugin.app.workspace.offref(offOpen);
-      };
-      ctx.addChild(child);
+    const app = plugin.app;
+    const raw = (parseYamlSafe<any>(src)) ?? {};
+    const klass = String(raw?.class ?? '').trim().split(/\s+/).filter(Boolean)[0];
+    if (klass) el.addClass(klass);
+    const items = parseRootToItems(src);
+    if (!items.length) {
+      el.createEl("pre", { text: "No 'items:' in ```consumables block." });
+      return;
     }
-  );
+
+    const computeRows = (): ConsumableRow[] => {
+      const tctx = createTemplateContext(el, app, ctx);
+      return items.map((it) => {
+        const label = (it?.label ?? "").toString() || "Consumable";
+        const stateKey = (it?.state_key ?? "").toString().trim();
+        let usesNum = 0; const rawUses = it?.uses ?? 0;
+        if (typeof rawUses === "string") {
+          const resolved = processTemplate(rawUses, tctx).trim();
+          const n = Number(resolved); usesNum = Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0;
+        } else { const n = Number(rawUses); usesNum = Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0; }
+        const filled = stateKey ? readState(stateKey, usesNum) : 0;
+        return { label, stateKey, uses: usesNum, filled };
+      });
+    };
+
+    const render = () => {
+      const rows = computeRows();
+      let root = roots.get(el);
+      if (!root) { root = createRoot(el); roots.set(el, root); }
+      root.render(
+        React.createElement(ConsumablesView, {
+          rows,
+          onChange: (stateKey: string, filled: number) => stateKey && writeState(stateKey, filled),
+        })
+      );
+    };
+    render();
+  });
 }
