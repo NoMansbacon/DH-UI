@@ -130,7 +130,8 @@ export function registerDamage(plugin: DaggerheartPlugin) {
       const klass = String(conf.class ?? '').trim().split(/\s+/).filter(Boolean)[0];
       el.addClass('dh-damage-block');
       if (klass) el.addClass(klass);
-      const hpKey = String(conf.hp_key ?? HP_KEY);
+      const hpKeyLocal = String(conf.hp_key ?? HP_KEY);
+      const armorKeyLocal = String(conf.armor_key ?? (`${ARMOR_KEY}::${ctx.sourcePath}`));
 
       const resolveThresholds = () => {
         const tctx = createTemplateContext(el, plugin.app, ctx);
@@ -184,8 +185,8 @@ export function registerDamage(plugin: DaggerheartPlugin) {
               tierReduce,
               finalMajor,
               finalSevere,
-              hpKey: String(conf.hp_key ?? HP_KEY),
-              armorKey: String(conf.armor_key ?? ARMOR_KEY),
+              hpKey: hpKeyLocal,
+              armorKey: armorKeyLocal,
               scope: getPreviewScope(el)
             });
 

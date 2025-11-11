@@ -86,9 +86,9 @@ export function registerVitals(plugin: DaggerheartPlugin) {
       if (klass) el.addClass(klass);
 
       const hpKey     = String(y.hp_key     ?? 'din_health');
-      const stressKey = String(y.stress_key ?? 'din_stress');
-      const armorKey  = String(y.armor_key  ?? 'din_armor');
-      const hopeKey   = String(y.hope_key   ?? 'din_hope');
+      const stressKey = String(y.stress_key ?? (`din_stress::${ctx.sourcePath}`));
+      const armorKey  = String(y.armor_key  ?? (`din_armor::${ctx.sourcePath}`));
+      const hopeKey   = String(y.hope_key   ?? (`din_hope::${ctx.sourcePath}`));
 
       let hpCount     = resolveCount(y.hp,     el, app, ctx);
       let stressCount = resolveCount(y.stress, el, app, ctx);

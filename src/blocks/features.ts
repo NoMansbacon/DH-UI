@@ -11,6 +11,9 @@ type FeatureDoc = {
   class?: FeatureItem[];
   subclass?: FeatureItem[];
   community?: FeatureItem[];
+  layout?: "grid" | "masonry";
+  cols?: number;
+  class?: string;
 };
 
 function getFM(app: App, ctx: MarkdownPostProcessorContext): Record<string, any> {
@@ -61,15 +64,10 @@ function renderFeaturesList(
   const root = el;
   root.empty();
   root.addClass("dh-features-list");
-  root.setAttr(
-    "style",
-    [
-      "display:flex",
-      "flex-direction:column",
-      "gap:16px",
-      "max-width:min(760px, 100%)"
-    ].join("; ")
-  );
+  const layout = String((doc as any).layout ?? 'grid').toLowerCase();
+  root.addClass(layout === 'masonry' ? 'dh-features--masonry' : 'dh-features--grid');
+  const colsNum = Number((doc as any).cols);
+  if (Number.isFinite(colsNum) && colsNum > 0) root.style.setProperty('--dh-features-cols', String(Math.floor(colsNum)));
 
   const tctx = createTemplateContext(el, app, ctx);
   const renderValue = (raw: FeatureItem["value"]): string => {
@@ -86,52 +84,21 @@ function renderFeaturesList(
     if (!items || !Array.isArray(items) || items.length === 0) continue;
 
     const sectionEl = root.createDiv({ cls: `dh-features-section dh-features-${section.key}` });
-    sectionEl.setAttr(
-      "style",
-      [
-        "display:flex",
-        "flex-direction:column",
-        "gap:8px"
-      ].join("; ")
-    );
 
     const heading = sectionEl.createDiv({ cls: "dh-features-heading", text: section.title });
-    heading.setAttr(
-      "style",
-      [
-        "font-weight:800",
-        "font-size:14px",
-        `color:${section.color}`,
-        "margin-bottom:4px",
-        "text-transform:uppercase",
-        "letter-spacing:0.5px"
-      ].join("; ")
-    );
 
     for (const item of items) {
       const label = String(item?.label ?? "");
       const value = renderValue(item?.value);
 
       const card = sectionEl.createDiv({ cls: "dh-feature-item" });
-      card.setAttr(
-        "style",
-        [
-          "border:1px solid var(--background-modifier-border)",
-          `border-left:4px solid ${section.color}`,
-          "border-radius:6px",
-          "padding:8px 12px",
-          "background:transparent"
-        ].join("; ")
-      );
 
       if (label) {
-        const labelEl = card.createDiv({ cls: "dh-feature-label", text: label });
-        labelEl.setAttr("style", "font-weight:700; font-size:13px; color:var(--text-normal); margin-bottom:4px");
+        card.createDiv({ cls: "dh-feature-label", text: label });
       }
 
       if (value) {
-        const valueEl = card.createDiv({ cls: "dh-feature-value", text: value });
-        valueEl.setAttr("style", "font-size:12px; color:var(--text-muted); white-space:pre-wrap");
+        card.createDiv({ cls: "dh-feature-value", text: value });
       }
     }
   }

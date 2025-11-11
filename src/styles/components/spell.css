@@ -1,0 +1,40 @@
+/* ===== Spell / Action cards (```spell, ```action) ===== */
+
+.dh-spell-card {
+  position: relative;
+  border: 1px dashed var(--background-modifier-border);
+  border-left: 6px solid #8e75e3; /* default spell accent */
+  border-radius: 8px;
+  padding: 10px 12px 10px 16px;
+  background: transparent;
+  max-width: min(760px, 100%);
+}
+.dh-action-card { border-left-color: #26a69a; }
+
+/* optional art */
+.dh-spell-art { margin-bottom: 8px; }
+.dh-spell-art img { display:block; max-width:100%; border-radius:10px; }
+
+/* header */
+.dh-spell-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px; }
+.dh-spell-head .title { font-weight:800; color:var(--text-normal); }
+.dh-spell-head .tags { display:flex; gap:6px; flex-wrap:wrap; }
+.dh-spell-head .tags .pill {
+  display:inline-flex; align-items:center; padding:2px 8px; border-radius:999px;
+  border:1px solid var(--background-modifier-border);
+  background: linear-gradient(180deg, var(--background-secondary) 0%, color-mix(in oklab, var(--background-secondary), #000 10%) 100%);
+  font-size:11px; color:var(--text-muted);
+}
+
+/* meta grid */
+.dh-spell-meta { display:grid; grid-template-columns:max-content 1fr; gap:6px 10px; margin:6px 0; }
+.dh-spell-meta .label { font-size:11px; color:var(--text-faint); }
+.dh-spell-meta .value { font-size:12px; color:var(--text-normal); }
+
+/* feature text */
+.dh-spell-text { white-space:pre-wrap; margin-top:4px; font-size:13px; }
+
+/* tokens strip */
+.dh-spell-tokens { display:flex; align-items:center; gap:8px; margin-top:6px; }
+.dh-spell-tokens > .label { font-size:11px; color:var(--text-faint); }
+.dh-spell-tokens > .dots { display:inline-flex; gap:6px; align-items:center; }

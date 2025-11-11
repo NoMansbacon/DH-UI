@@ -21,7 +21,7 @@ export function registerDomainPickerBlock(plugin: DaggerheartPlugin) {
   );
 }
 
-async function renderDomainPicker(
+export async function renderDomainPicker(
   el: HTMLElement,
   plugin: DaggerheartPlugin,
   ctx: MarkdownPostProcessorContext
@@ -280,32 +280,48 @@ async function renderDomainPicker(
       parseDomains(getField(c, ["domains", "domain", "Domains"], [])).forEach((d: string) => allDomainsSet.add(d.toLowerCase()));
     });
     const allDomains = Array.from(allDomainsSet).sort();
+    const characterDomains = (charDomains || []).map((d) => d.toLowerCase());
+    const domainOptions = characterDomains.length > 0 ? characterDomains : allDomains;
 
-    const allTypesSet = new Set<string>();
-    allCards.forEach((c: any) => {
-      const t = String(getField(c, ["type", "Type"], "")).trim();
-      if (t) allTypesSet.add(t);
-    });
-    const allTypes = Array.from(allTypesSet).sort();
+    // Compute type options constrained by selected domain or character domains
+    function typesForDomainBaseline(): string[] {
+      const base = allCards.array ? allCards.array() : allCards;
+      const domainFilter = (selDomain && selDomain.length) ? [selDomain] : characterDomains;
+      const types = new Set<string>();
+      for (const c of base) {
+        const cDomains = parseDomains(getField(c, ["domains", "domain", "Domains"], [])).map((s: string) => s.toLowerCase());
+        const include = domainFilter.length ? cDomains.some((d: string) => domainFilter.includes(d)) : true;
+        if (!include) continue;
+        const t = String(getField(c, ["type", "Type"], "")).trim();
+        if (t) types.add(t);
+      }
+      return Array.from(types).sort();
+    }
 
     let selDomain: string | null = null;
     let selType: string | null = null;
     let selectedLevel: number | null = null;
 
-    // Domain select
+    // Domain select (restricted to character domains if available)
     const domWrap = filters.createDiv({ cls: "filter" });
     domWrap.createEl("label", { text: "Domain" });
     const domSel = domWrap.createEl("select", { cls: "dropdown" });
     domSel.appendChild(new Option("Any", ""));
-    allDomains.forEach((d) => domSel.appendChild(new Option(d, d)));
-    domSel.addEventListener("change", () => { selDomain = domSel.value || null; renderCards(); });
+    domainOptions.forEach((d) => domSel.appendChild(new Option(d, d)));
+    domSel.addEventListener("change", () => { selDomain = domSel.value || null; selType = null; populateTypeOptions(); renderCards(); });
 
-    // Type select
+    // Type select (options depend on selected/allowed domains)
     const typeWrap = filters.createDiv({ cls: "filter" });
     typeWrap.createEl("label", { text: "Type" });
     const typeSel = typeWrap.createEl("select", { cls: "dropdown" });
-    typeSel.appendChild(new Option("Any", ""));
-    allTypes.forEach((t) => typeSel.appendChild(new Option(t, t)));
+    const populateTypeOptions = () => {
+      // clear
+      while (typeSel.firstChild) typeSel.removeChild(typeSel.firstChild);
+      typeSel.appendChild(new Option("Any", ""));
+      typesForDomainBaseline().forEach((t) => typeSel.appendChild(new Option(t, t)));
+      typeSel.value = "";
+    };
+    populateTypeOptions();
     typeSel.addEventListener("change", () => { selType = typeSel.value || null; renderCards(); });
 
     // Level filter (Any or exact 1–10)

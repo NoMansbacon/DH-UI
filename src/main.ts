@@ -28,6 +28,7 @@ import { registerLevelUp } from "./blocks/level-up";
 import { registerSpellBlocks } from "./blocks/spell";
 import { registerDomainPickerBlock } from "./blocks/domain-picker";
 import { registerFeaturesBlock } from "./blocks/features";
+import { registerDashboard } from "./blocks/dashboard";
 
 export default class DaggerheartPlugin extends Plugin {
   settings: DaggerheartSettings;
@@ -70,6 +71,7 @@ export default class DaggerheartPlugin extends Plugin {
     try { registerSpellBlocks(this); }   catch (e) { console.error('[DH-UI] spell/action load error', e); }
     try { registerDomainPickerBlock(this); } catch (e) { console.error('[DH-UI] domain-picker load error', e); }
     try { registerFeaturesBlock(this); } catch (e) { console.error('[DH-UI] features load error', e); }
+    try { registerDashboard(this); } catch (e) { console.error('[DH-UI] dashboard load error', e); }
 
     // Grid/layout customization via settings removed; layout controlled by CSS only
 

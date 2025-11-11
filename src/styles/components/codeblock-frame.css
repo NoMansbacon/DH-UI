@@ -1,5 +1,24 @@
-/* Code block framing with left accent and small icon */
-.markdown-rendered pre {
+/* Code block framing with left accent and small icon (scoped to DH-UI code blocks only) */
+/* Target only our plugin languages to avoid affecting generic code blocks */
+.markdown-rendered pre:has(> code.language-badges),
+.markdown-rendered pre:has(> code.language-consumables),
+.markdown-rendered pre:has(> code.language-ability),
+.markdown-rendered pre:has(> code.language-traits),
+.markdown-rendered pre:has(> code.language-damage),
+.markdown-rendered pre:has(> code.language-rest),
+.markdown-rendered pre:has(> code.language-short-rest),
+.markdown-rendered pre:has(> code.language-short),
+.markdown-rendered pre:has(> code.language-long-rest),
+.markdown-rendered pre:has(> code.language-long),
+.markdown-rendered pre:has(> code.language-hp),
+.markdown-rendered pre:has(> code.language-stress),
+.markdown-rendered pre:has(> code.language-armor),
+.markdown-rendered pre:has(> code.language-hope),
+.markdown-rendered pre:has(> code.language-vitals),
+.markdown-rendered pre:has(> code.language-vital-trackers),
+.markdown-rendered pre:has(> code.language-features),
+.markdown-rendered pre:has(> code.language-domainpicker),
+.markdown-rendered pre:has(> code.language-levelup) {
   position: relative;
   border: 1px solid var(--background-modifier-border);
   border-left: 6px solid var(--code-accent, var(--text-accent));
@@ -8,7 +27,25 @@
   margin: 8px 0;
 }
 
-.markdown-rendered pre::before {
+.markdown-rendered pre:has(> code.language-badges)::before,
+.markdown-rendered pre:has(> code.language-consumables)::before,
+.markdown-rendered pre:has(> code.language-ability)::before,
+.markdown-rendered pre:has(> code.language-traits)::before,
+.markdown-rendered pre:has(> code.language-damage)::before,
+.markdown-rendered pre:has(> code.language-rest)::before,
+.markdown-rendered pre:has(> code.language-short-rest)::before,
+.markdown-rendered pre:has(> code.language-short)::before,
+.markdown-rendered pre:has(> code.language-long-rest)::before,
+.markdown-rendered pre:has(> code.language-long)::before,
+.markdown-rendered pre:has(> code.language-hp)::before,
+.markdown-rendered pre:has(> code.language-stress)::before,
+.markdown-rendered pre:has(> code.language-armor)::before,
+.markdown-rendered pre:has(> code.language-hope)::before,
+.markdown-rendered pre:has(> code.language-vitals)::before,
+.markdown-rendered pre:has(> code.language-vital-trackers)::before,
+.markdown-rendered pre:has(> code.language-features)::before,
+.markdown-rendered pre:has(> code.language-domainpicker)::before,
+.markdown-rendered pre:has(> code.language-levelup)::before {
   content: var(--code-icon, "");
   position: absolute;
   left: 8px;
@@ -27,7 +64,25 @@
   border-radius: 999px;
 }
 
-.markdown-rendered pre code { display: block; }
+.markdown-rendered pre:has(> code.language-badges) code,
+.markdown-rendered pre:has(> code.language-consumables) code,
+.markdown-rendered pre:has(> code.language-ability) code,
+.markdown-rendered pre:has(> code.language-traits) code,
+.markdown-rendered pre:has(> code.language-damage) code,
+.markdown-rendered pre:has(> code.language-rest) code,
+.markdown-rendered pre:has(> code.language-short-rest) code,
+.markdown-rendered pre:has(> code.language-short) code,
+.markdown-rendered pre:has(> code.language-long-rest) code,
+.markdown-rendered pre:has(> code.language-long) code,
+.markdown-rendered pre:has(> code.language-hp) code,
+.markdown-rendered pre:has(> code.language-stress) code,
+.markdown-rendered pre:has(> code.language-armor) code,
+.markdown-rendered pre:has(> code.language-hope) code,
+.markdown-rendered pre:has(> code.language-vitals) code,
+.markdown-rendered pre:has(> code.language-vital-trackers) code,
+.markdown-rendered pre:has(> code.language-features) code,
+.markdown-rendered pre:has(> code.language-domainpicker) code,
+.markdown-rendered pre:has(> code.language-levelup) code { display: block; }
 
 /* Language-specific accents (Chromium supports :has in Electron) */
 .markdown-rendered pre:has(> code.language-js)     { --code-accent: #f7df1e; --code-icon: "JS"; }
@@ -67,5 +122,3 @@
 .markdown-rendered pre:has(> code.language-armor)       { --code-accent: var(--dh-gray, #9aa0a6);  --code-icon: "ARM"; }
 .markdown-rendered pre:has(> code.language-hope)        { --code-accent: var(--dh-gold, #e6c14f);  --code-icon: "HOP"; }
 
-/* Fallback default icon if no language match */
-.markdown-rendered pre:not(:has(> code[class*="language-"])) { --code-icon: "<>"; }

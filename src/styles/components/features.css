@@ -1,0 +1,57 @@
+/* ===== Features list (standalone) ===== */
+
+/* Container for all sections */
+.dh-features-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: min(760px, 100%);
+}
+
+/* Each section (Ancestry, Class, Subclass, Community) */
+.dh-features-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Section heading */
+.dh-features-heading {
+  font-weight: 800;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Feature card */
+.dh-feature-item {
+  border: 1px solid var(--background-modifier-border);
+  border-left: 4px solid var(--background-modifier-border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  background: transparent;
+}
+
+/* Label + value */
+.dh-feature-label {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text-accent);
+  margin-bottom: 4px;
+}
+.dh-feature-value {
+  font-size: 12px;
+  color: var(--text-normal);
+  white-space: pre-wrap;
+}
+
+/* Per-section accent colors */
+.dh-features-ancestry .dh-features-heading { color: #4caf50; }
+.dh-features-class    .dh-features-heading { color: #2196f3; }
+.dh-features-subclass .dh-features-heading { color: #ff9800; }
+.dh-features-community .dh-features-heading { color: #9c27b0; }
+
+.dh-features-ancestry .dh-feature-item { border-left-color: #4caf50; }
+.dh-features-class    .dh-feature-item { border-left-color: #2196f3; }
+.dh-features-subclass .dh-feature-item { border-left-color: #ff9800; }
+.dh-features-community .dh-feature-item { border-left-color: #9c27b0; }
