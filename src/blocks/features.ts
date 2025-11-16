@@ -64,8 +64,19 @@ function renderFeaturesList(
   const root = el;
   root.empty();
   root.addClass("dh-features-list");
-  const layout = String((doc as any).layout ?? 'grid').toLowerCase();
-  root.addClass(layout === 'masonry' ? 'dh-features--masonry' : 'dh-features--grid');
+  // Default: standalone is a list. Opt-in to grid via layout: grid or class: grid
+  const layoutStr = String(((doc as any).layout ?? '')).toLowerCase();
+  // Accept CSS class overrides: `class: "grid"` or `className: "grid"`
+  const rawCls = typeof (doc as any).class === 'string' ? (doc as any).class
+               : typeof (doc as any).className === 'string' ? (doc as any).className
+               : '';
+  if (rawCls) {
+    for (const c of rawCls.split(/\s+/).filter(Boolean)) root.addClass(c);
+  }
+  const isGrid = layoutStr === 'grid' || (/\bgrid\b/i.test(rawCls));
+  if (layoutStr === 'masonry') root.addClass('dh-features--masonry');
+  else if (isGrid) root.addClass('dh-features--grid');
+
   const colsNum = Number((doc as any).cols);
   if (Number.isFinite(colsNum) && colsNum > 0) root.style.setProperty('--dh-features-cols', String(Math.floor(colsNum)));
 

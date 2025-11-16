@@ -10,6 +10,7 @@
   border-left: 6px solid #a78bfa; /* traits accent */
   border-radius: 8px;
   padding: 10px 12px 10px 16px;
+  max-width: 710px;
 }
 
 .dh-ability-cards::before{

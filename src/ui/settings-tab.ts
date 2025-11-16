@@ -54,6 +54,19 @@ export class DaggerheartSettingTab extends PluginSettingTab {
       });
 
     new Setting(containerEl)
+      .setName("Equipment folder")
+      .setDesc("Vault folder where equipment (weapons/armor) notes are stored. Leave empty to search entire vault.")
+      .addText((text) => {
+        text
+          .setPlaceholder("Items")
+          .setValue(this.plugin.settings.equipmentFolder || "")
+          .onChange(async (value) => {
+            this.plugin.settings.equipmentFolder = value.trim();
+            await this.plugin.saveSettings();
+          });
+      });
+
+    new Setting(containerEl)
       .setName("Domain picker view")
       .setDesc("Choose between card grid or table view (no art) for the Add Domain Cards modal.")
       .addDropdown((dd) => {

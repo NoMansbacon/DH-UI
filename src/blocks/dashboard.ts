@@ -98,7 +98,16 @@ function resolveCount(
   if (typeof raw === "number") { const n = Math.floor(raw); return Number.isFinite(n) ? Math.max(0, n) : 0; }
   try {
     const tctx = createTemplateContext(el, app, ctx);
-    const out = processTemplate(String(raw), tctx).trim();
+    const s = String(raw).trim();
+    // Robust: allow either "{{ frontmatter.key }}" or plain "frontmatter.key"
+    const m = s.match(/^\{\{\s*frontmatter\.([a-zA-Z0-9_\-]+)\s*\}\}$|^frontmatter\.([a-zA-Z0-9_\-]+)$/);
+    if (m) {
+      const key = (m[1] || m[2]) as string;
+      const v = (tctx.frontmatter as any)?.[key];
+      const n = Math.floor(Number(String(v)));
+      return Number.isFinite(n) ? Math.max(0, n) : 0;
+    }
+    const out = processTemplate(s, tctx).trim();
     const n = Math.floor(Number(out));
     return Number.isFinite(n) ? Math.max(0, n) : 0;
   } catch { return 0; }
@@ -167,28 +176,29 @@ export function registerDashboard(plugin: DaggerheartPlugin) {
   registerLiveCodeBlock(plugin, "dashboard", async (el: HTMLElement, src: string, ctx: MarkdownPostProcessorContext) => {
     const app = plugin.app;
     const y = parseYaml(src);
+    const yv: any = (y as any).vitals || {};
 
     const klass = String(y.class ?? '').trim().split(/\s+/).filter(Boolean)[0];
     el.addClass('dh-dashboard-block');
     if (klass) el.addClass(klass);
 
     // Prefer provided keys; otherwise use defaults
-    const hpKey     = String(y.hp_key     ?? 'din_health');
-    const stressKey = String(y.stress_key ?? (`din_stress::${ctx.sourcePath}`));
-    const armorKey  = String(y.armor_key  ?? (`din_armor::${ctx.sourcePath}`));
-    const hopeKey   = String(y.hope_key   ?? (`din_hope::${ctx.sourcePath}`));
+    const hpKey     = String((y as any).hp_key     ?? yv.hp_key     ?? 'din_health');
+    const stressKey = String((y as any).stress_key ?? yv.stress_key ?? (`din_stress::${ctx.sourcePath}`));
+    const armorKey  = String((y as any).armor_key  ?? yv.armor_key  ?? (`din_armor::${ctx.sourcePath}`));
+    const hopeKey   = String((y as any).hope_key   ?? yv.hope_key   ?? (`din_hope::${ctx.sourcePath}`));
 
     // Counts (resolve templates)
-    let hpCount     = resolveCount(y.hp,     el, app, ctx);
-    let stressCount = resolveCount(y.stress, el, app, ctx);
-    let armorCount  = resolveCount(y.armor,  el, app, ctx);
-    let hopeCount   = resolveCount(y.hope,   el, app, ctx);
+    let hpCount     = resolveCount((y as any).hp     ?? yv.hp,     el, app, ctx);
+    let stressCount = resolveCount((y as any).stress ?? yv.stress, el, app, ctx);
+    let armorCount  = resolveCount((y as any).armor  ?? yv.armor,  el, app, ctx);
+    let hopeCount   = resolveCount((y as any).hope   ?? yv.hope,   el, app, ctx);
     if (!hopeCount) hopeCount = 6;
 
-    const hpLabel     = String(y.hp_label     ?? 'HP');
-    const stressLabel = String(y.stress_label ?? 'Stress');
-    const armorLabel  = String(y.armor_label  ?? 'Armor');
-    const hopeLabel   = String(y.hope_label   ?? 'Hope');
+    const hpLabel     = String((y as any).hp_label     ?? yv.hp_label     ?? 'HP');
+    const stressLabel = String((y as any).stress_label ?? yv.stress_label ?? 'Stress');
+    const armorLabel  = String((y as any).armor_label  ?? yv.armor_label  ?? 'Armor');
+    const hopeLabel   = String((y as any).hope_label   ?? yv.hope_label   ?? 'Hope');
 
     const [hpFilled, stressFilled, armorFilled, hopeFilled] = await Promise.all([
       readState(hpKey, hpCount),
@@ -242,8 +252,14 @@ export function registerDashboard(plugin: DaggerheartPlugin) {
         }
         const hhRaw = (y as any).hero_height;
         const heroH = typeof hhRaw === 'string' ? hhRaw : (Number.isFinite(hhRaw as any) ? `${hhRaw}px` : undefined);
+        // Optional fit/position controls for the portrait image
+        const heroFit = (y as any).hero_fit ? String((y as any).hero_fit) : undefined; // 'cover' | 'contain'
+        const heroPos = (y as any).hero_position ? String((y as any).hero_position) : undefined; // e.g. 'top', 'center', 'top-left'
         if (heroUrl) {
-          heroCard = React.createElement('div', { className: 'dh-dash-section card-hero dh-dash-hero', style: heroH ? ({ ['--dh-hero-h']: heroH } as any) : undefined, 'data-fixed-h': heroH ? '1' : undefined },
+          const heroAttrs: any = { className: 'dh-dash-section card-hero dh-dash-hero', style: heroH ? ({ ['--dh-hero-h']: heroH } as any) : undefined, 'data-fixed-h': heroH ? '1' : undefined };
+          if (heroFit) heroAttrs['data-fit'] = heroFit;
+          if (heroPos) heroAttrs['data-pos'] = heroPos;
+          heroCard = React.createElement('div', heroAttrs,
             React.createElement('div', { className: 'dh-dash-title' }, 'Portrait'),
             React.createElement('img', { className: 'dh-hero-img', src: heroUrl, alt: 'Portrait' })
           );
@@ -264,48 +280,82 @@ export function registerDashboard(plugin: DaggerheartPlugin) {
         (y.show_badges !== false && y.badges && Array.isArray(y.badges.items) && y.badges.items.length)
           ? React.createElement(BadgesView, { items: computeBadges(el, app, ctx, y.badges.items as any) })
           : null,
-        // inline rest controls
-        React.createElement(ControlsRowView, {
-          showShort, showLong, showLevelUp, showFullHeal, showResetAll,
-          shortLabel, longLabel, levelupLabel, fullHealLabel, resetAllLabel,
-          onShort: () => openShortRestUI(plugin, el, ctx, { hp: hpKey, stress: stressKey, armor: armorKey, hope: hopeKey }),
-          onLong: () => openLongRestUI(plugin, el, ctx, { hp: hpKey, stress: stressKey, armor: armorKey, hope: hopeKey }),
-          onLevelUp: () => {
-            const f = plugin.app.vault.getFileByPath(ctx.sourcePath) || plugin.app.workspace.getActiveFile();
-            if (f && f instanceof TFile) { try { (new (require('../ui/levelup-modal').LevelUpModal)(plugin.app as any, plugin, f)).open(); } catch { new Notice('Level Up: failed to open modal'); } }
-            else new Notice('Level Up: could not resolve file for modal');
-          },
-          onFullHeal: async () => {
-            const scope = (el.closest('.markdown-preview-view') as HTMLElement) ?? document.body;
-            const keys = new Set<string>();
-            scope.querySelectorAll('.dh-tracker .dh-track-hp').forEach((n)=>{ const k = (n.closest('.dh-tracker') as HTMLElement | null)?.getAttribute('data-dh-key') || ''; if (k) keys.add(k); });
-            for (const k of keys){ await store.set<number>('tracker:' + k, 0); try { window.dispatchEvent(new CustomEvent('dh:tracker:changed', { detail: { key: k, filled: 0 } })); } catch {} }
-            new Notice(keys.size ? 'HP fully restored for this note.' : 'No HP tracker found in this note.');
-          },
-          onResetAll: async () => {
-            const scope = (el.closest('.markdown-preview-view') as HTMLElement) ?? document.body;
-            const kinds = ['hp','stress','armor','hope'] as const;
-            const classFor: Record<typeof kinds[number], string> = { hp: 'dh-track-hp', stress: 'dh-track-stress', armor: 'dh-track-armor', hope: 'dh-track-hope' } as any;
-            const keysByKind: Record<string, Set<string>> = { hp: new Set(), stress: new Set(), armor: new Set(), hope: new Set() } as any;
-            kinds.forEach(kind => { scope.querySelectorAll('.dh-tracker .' + classFor[kind]).forEach((n)=>{ const k = (n.closest('.dh-tracker') as HTMLElement | null)?.getAttribute('data-dh-key') || ''; if (k) (keysByKind[kind] as Set<string>).add(k); }); });
-            let changed = 0; for (const kind of kinds){ for (const k of keysByKind[kind]){ await store.set<number>('tracker:' + k, 0); changed++; try { window.dispatchEvent(new CustomEvent('dh:tracker:changed', { detail: { key: k, filled: 0 } })); } catch {} } }
-            new Notice(changed ? 'All trackers in this note reset.' : 'No trackers found in this note.');
-          },
-        }),
-        // abilities beneath (optional)
-        abilMount
+        // abilities (traits) in the middle
+        abilMount,
+        // controls row under traits (styled like standalone rest block)
+        React.createElement('div', { className: 'block-language-rest dh-rest-embed' },
+          React.createElement(ControlsRowView, {
+            showShort, showLong, showLevelUp, showFullHeal, showResetAll,
+            shortLabel, longLabel, levelupLabel, fullHealLabel, resetAllLabel,
+            onShort: () => openShortRestUI(plugin, el, ctx, { hp: hpKey, stress: stressKey, armor: armorKey, hope: hopeKey }),
+            onLong: () => openLongRestUI(plugin, el, ctx, { hp: hpKey, stress: stressKey, armor: armorKey, hope: hopeKey }),
+            onLevelUp: () => {
+              const f = plugin.app.vault.getFileByPath(ctx.sourcePath) || plugin.app.workspace.getActiveFile();
+              if (f && f instanceof TFile) { try { (new (require('../ui/levelup-modal').LevelUpModal)(plugin.app as any, plugin, f)).open(); } catch { new Notice('Level Up: failed to open modal'); } }
+              else new Notice('Level Up: could not resolve file for modal');
+            },
+            onFullHeal: async () => {
+              const scope = (el.closest('.markdown-preview-view') as HTMLElement) ?? document.body;
+              const keys = new Set<string>();
+              scope.querySelectorAll('.dh-tracker .dh-track-hp').forEach((n)=>{ const k = (n.closest('.dh-tracker') as HTMLElement | null)?.getAttribute('data-dh-key') || ''; if (k) keys.add(k); });
+              for (const k of keys){ await store.set<number>('tracker:' + k, 0); try { window.dispatchEvent(new CustomEvent('dh:tracker:changed', { detail: { key: k, filled: 0 } })); } catch {} }
+              new Notice(keys.size ? 'HP fully restored for this note.' : 'No HP tracker found in this note.');
+            },
+            onResetAll: async () => {
+              const scope = (el.closest('.markdown-preview-view') as HTMLElement) ?? document.body;
+              const kinds = ['hp','stress','armor','hope'] as const;
+              const classFor: Record<typeof kinds[number], string> = { hp: 'dh-track-hp', stress: 'dh-track-stress', armor: 'dh-track-armor', hope: 'dh-track-hope' } as any;
+              const keysByKind: Record<string, Set<string>> = { hp: new Set(), stress: new Set(), armor: new Set(), hope: new Set() } as any;
+              kinds.forEach(kind => { scope.querySelectorAll('.dh-tracker .' + classFor[kind]).forEach((n)=>{ const k = (n.closest('.dh-tracker') as HTMLElement | null)?.getAttribute('data-dh-key') || ''; if (k) (keysByKind[kind] as Set<string>).add(k); }); });
+              let changed = 0; for (const kind of kinds){ for (const k of keysByKind[kind]){ await store.set<number>('tracker:' + k, 0); changed++; try { window.dispatchEvent(new CustomEvent('dh:tracker:changed', { detail: { key: k, filled: 0 } })); } catch {} } }
+              new Notice(changed ? 'All trackers in this note reset.' : 'No trackers found in this note.');
+            },
+          })
+        )
       );
 
 // Vitals + Damage
       if (y.show_vitals !== false) {
-        const children: any[] = [
-          React.createElement('div', { className: 'dh-dash-title' }, 'Vitals & Damage'),
-          React.createElement('div', { className: 'dh-dashboard-vitals' },
+        const vitalsInner: any[] = [
+          React.createElement('div', { className: 'dh-vitals-grid' },
             React.createElement(TrackerRowView as any, { label: hpLabel, kind: 'hp', shape: 'rect', total: hpCount, initialFilled: hpFilled, onChange: onFilled(hpKey), stateKey: hpKey }),
             React.createElement(TrackerRowView as any, { label: stressLabel, kind: 'stress', shape: 'rect', total: stressCount, initialFilled: stressFilled, onChange: onFilled(stressKey), stateKey: stressKey }),
             React.createElement(TrackerRowView as any, { label: armorLabel, kind: 'armor', shape: 'rect', total: armorCount, initialFilled: armorFilled, onChange: onFilled(armorKey), stateKey: armorKey }),
             React.createElement(TrackerRowView as any, { label: hopeLabel, kind: 'hope', shape: 'diamond', total: hopeCount, initialFilled: hopeFilled, onChange: onFilled(hopeKey), stateKey: hopeKey }),
-          ),
+          )
+        ];
+        // Optional: hope features/footer nested under vitals: { footer: [...] }
+        try {
+          const tctx = createTemplateContext(el, app, ctx);
+          const rawHF: any = yv.hope_feature ?? yv.footer;
+          const hopeFeatures: Array<{ label: string; value: string }> = [];
+          const normOne = (item: any) => {
+            if (item == null) return;
+            if (typeof item === 'string') {
+              const v = processTemplate(String(item), tctx).trim();
+              if (v) hopeFeatures.push({ label: '', value: v });
+              return;
+            }
+            if (typeof item === 'object') {
+              const lbl = (item.label ?? item.lable ?? '').toString();
+              const val = (item.value ?? '').toString();
+              const nLbl = lbl ? processTemplate(lbl, tctx).trim() : '';
+              const nVal = val ? processTemplate(val, tctx).trim() : '';
+              if (nLbl || nVal) hopeFeatures.push({ label: nLbl, value: nVal });
+            }
+          };
+          if (Array.isArray(rawHF)) rawHF.forEach(normOne); else if (rawHF != null) normOne(rawHF);
+          if (hopeFeatures.length) {
+            vitalsInner.push(
+              React.createElement('div', { className: 'dh-vitals-hope' },
+                ...hopeFeatures.map((f) => React.createElement('div', { className: 'dh-vitals-hope-row' }, f.label ? React.createElement('div', { className: 'label' }, f.label) : null, React.createElement('div', { className: 'value' }, f.value)))
+              )
+            );
+          }
+        } catch {}
+        const children: any[] = [
+          React.createElement('div', { className: 'dh-dash-title' }, 'Vitals & Damage'),
+          React.createElement('div', { className: 'dh-vitals' }, ...vitalsInner),
         ];
         if (y.show_damage !== false) {
           const dmgCfg = (y.damage || {}) as any;

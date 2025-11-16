@@ -82,6 +82,9 @@
 .dh-dash-vitals .dh-tracker { 
     margin-bottom: 6px; 
 }
+/* Make dashboard vitals rows look like standalone vitals: remove per-row dashed frame/label */
+.dh-dashboard-vitals .dh-tracker { border: none; padding: 0; margin: 0; }
+.dh-dashboard-vitals .dh-tracker::before { content: none; }
 
 .dh-abilities-wrap { 
     display:block; 
@@ -92,11 +95,17 @@
     height: auto; 
     aspect-ratio: 16 / 9; 
     object-fit: cover; 
+    object-position: center center; 
     border-radius: 8px; 
     display: block;
 }
 /* When a fixed height is provided from the block (hero_height), override aspect ratio */
 .dh-dash-hero[data-fixed-h="1"] .dh-hero-img { aspect-ratio: auto; height: var(--dh-hero-h, 180px); }
+/* Fit/position overrides via data attributes */
+.dh-dash-hero[data-fit="contain"] .dh-hero-img { object-fit: contain; background: var(--background-secondary); }
+.dh-dash-hero[data-pos="top"] .dh-hero-img { object-position: center top; }
+.dh-dash-hero[data-pos="center"] .dh-hero-img { object-position: center center; }
+.dh-dash-hero[data-pos="bottom"] .dh-hero-img { object-position: center bottom; }
 
 /* Make the portrait image fill the hero grid area while keeping aspect */
 .card-hero { display: grid; grid-template-rows: auto 1fr; }

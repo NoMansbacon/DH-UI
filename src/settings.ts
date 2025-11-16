@@ -10,6 +10,7 @@
 export interface DaggerheartSettings {
   stateFilePath: string;
   domainCardsFolder: string;
+  equipmentFolder: string;
   // 'card' = modal card grid, 'table' = tabular rows (no art)
   domainPickerView: 'card' | 'table';
   domainPickerColumns: {
@@ -26,6 +27,7 @@ export interface DaggerheartSettings {
 export const DEFAULT_SETTINGS: DaggerheartSettings = {
   stateFilePath: ".obsidian/plugins/dh_state.json",
   domainCardsFolder: "",
+  equipmentFolder: "",
   domainPickerView: 'card',
   domainPickerColumns: {
     name: true,

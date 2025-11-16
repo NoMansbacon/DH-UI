@@ -3,8 +3,6 @@
 /* Standalone Vitals container: dashed frame + colored left accent */
 .dh-vitals {
   position: relative;
-  border: 1px dashed var(--background-modifier-border);
-  border-left: 6px solid #607d8b; /* vitals accent */
   border-radius: 8px;
   padding: 10px 12px 12px 16px;
   background: transparent;
@@ -15,6 +13,7 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 8px 12px;
+  color: var(--text-accent)
 }
 
 @container dhdash (min-width: 560px) {
@@ -25,11 +24,20 @@
   .dh-vitals-grid { grid-template-columns: 1fr 1fr; }
 }
 
-/* Tidy the inner tracker rows (no dashed frame inside the combined card) */
+/* Give each vital its own badge-like block (similar to .dh-badge) */
 .dh-vitals .dh-tracker {
-  border: none;
-  padding: 0;
+  /* keep the basic grid layout from trackers.css, but restyle the frame */
   margin: 0;
+  padding: 8px 10px;
+  border-radius: 12px;
+
+  border: 1px solid var(--background-modifier-border);
+  background: linear-gradient(
+    180deg,
+    var(--background-secondary) 0%,
+    color-mix(in oklab, var(--background-secondary), #000 12%) 100%
+  );
+  box-shadow: var(--shadow-s);
 }
 .dh-vitals .dh-tracker::before { content: none; }
 
@@ -61,12 +69,41 @@
 }
 
 /* Hope features footer (grid of label/value rows) */
-.dh-vitals-hope { margin-top: 10px; display: grid; gap: 6px; justify-items: center; }
+.dh-vitals-hope {
+  margin-top: 10px;
+  display: grid;
+  gap: 6px;
+  justify-items: stretch; /* make rows fill the available width */
+}
+
+/* Each hope feature row styled like a compact badge block */
 .dh-vitals-hope-row {
   display: grid;
-  grid-template-columns: max-content max-content;
+  grid-template-columns: minmax(0, max-content) minmax(0, 1fr);
   gap: 2px 10px;
   align-items: start;
+  width: 100%;
+
+  border-radius: 12px;
+  padding: 8px 10px;
+  border: 1px solid var(--background-modifier-border);
+  background: linear-gradient(
+    180deg,
+    var(--background-secondary) 0%,
+    color-mix(in oklab, var(--background-secondary), #000 12%) 100%
+  );
+  box-shadow: var(--shadow-s);
 }
-.dh-vitals-hope-row .label { font-size: 13px; color: var(--text-accent); font-weight: 600; }
-.dh-vitals-hope-row .value { font-size: 13px; color: var(--text-normal); }
+.dh-vitals-hope-row .label {
+  font-size: 13px;
+  color: var(--text-accent);
+  font-weight: 600;
+  white-space: normal;
+}
+.dh-vitals-hope-row .value {
+  font-size: 13px;
+  color: var(--text-normal);
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}

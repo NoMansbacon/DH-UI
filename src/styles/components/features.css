@@ -8,6 +8,38 @@
   max-width: min(760px, 100%);
 }
 
+/* Grid variant to mirror dashboard card-features */
+.dh-features-list.dh-features--grid,
+.dh-features-list.grid {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  max-width: none; /* allow full width like dashboard */
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-areas: "anc cla" "com sub";
+  align-items: start;
+}
+.dh-features-list.dh-features--grid .dh-features-ancestry,
+.dh-features-list.grid .dh-features-ancestry  { grid-area: anc; }
+.dh-features-list.dh-features--grid .dh-features-class,
+.dh-features-list.grid .dh-features-class     { grid-area: cla; }
+.dh-features-list.dh-features--grid .dh-features-community,
+.dh-features-list.grid .dh-features-community { grid-area: com; }
+.dh-features-list.dh-features--grid .dh-features-subclass,
+.dh-features-list.grid .dh-features-subclass  { grid-area: sub; }
+
+@media (max-width: 800px) {
+  .dh-features-list.dh-features--grid,
+  .dh-features-list.grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "anc"
+      "cla"
+      "com"
+      "sub";
+  }
+}
+
 /* Each section (Ancestry, Class, Subclass, Community) */
 .dh-features-section {
   display: flex;

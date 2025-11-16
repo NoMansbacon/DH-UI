@@ -336,6 +336,14 @@ export async function renderDomainPicker(
       renderCards();
     });
 
+    // Text search (by name, feature, type, domain)
+    let q = "";
+    const searchWrap = filters.createDiv({ cls: "filter" });
+    searchWrap.createEl("label", { text: "Search" });
+    const searchInput = searchWrap.createEl("input", { type: "text" });
+    searchInput.placeholder = "Name, feature, type or domain";
+    searchInput.addEventListener("input", () => { q = searchInput.value.toLowerCase(); renderCards(); });
+
     // Reset button
     const resetWrap = filters.createDiv({ cls: "filter" });
     resetWrap.createEl("label", { text: "\u00A0" });
@@ -344,6 +352,7 @@ export async function renderDomainPicker(
       selDomain = null; domSel.value = "";
       selType = null; typeSel.value = "";
       lvlSel.value = ""; selectedLevel = null;
+      q = ""; searchInput.value = "";
       renderCards();
     });
 
@@ -363,7 +372,8 @@ export async function renderDomainPicker(
       const levelInfo = selectedLevel !== null ? `= ${selectedLevel}` : (charLevelNow > 0 ? `≤ ${charLevelNow}` : "Any");
       const domInfo = selDomain ? selDomain : (charDomainsNow.join(", ") || "—");
       const typeInfo = selType || "Any";
-      filterInfo.setText(`Filters: level ${levelInfo} • domains: ${domInfo} • type: ${typeInfo}`);
+      const searchInfo = q ? ` • search: ${q}` : "";
+      filterInfo.setText(`Filters: level ${levelInfo} • domains: ${domInfo} • type: ${typeInfo}${searchInfo}`);
 
       let candidates = base
         .filter((c: any) => {
@@ -388,7 +398,14 @@ export async function renderDomainPicker(
           // Level filter: exact if selected; otherwise cap to character level (if > 0)
           const levelOK = selectedLevel !== null ? cLevel === selectedLevel : (charLevelNow > 0 ? cLevel <= charLevelNow : true);
 
-          return domainOK && typeOK && levelOK;
+          // Text search: name, feature, type, domains
+          const cName = String(c.file?.name || "");
+          const cFeature = String(getField(c, ["feature", "Feature"], ""));
+          const qOK = q
+            ? [cName, cFeature, t, ...cDomains].some((s) => String(s).toLowerCase().includes(q))
+            : true;
+
+          return domainOK && typeOK && levelOK && qOK;
         })
         .sort((a: any, b: any) => {
           const la = toNumber(getField(a, ["level", "Level"], 0));

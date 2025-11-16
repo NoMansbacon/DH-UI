@@ -29,6 +29,7 @@ import { registerSpellBlocks } from "./blocks/spell";
 import { registerDomainPickerBlock } from "./blocks/domain-picker";
 import { registerFeaturesBlock } from "./blocks/features";
 import { registerDashboard } from "./blocks/dashboard";
+import { registerEquipmentPickerBlock } from "./blocks/equipment-picker";
 
 export default class DaggerheartPlugin extends Plugin {
   settings: DaggerheartSettings;
@@ -53,8 +54,21 @@ export default class DaggerheartPlugin extends Plugin {
         pre.setText('Error rendering abilities/traits block. See console for details.');
       }
     };
-    this.registerMarkdownCodeBlockProcessor('ability', renderAbilities);
-    this.registerMarkdownCodeBlockProcessor('traits', renderAbilities);
+
+    // Register code fences; if another plugin already claimed these generic names,
+    // fall back to namespaced aliases to avoid crashing the whole plugin.
+    try {
+      this.registerMarkdownCodeBlockProcessor('ability', renderAbilities);
+    } catch (e) {
+      console.warn('[DH-UI] "ability" code block already registered by another plugin; using alias "dh-ability" instead.', e);
+      try { this.registerMarkdownCodeBlockProcessor('dh-ability', renderAbilities); } catch {}
+    }
+    try {
+      this.registerMarkdownCodeBlockProcessor('traits', renderAbilities);
+    } catch (e) {
+      console.warn('[DH-UI] "traits" code block already registered by another plugin; using alias "dh-traits" instead.', e);
+      try { this.registerMarkdownCodeBlockProcessor('dh-traits', renderAbilities); } catch {}
+    }
 
     // Other processors
     try { registerBadgesBlock(this); }       catch (e) { console.error('[DH-UI] badges load error', e); }
@@ -70,6 +84,7 @@ export default class DaggerheartPlugin extends Plugin {
     try { registerLevelUp(this); }      catch (e) { console.error('[DH-UI] level-up load error', e); }
     try { registerSpellBlocks(this); }   catch (e) { console.error('[DH-UI] spell/action load error', e); }
     try { registerDomainPickerBlock(this); } catch (e) { console.error('[DH-UI] domain-picker load error', e); }
+    try { registerEquipmentPickerBlock(this); } catch (e) { console.error('[DH-UI] equipment-picker load error', e); }
     try { registerFeaturesBlock(this); } catch (e) { console.error('[DH-UI] features load error', e); }
     try { registerDashboard(this); } catch (e) { console.error('[DH-UI] dashboard load error', e); }
 

@@ -52,6 +52,14 @@ function resolveCount(
   }
   try {
     const tctx = createTemplateContext(el, app, ctx);
+    const s = String(raw).trim();
+    const m = s.match(/^\{\{\s*frontmatter\.([a-zA-Z0-9_\-]+)\s*\}\}$|^frontmatter\.([a-zA-Z0-9_\-]+)$/);
+    if (m) {
+      const key = (m[1] || m[2]) as string;
+      const v = (tctx.frontmatter as any)?.[key];
+      const n = Math.floor(Number(String(v)));
+      return Number.isFinite(n) ? Math.max(0, n) : 0;
+    }
     const out = processTemplate(String(raw), tctx).trim();
     const n = Math.floor(Number(out));
     return Number.isFinite(n) ? Math.max(0, n) : 0;

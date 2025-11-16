@@ -23,7 +23,20 @@ export function processTemplate(text: string, ctx: TemplateContext): string {
 }
 
 export function createTemplateContext(el: HTMLElement, app: App, mdctx: MarkdownPostProcessorContext, fmOverride?: Frontmatter): TemplateContext {
-  const fm = (fmOverride ?? (app.metadataCache.getCache(mdctx.sourcePath || "")?.frontmatter ?? {})) as Frontmatter;
+  // Be resilient: try multiple sources for frontmatter
+  let fm: Frontmatter = {};
+  try {
+    if (fmOverride) fm = fmOverride as Frontmatter;
+    else {
+      const fromCache = app.metadataCache.getCache(mdctx.sourcePath || "")?.frontmatter as Frontmatter | undefined;
+      if (fromCache) fm = fromCache;
+      else {
+        const file = app.vault.getFileByPath(mdctx.sourcePath || "");
+        const fromFile = file ? (app.metadataCache.getFileCache(file as any)?.frontmatter as Frontmatter | undefined) : undefined;
+        if (fromFile) fm = fromFile;
+      }
+    }
+  } catch { /* ignore */ }
 
   let abilities: AbilityScores = { agility:0, strength:0, finesse:0, instinct:0, presence:0, knowledge:0 };
   try{
@@ -36,7 +49,7 @@ export function createTemplateContext(el: HTMLElement, app: App, mdctx: Markdown
     }
   }catch{}
 
-  return { frontmatter: fm, abilities, skills: {} };
+  return { frontmatter: fm || {}, abilities, skills: {} };
 }
 
 function evalExpr(expr: string, ctx: TemplateContext): string|number {
