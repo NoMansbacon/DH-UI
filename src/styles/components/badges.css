@@ -1,19 +1,15 @@
 .dh-badges{
   display:flex;
   flex-wrap:wrap; 
-  gap:8px; 
+  gap:var(--dh-card-gap); 
   margin:8px 0 6px;
 }
 .dh-badge{
   box-sizing: border-box;
   position: relative;
-  border-radius: 12px;
-  padding: 10px 12px;
-  background: linear-gradient(
-    180deg,
-    var(--background-secondary) 0%,
-    color-mix(in oklab, var(--background-secondary), #000 12%) 100%
-  );
+  border-radius: var(--dh-radius-card);
+  padding: var(--dh-card-padding-y) var(--dh-card-padding-x);
+  background: var(--dh-card-bg);
   display: inline-flex;
   align-items: center;
   gap: 6px; /* space between label and value */

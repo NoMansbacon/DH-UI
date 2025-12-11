@@ -16,9 +16,10 @@ import { parseYamlSafe } from "../utils/yaml";
 import { openShortRestUI } from "./short-rest";
 import { openLongRestUI } from "./long-rest";
 import React from "react";
-import { createRoot, Root } from "react-dom/client";
+import { Root } from "react-dom/client";
 import { ControlsRowView } from "../components/controls-row";
 import { registerLiveCodeBlock } from "../utils/liveBlock";
+import { getOrCreateRoot } from "../utils/reactRoot";
 import * as store from "../lib/services/stateStore";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { KVProvider } from "../components/state/kv-context";
@@ -98,8 +99,7 @@ export function registerRest(plugin: DaggerheartPlugin) {
         const showFullHeal = conf.show_full_heal === true;
         const showResetAll = conf.show_reset_all === true;
 
-        let r = roots.get(el);
-        if (!r) { r = createRoot(el); roots.set(el, r); }
+        const r = getOrCreateRoot(roots, el);
         r.render(
           React.createElement(ErrorBoundary, { name: 'Controls' },
             React.createElement(KVProvider, null,

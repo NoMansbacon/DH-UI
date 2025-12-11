@@ -4,16 +4,11 @@
   padding: 6px 12px;
   border-radius: 999px;
   border: 1px solid var(--background-modifier-border);
-  background: linear-gradient(
-    180deg,
-    var(--background-secondary) 0%,
-    color-mix(in oklab, var(--background-secondary), #000 10%) 100%
-  );
+  background: var(--background-secondary);
   color: var(--text-normal);
   font-weight: 700;
   cursor: pointer;
-  box-shadow: var(--shadow-s);
-  transition: transform 100ms ease, box-shadow 120ms ease, border-color 120ms ease;
+  box-shadow: none !important;
   position: relative;
   padding-left: 16px;
 }
@@ -28,9 +23,7 @@
 }
 .dh-rest-trigger:hover {
   border-color: color-mix(in oklab, var(--background-modifier-border), #fff 18%);
-  box-shadow: 0 6px 14px rgba(0,0,0,.22);
 }
-.dh-rest-trigger:active { transform: translateY(1px) scale(0.99); }
 
 /* Modal layout */
 .dh-rest-modal {
@@ -41,8 +34,8 @@
 .dh-rest-backdrop {
   position: absolute;
   inset: 0;
+  /* Keep dimming, but remove blur so the background stays sharp */
   background: rgba(0,0,0,.45);
-  backdrop-filter: blur(2px);
 }
 
 /* Panel */
@@ -51,17 +44,14 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%,-50%);
-  width: min(620px, calc(100vw - 24px));
+  width: min(880px, calc(100vw - 32px)); /* wider so both columns have breathing room */
   margin: 0 auto;
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid var(--background-modifier-border);
-  background: linear-gradient(
-    180deg,
-    var(--background-secondary) 0%,
-    color-mix(in oklab, var(--background-secondary), #000 12%) 100%
-  );
-  box-shadow: var(--shadow-l, 0 12px 28px rgba(0,0,0,.3));
+  padding: 14px;
+  border-radius: var(--dh-radius-card);
+  border: 1px solid color-mix(in oklab, var(--background-modifier-border), #fff 18%);
+  /* Use shared flat card color */
+  background: var(--dh-card-bg);
+  box-shadow: none;
 }
 
 /* Header bar */
@@ -88,12 +78,8 @@
   padding: 2px 8px;
   border-radius: 999px;
   border: 1px solid var(--background-modifier-border);
-  background: linear-gradient(
-    180deg,
-    var(--background-secondary) 0%,
-    color-mix(in oklab, var(--background-secondary), #000 10%) 100%
-  );
-  box-shadow: var(--shadow-s);
+  background: var(--background-secondary);
+  box-shadow: none !important;
 }
 
 .dh-rest-picks {
@@ -112,46 +98,70 @@
   padding: 0;
   border-radius: 8px;
   border: 1px solid var(--background-modifier-border);
-  background: linear-gradient(
-    180deg,
-    var(--background-secondary) 0%,
-    color-mix(in oklab, var(--background-secondary), #000 10%) 100%
-  );
+  background: var(--dh-card-bg);
   color: var(--text-muted);
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: var(--shadow-s);
+  box-shadow: none !important;
 }
 .dh-rest-close:hover {
   color: var(--text-normal);
   border-color: color-mix(in oklab, var(--background-modifier-border), #fff 18%);
 }
 
+/* Rest modal grid for combined short+long columns */
+.dh-rest-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--dh-card-gap);
+  margin-top: 4px;
+}
+
+.dh-rest-col {
+  border-radius: var(--dh-radius-card);
+  padding: var(--dh-card-padding-y) var(--dh-card-padding-x);
+  border: 1px solid color-mix(in oklab, var(--background-modifier-border), #fff 16%);
+  background: var(--dh-card-bg);
+}
+
+.dh-rest-col-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+@media (max-width: 680px) {
+  .dh-rest-grid {
+    grid-template-columns: 1fr; /* stack short/long columns on narrow screens */
+  }
+}
+
 /* Action buttons */
 .dh-rest-actions {
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 6px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  margin-bottom: 0;
 }
 .dh-rest-btn {
   padding: 6px 10px;
   border-radius: 8px;
   border: 1px solid var(--background-modifier-border);
-  background: linear-gradient(
-    180deg,
-    var(--background-secondary) 0%,
-    color-mix(in oklab, var(--background-secondary), #000 10%) 100%
-  );
+  background: var(--background-secondary);
   color: var(--text-normal);
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: var(--shadow-s);
+  box-shadow: none !important;
+  text-align: left;
 }
 .dh-rest-btn.on {
-  border-color: color-mix(in oklab, var(--background-modifier-border), #fff 22%);
-  box-shadow: 0 6px 14px rgba(0,0,0,.22);
+  border-color: var(--interactive-accent);
+  background: color-mix(in oklab, var(--background-secondary), var(--interactive-accent) 12%);
 }
 
 /* Apply row + math readout */
@@ -160,22 +170,15 @@
   padding: 6px 12px;
   border-radius: 999px;
   border: 1px solid var(--background-modifier-border);
-  background: linear-gradient(
-    180deg,
-    var(--background-secondary) 0%,
-    color-mix(in oklab, var(--background-secondary), #000 10%) 100%
-  );
+  background: var(--dh-card-bg);
   color: var(--text-normal);
   font-weight: 700;
   cursor: pointer;
-  box-shadow: var(--shadow-s);
-  transition: transform 100ms ease, box-shadow 120ms ease, border-color 120ms ease;
+  box-shadow: none !important;
 }
 .dh-event-btn:hover {
   border-color: color-mix(in oklab, var(--background-modifier-border), #fff 18%);
-  box-shadow: 0 6px 14px rgba(0,0,0,.22);
 }
-.dh-event-btn:active { transform: translateY(1px) scale(0.99); }
 
 .dh-rest-math {
   margin-top: 6px;
@@ -192,7 +195,7 @@
   top: auto;
   transform: none;
   margin: 0 auto;
-  width: min(620px, calc(100vw - 24px));
+  width: min(880px, calc(100vw - 32px));
 }
 
 /* Override the core modal overflow only for our rest modals. The code

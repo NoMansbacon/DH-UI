@@ -4,15 +4,24 @@
  * Integrates with plugin settings for configurable card folder location
  */
 
-import { MarkdownPostProcessorContext, MarkdownRenderChild, TFile } from "obsidian";
+import { MarkdownPostProcessorContext, MarkdownRenderChild, Notice, TFile } from "obsidian";
 import type DaggerheartPlugin from "../main";
+import { parseYamlSafe } from "../utils/yaml";
+
+type DomainPickerBlockYaml = {
+  folder?: string | string[];
+  folders?: string | string[];
+  view?: "card" | "table";
+  use_character_filters?: boolean;
+  max_loadout?: number;
+};
 
 export function registerDomainPickerBlock(plugin: DaggerheartPlugin) {
   plugin.registerMarkdownCodeBlockProcessor(
     "domainpicker",
     async (src: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
       try {
-        await renderDomainPicker(el, plugin, ctx);
+        await renderDomainPicker(el, plugin, ctx, src);
       } catch (e) {
         console.error("[DH-UI] Domain picker render error:", e);
         el.setText("Error rendering domain picker. See console for details.");
@@ -24,11 +33,23 @@ export function registerDomainPickerBlock(plugin: DaggerheartPlugin) {
 export async function renderDomainPicker(
   el: HTMLElement,
   plugin: DaggerheartPlugin,
-  ctx: MarkdownPostProcessorContext
+  ctx: MarkdownPostProcessorContext,
+  src: string
 ) {
   const root = el.createDiv();
 
+  // Per-block configuration (folders, view, filters, loadout cap)
+  let blockCfg: DomainPickerBlockYaml = {};
+  try {
+    blockCfg = (parseYamlSafe<DomainPickerBlockYaml>(src)) ?? {};
+  } catch {
+    blockCfg = {};
+  }
+
   let levelOverride: number | null = null;
+  let requiredAdds: number | null = null;
+  let addsSoFar = 0;
+  let closeOnAddOnce = false;
 
   const dataviewPlugin = (plugin.app as any).plugins?.plugins?.dataview;
   if (!dataviewPlugin) {
@@ -50,14 +71,42 @@ export async function renderDomainPicker(
     getField(cur, ["domains", "Domains"], [])
   ).map((s) => s.toLowerCase());
 
-  // Discover cards based on plugin settings
+  // Per-block override or global default for character-based filters
+  let useCharFilters = plugin.settings.domainPickerUseCharacterFilters !== false;
+  if (typeof blockCfg.use_character_filters === "boolean") {
+    useCharFilters = blockCfg.use_character_filters;
+  }
+
+  // Discover cards based on per-block folders or plugin settings
   const discoverCards = () => {
-    const raw = plugin.settings.domainCardsFolder?.trim();
-    if (raw && raw.length > 0) {
-      // Normalize to vault-relative, forward slashes; avoid Dataview query parser by filtering in JS
+    // Block-level folder(s) take precedence when provided
+    const folderValue = (blockCfg.folders ?? blockCfg.folder) as any;
+    let folders: string[] = [];
+    if (Array.isArray(folderValue)) {
+      folders = folderValue.map((v) => String(v).trim()).filter(Boolean);
+    } else if (typeof folderValue === "string" && folderValue.trim()) {
+      folders = [folderValue.trim()];
+    }
+
+    const normalizePrefix = (raw: string) => {
       const folder = raw.replace(/\\/g, "/");
       const prefix = folder.endsWith("/") ? folder : folder + "/";
-      const prefixLC = prefix.toLowerCase();
+      return prefix.toLowerCase();
+    };
+
+    if (folders.length > 0) {
+      const prefixes = folders.map(normalizePrefix);
+      return dv.pages().where((p: any) => {
+        const path = String(p?.file?.path || "").toLowerCase();
+        if (!path) return false;
+        return prefixes.some((pre) => path.startsWith(pre));
+      });
+    }
+
+    // Fallback to plugin setting when no per-block folders provided
+    const raw = plugin.settings.domainCardsFolder?.trim();
+    if (raw && raw.length > 0) {
+      const prefixLC = normalizePrefix(raw);
       return dv
         .pages()
         .where(
@@ -66,7 +115,7 @@ export async function renderDomainPicker(
             p.file.path.toLowerCase().startsWith(prefixLC)
         );
     }
-    // Search whole vault by tag when no folder specified
+    // Search whole vault by tag/field when no folder specified anywhere
     return dv.pages().where((p: any) => hasTag(p, "domain") || hasTag(p, "domains") || getField(p, ["domain", "Domain"], null) != null);
   };
 
@@ -77,11 +126,37 @@ export async function renderDomainPicker(
     loadout: toPaths(getField(cur, ["loadout", "Loadout"], [])),
   };
 
+  // Element inside the modal to show loadout limit / error messages
+  let modalLimitMsg: HTMLDivElement | null = null;
+
+  // Block-level override or global setting for domain loadout limit
+  const blockMax = (() => {
+    const raw = (blockCfg as any)?.max_loadout;
+    const n = Number(raw);
+    return Number.isFinite(n) && n > 0 ? Math.floor(n) : null;
+  })();
+
+  // Helpers for enforcing and displaying the domain loadout limit from settings
+  const getDomainLimit = (): number | null => {
+    try {
+      if (blockMax != null) return blockMax;
+      const raw = (plugin.settings as any)?.maxDomainLoadout;
+      const n = Number(raw);
+      return Number.isFinite(n) && n > 0 ? Math.floor(n) : null;
+    } catch {
+      return null;
+    }
+  };
+  const getLoadoutCount = (): number => {
+    return Array.isArray(state.loadout) ? state.loadout.length : 0;
+  };
+
   const ui = {
     header: root.createEl("div", { cls: "dvjs-toolbar" }),
     tables: root.createEl("div", { cls: "dvjs-tables" }),
     modal: null as HTMLElement | null,
     currentFilter: "loadout" as "vault" | "loadout",
+    counter: null as HTMLDivElement | null,
   };
 
   // Toolbar with filter buttons
@@ -107,7 +182,11 @@ export async function renderDomainPicker(
   const addBtn = ui.header.createEl("button", { text: "Add cards" });
   addBtn.addEventListener("click", () => openModal());
 
-  // Listen for global open requests (e.g., after Level Up opt5)
+  // Loadout counter / warning area
+  const counterHost = ui.header.createEl("div", { cls: "dvjs-loadout-counter" });
+  ui.counter = counterHost;
+
+  // Listen for global open requests (e.g., after Level Up)
   const child = new MarkdownRenderChild(el);
   const onOpen = (ev: Event) => {
     try {
@@ -116,27 +195,34 @@ export async function renderDomainPicker(
       if (!fp || fp === ctx.sourcePath) {
         const lvl = Number(ce?.detail?.level);
         levelOverride = Number.isFinite(lvl) ? lvl : null;
+        const req = Number(ce?.detail?.required);
+        // Default to 1 required add when coming from a level-up without an explicit value
+        requiredAdds = Number.isFinite(req) && req > 0 ? req : 1;
+        addsSoFar = 0;
         openModal();
       }
     } catch {}
   };
   window.addEventListener('dh:domainpicker:open' as any, onOpen as any);
-  child.onunload = () => { try { window.removeEventListener('dh:domainpicker:open' as any, onOpen as any); } catch {} };
+  child.onunload = () => {
+    try { window.removeEventListener('dh:domainpicker:open' as any, onOpen as any); } catch {}
+    try { closeModal(); } catch {}
+  };
   ctx.addChild(child);
 
   renderTables();
 
   function getVisibleColumns() {
-    const cols: string[] = [];
-    const settings = plugin.settings.domainPickerColumns;
-    if (settings.name) cols.push("Name");
-    if (settings.type) cols.push("Type");
-    if (settings.domain) cols.push("Domain");
-    if (settings.level) cols.push("Level");
-    if (settings.stress) cols.push("Stress");
-    if (settings.feature) cols.push("Feature");
-    if (settings.tokens) cols.push("Tokens");
-    return cols;
+    // Fixed, opinionated column set; user-facing column editor removed for simplicity
+    return [
+      "Name",
+      "Type",
+      "Domain",
+      "Level",
+      "Stress",
+      "Feature",
+      "Tokens",
+    ];
   }
 
   function renderTables() {
@@ -145,6 +231,7 @@ export async function renderDomainPicker(
       ui.currentFilter === "vault" ? state.vault : state.loadout;
     const title = ui.currentFilter === "vault" ? "Vault" : "Loadout";
     ui.tables.appendChild(buildSection(title, list));
+    updateLoadoutCounter();
   }
 
   function buildSection(title: string, list: string[]) {
@@ -159,8 +246,10 @@ export async function renderDomainPicker(
     visibleCols.forEach((c) => {
       const th = trh.createEl("th", { text: c });
       if (c === "Tokens") th.addClass('dvjs-tokens-col');
+      if (c === "Feature") th.addClass('dvjs-col-feature');
     });
-    trh.createEl("th", { text: "Actions" });
+    const thActions = trh.createEl("th", { text: "Actions" });
+    thActions.addClass('dvjs-col-actions');
 
     const tbody = table.createEl("tbody");
     const rows = list.map((path) => pathToRow(path));
@@ -189,9 +278,7 @@ export async function renderDomainPicker(
             td.innerText = r.stress ?? "";
           } else if (col === "Feature") {
             td.innerText = r.feature ?? "";
-            td.style.maxWidth = "300px";
-            td.style.whiteSpace = "normal";
-            td.style.wordWrap = "break-word";
+            td.addClass('dvjs-col-feature');
           } else if (col === "Tokens") {
             renderTokensCell(td, r.path, r.tokens);
           }
@@ -205,8 +292,19 @@ export async function renderDomainPicker(
           text: `→ ${otherListName}`,
         });
         btnSwitch.addEventListener("click", async () => {
-          await removeFromList(title.toLowerCase(), r.path);
-          await addToList(otherListName, r.path);
+          const from = title.toLowerCase(); // "vault" or "loadout"
+          const to = otherListName as "vault" | "loadout";
+
+          // Special case: moving Vault → Loadout should not delete the card
+          // if the loadout is already at its limit. Try add first; only
+          // remove from Vault if the add succeeds.
+          if (from === "vault" && to === "loadout") {
+            const ok = await addToList("loadout", r.path);
+            if (ok) await removeFromList("vault", r.path);
+          } else {
+            await removeFromList(from, r.path);
+            await addToList(to, r.path);
+          }
         });
 
         const btnRemove = tdActions.createEl("button", { text: "Remove" });
@@ -214,10 +312,36 @@ export async function renderDomainPicker(
         btnRemove.addEventListener("click", async () => {
           await removeFromList(title.toLowerCase(), r.path);
         });
+
+        // Token adjustment buttons (always available)
+        const btnAddToken = tdActions.createEl("button", { text: "+ token" });
+        const btnRemoveToken = tdActions.createEl("button", { text: "- token" });
+        btnAddToken.addEventListener("click", () => adjustTokens(r.path, r.tokens, +1));
+        btnRemoveToken.addEventListener("click", () => adjustTokens(r.path, r.tokens, -1));
       });
     }
 
     return section;
+  }
+
+  function updateLoadoutCounter() {
+    if (!ui.counter) return;
+    const limit = getDomainLimit();
+    const count = getLoadoutCount();
+    if (limit != null) {
+      const over = count > limit;
+      ui.counter.empty();
+      const text = over
+        ? `Domain loadout: ${count}/${limit} (over recommended limit)`
+        : `Domain loadout: ${count}/${limit}`;
+      ui.counter.createSpan({ text });
+      if (over) ui.counter.addClass("dvjs-loadout-counter--over");
+      else ui.counter.removeClass("dvjs-loadout-counter--over");
+    } else {
+      ui.counter.empty();
+      ui.counter.createSpan({ text: `Domain loadout: ${count} (no limit)` });
+      ui.counter.removeClass("dvjs-loadout-counter--over");
+    }
   }
 
   function pathToRow(path: string) {
@@ -251,9 +375,21 @@ export async function renderDomainPicker(
     return r;
   }
 
+  function closeModal() {
+    if (ui.modal) {
+      ui.modal.remove();
+      ui.modal = null;
+    }
+  }
+
   function openModal() {
-    if (ui.modal) ui.modal.remove();
+    closeModal();
     ui.modal = document.body.createDiv({ cls: "dvjs-modal-backdrop" });
+    ui.modal.addEventListener("click", (ev) => {
+      if (ev.target === ui.modal) {
+        closeModal();
+      }
+    });
     const modal = ui.modal.createDiv({ cls: "dvjs-modal" });
 
     const visibleCols = getVisibleColumns();
@@ -264,12 +400,15 @@ export async function renderDomainPicker(
       text: "✕",
       cls: "dvjs-close",
     });
-    closeBtn.addEventListener("click", () => ui.modal?.remove());
+    closeBtn.addEventListener("click", () => closeModal());
 
     const filterInfo = modal.createDiv({ cls: "dvjs-filter-info" });
     filterInfo.setText(
       `Filters: level ≤ ${charLevel} • domains: ${charDomains.join(", ") || "—"}`
     );
+
+    // Slot for showing errors / limit messages related to loadout
+    modalLimitMsg = modal.createDiv({ cls: "dvjs-modal-limit" });
 
     // Filters UI
     ensureCardStyles();
@@ -280,7 +419,7 @@ export async function renderDomainPicker(
       parseDomains(getField(c, ["domains", "domain", "Domains"], [])).forEach((d: string) => allDomainsSet.add(d.toLowerCase()));
     });
     const allDomains = Array.from(allDomainsSet).sort();
-    const characterDomains = (charDomains || []).map((d) => d.toLowerCase());
+    const characterDomains = useCharFilters ? (charDomains || []).map((d) => d.toLowerCase()) : [];
     const domainOptions = characterDomains.length > 0 ? characterDomains : allDomains;
 
     // Compute type options constrained by selected domain or character domains
@@ -365,8 +504,12 @@ export async function renderDomainPicker(
 
       // Refresh current character fields so info stays accurate
       const curNow = dv.page(file.path);
-      const charLevelNow = (levelOverride !== null ? levelOverride : toNumber(getField(curNow, ["level", "Level"], charLevel)));
-      const charDomainsNow = parseDomains(getField(curNow, ["domains", "Domains"], charDomains)).map((s) => s.toLowerCase());
+      const charLevelNow = useCharFilters
+        ? (levelOverride !== null ? levelOverride : toNumber(getField(curNow, ["level", "Level"], charLevel)))
+        : 0;
+      const charDomainsNow = useCharFilters
+        ? parseDomains(getField(curNow, ["domains", "Domains"], charDomains)).map((s) => s.toLowerCase())
+        : [];
 
       // Update info line
       const levelInfo = selectedLevel !== null ? `= ${selectedLevel}` : (charLevelNow > 0 ? `≤ ${charLevelNow}` : "Any");
@@ -414,23 +557,38 @@ export async function renderDomainPicker(
           return (a.file?.name || "").localeCompare(b.file?.name || "");
         });
 
-      const view = plugin.settings.domainPickerView || 'card';
-
-      if (candidates.length === 0) {
-        const empty = listRoot.createDiv({ cls: "dvjs-empty", text: "No matching cards" });
-        (empty as HTMLElement).style.opacity = "0.7";
-        return;
+      // Determine view: block-level override wins; fall back to plugin setting, then 'card'.
+      let view: "card" | "table" = "card";
+      if (blockCfg.view === "card" || blockCfg.view === "table") {
+        view = blockCfg.view;
+      } else if (plugin.settings.domainPickerView === "card" || plugin.settings.domainPickerView === "table") {
+        view = plugin.settings.domainPickerView;
       }
 
-      if (view === 'table') {
-        const table = listRoot.createEl('table', { cls: 'dvjs-table' });
-        const thead = table.createEl('thead');
-        const trh = thead.createEl('tr');
-        visibleCols.forEach((h) => trh.createEl('th', { text: h }));
-        trh.createEl('th', { text: 'Actions' });
-        const tbody = table.createEl('tbody');
+      if (view === "table") {
+    const table = listRoot.createEl('table', { cls: 'dvjs-table' });
+    const thead = table.createEl('thead');
+    const trh = thead.createEl('tr');
+    visibleCols.forEach((h) => {
+      const th = trh.createEl('th', { text: h });
+      if (h === 'Tokens') th.addClass('dvjs-tokens-col');
+      if (h === 'Feature') th.addClass('dvjs-col-feature');
+    });
+    const thAct = trh.createEl('th', { text: 'Actions' });
+    thAct.addClass('dvjs-col-actions');
+    const tbody = table.createEl('tbody');
 
-        candidates.forEach((c: any) => {
+    if (candidates.length === 0) {
+      const tr = tbody.createEl('tr');
+      const td = tr.createEl('td', {
+        text: 'No matching cards',
+        attr: { colspan: String(visibleCols.length + 1) },
+      });
+      (td as HTMLElement).style.opacity = '0.7';
+      return;
+    }
+
+    candidates.forEach((c: any) => {
           const cPath = c.file?.path;
           const cName = c.file?.name || basenameNoExt(cPath || "");
           const cLevel = toNumber(getField(c, ["level", "Level"], ""));
@@ -454,25 +612,30 @@ export async function renderDomainPicker(
               td.innerText = String(cStress ?? '');
             } else if (col === 'Feature') {
               td.innerText = cFeature ?? '';
-              td.style.maxWidth = '300px';
-              td.style.whiteSpace = 'normal';
-              td.style.wordWrap = 'break-word';
+              td.addClass('dvjs-col-feature');
             }
           });
           const tdAct = tr.createEl('td');
+          tdAct.addClass('dvjs-col-actions');
           const btnVault = tdAct.createEl('button', { text: 'Add to Vault' });
           const btnLoad = tdAct.createEl('button', { text: 'Add to Loadout' });
           btnVault.disabled = added('vault', cPath);
           btnLoad.disabled = added('loadout', cPath);
           btnVault.addEventListener('click', async () => { await addToList('vault', cPath); renderCards(); });
-          btnLoad.addEventListener('click', async () => { await addToList('loadout', cPath); renderCards(); });
-        });
-        return;
-      }
+        btnLoad.addEventListener('click', async () => { await addToList('loadout', cPath); renderCards(); });
+      });
+      return;
+    }
 
-      // Card view
-      const grid = listRoot.createDiv({ cls: 'dvjs-card-grid' });
-      candidates.forEach((c: any) => {
+    // Card view
+    if (candidates.length === 0) {
+      const empty = listRoot.createDiv({ cls: 'dvjs-empty', text: 'No matching cards' });
+      (empty as HTMLElement).style.opacity = '0.7';
+      return;
+    }
+
+    const grid = listRoot.createDiv({ cls: 'dvjs-card-grid' });
+    candidates.forEach((c: any) => {
         const cPath = c.file?.path;
         const cName = c.file?.name || basenameNoExt(cPath || "");
         const cLevel = toNumber(getField(c, ["level", "Level"], ""));
@@ -513,7 +676,29 @@ export async function renderDomainPicker(
     return arr.some((p) => eqPath(p, path));
   }
 
-  async function addToList(listName: "vault" | "loadout", path: string) {
+  async function addToList(listName: "vault" | "loadout", path: string): Promise<boolean> {
+    // Enforce maxDomainLoadout when adding to loadout
+    if (listName === "loadout") {
+      const limit = getDomainLimit();
+      const current = getLoadoutCount();
+      if (limit != null && current >= limit) {
+        const msg = limit === 1
+          ? "Your domain loadout is full (1/1). Move a card back to your Vault before equipping another."
+          : `Your domain loadout is full (${current}/${limit}). Move a card back to your Vault before equipping another.`;
+
+        // Show message inside the open modal, if any
+        if (ui.modal && modalLimitMsg) {
+          modalLimitMsg.empty();
+          modalLimitMsg.createSpan({ text: msg });
+          modalLimitMsg.addClass("dvjs-modal-limit--visible");
+        }
+
+        // Also surface as a Notice for non-modal callers
+        new Notice(msg);
+        return false;
+      }
+    }
+
     const link = `[[${path}]]`;
     const other = listName === "vault" ? "loadout" : "vault";
     await plugin.app.fileManager.processFrontMatter(file, (fm) => {
@@ -531,6 +716,15 @@ export async function renderDomainPicker(
       state[listName].push(path);
     }
     renderTables();
+    // When opened from a Level Up selection, close once the required number of cards has been added
+    if (requiredAdds != null) {
+      addsSoFar++;
+      if (addsSoFar >= requiredAdds) {
+        closeModal();
+        requiredAdds = null;
+      }
+    }
+    return true;
   }
 
   async function removeFromList(listName: string, path: string) {
@@ -552,18 +746,33 @@ export async function renderDomainPicker(
   }
   function writeTokenState(key: string, v: number) { try { localStorage.setItem(`dh:token:${key}`, String(Math.max(0, v))); } catch {} }
 
-  function renderTokensCell(td: HTMLTableCellElement, cardPath: string, maxTokens: number) {
-    const max = Number(maxTokens || 0);
-    if (!Number.isFinite(max) || max <= 0) return;
-    td.classList.add('dvjs-tokens-col');
+  function adjustTokens(cardPath: string, maxTokens: number, delta: number) {
+    const configured = Number(maxTokens || 0);
+    const max = Number.isFinite(configured) && configured > 0 ? configured : 15;
     const key = `${file.path}:${cardPath}`;
-    const wrap = td.createDiv({ cls: 'dvjs-tokens-wrap' });
+    const current = readTokenState(key, max);
+    const next = Math.max(0, Math.min(max, current + delta));
+    if (next === current) return;
+    writeTokenState(key, next);
+    renderTables();
+  }
+
+  function renderTokensCell(td: HTMLTableCellElement, cardPath: string, maxTokens: number) {
+    const configured = Number(maxTokens || 0);
+    const max = Number.isFinite(configured) && configured > 0 ? configured : 15;
+    const key = `${file.path}:${cardPath}`;
     let filled = readTokenState(key, max);
+
+    // If no tokens have been added yet, keep the cell empty
+    if (filled <= 0) return;
+
+    td.classList.add('dvjs-tokens-col');
+    const wrap = td.createDiv({ cls: 'dvjs-tokens-wrap' });
     const refresh = () => {
       wrap.empty();
-      for (let i = 0; i < max; i++) {
+      for (let i = 0; i < filled; i++) {
         const d = document.createElement('div');
-        d.className = 'dvjs-token-dot' + (i < filled ? ' on' : '');
+        d.className = 'dvjs-token-dot on';
         d.onclick = () => {
           const next = (i + 1 === filled) ? 0 : (i + 1);
           filled = Math.max(0, Math.min(max, next));
@@ -733,6 +942,8 @@ export async function renderDomainPicker(
     a.addEventListener("click", (e) => {
       e.preventDefault();
       plugin.app.workspace.openLinkText(path, "", true);
+      // If a picker modal is open (table or card view), close it after navigation
+      try { closeModal(); } catch {}
     });
   }
 

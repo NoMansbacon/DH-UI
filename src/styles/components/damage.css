@@ -1,26 +1,24 @@
-/* Damage block */
+/* Damage block: make it stand out similar to vitals/badges */
 .dh-damage-inline {
   display: flex;
   flex-direction: column;
   gap: 8px;
   margin: 6px 0;
   position: relative;
-  border: 1px solid var(--background-modifier-border);
-  border-left: 6px solid var(--background-modifier-border);
-  border-radius: 8px;
-  padding: 10px 12px 10px 16px;          /* room for icon */
-  max-width: fit-content;
+  display: inline-flex;
+
+  border-radius: var(--dh-radius-card);
+  padding: var(--dh-card-padding-y) var(--dh-card-padding-x);
+  max-width: 100%;
+
+  /* Match shared flat card style */
+  border: 1px solid color-mix(in oklab, var(--background-modifier-border), #fff 18%);
+  background: var(--dh-card-bg);
+  box-shadow: none;
 }
+/* Remove legacy inner dashed frame */
 .dh-damage-inline::before {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin: 6px 0;
-  position: relative;
-  border: 1px dashed var(--background-modifier-border);
-  border-left: 6px solid var(--background-modifier-border);
-  border-radius: 8px;
-  padding: 10px 12px 10px 16px;
+  content: none;
 }
 
 /* Tiers ribbon: step segments with chevron connectors */
@@ -36,15 +34,12 @@
   max-width: 90px;
   padding: 6px 10px 4px;
   text-align: center;
-  border: 1px solid var(--background-modifier-border);
   border-radius: 8px;
-  background: linear-gradient(
-    180deg,
-    var(--background-secondary) 0%,
-    color-mix(in oklab, var(--background-secondary), #000 12%) 100%
-  );
-  border: 1px solid var(--background-modifier-border);
-  box-shadow: var(--shadow-s);
+
+  /* Match shared flat card style */
+  border: 1px solid color-mix(in oklab, var(--background-modifier-border), #fff 18%);
+  background: var(--dh-card-bg);
+  box-shadow: none;
 }
 .dh-dmg-steps .step .label {
   font-weight: 800;
@@ -118,6 +113,6 @@
   border: 1px solid var(--background-modifier-border);
   background: var(--background-secondary);
   color: var(--text-normal);
-  box-shadow: var(--shadow-s) inset;
+  box-shadow: none;
   
 }

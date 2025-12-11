@@ -1,10 +1,18 @@
 /* Domain Card Picker Styles */
 
-/* Tokens column: fit content and wrap tokens */
+/* Tokens column: compact but readable header */
 .dvjs-table th.dvjs-tokens-col,
 .dvjs-table td.dvjs-tokens-col {
-  width: 1%;
-  white-space: normal;
+  width: auto;
+}
+/* Header: keep "Tokens" on one line */
+.dvjs-table th.dvjs-tokens-col {
+  white-space: nowrap !important;
+}
+/* Cells: allow dot grid to wrap naturally if needed */
+.dvjs-table td.dvjs-tokens-col {
+  white-space: normal !important;
+  word-break: normal !important;
 }
 .dvjs-tokens-wrap {
   display: grid;
@@ -17,14 +25,13 @@
   height: 20px;
   border-radius: 999px;
   border: 1px solid var(--background-modifier-border);
-  background: linear-gradient(180deg, var(--background-secondary) 0%, color-mix(in oklab, var(--background-secondary), #000 12%) 100%);
-  box-shadow: var(--shadow-s);
+  background: var(--background-secondary);
+  box-shadow: none;
   cursor: pointer;
 }
 .dvjs-token-dot.on {
-  background: linear-gradient(180deg, #e2b64c, #b88418);
-  box-shadow: 0 0 0 1px rgba(0,0,0,.25) inset, 0 0 8px rgba(255,199,66,.45);
-  border-color: #ffcf5a;
+  background: var(--dh-accent);
+  border-color: color-mix(in oklab, var(--dh-accent), #000 25%);
 }
 
 .dvjs-toolbar {
@@ -49,7 +56,7 @@
   font-weight: 500 !important;
   cursor: pointer !important;
   transition: all 120ms ease !important;
-  box-shadow: var(--shadow-s) !important;
+  box-shadow: none !important;
 }
 
 .dvjs-filter-buttons button:hover {
@@ -67,17 +74,17 @@
 .dvjs-toolbar > button {
   padding: 6px 12px !important;
   border: 1px solid var(--background-modifier-border) !important;
-  background: linear-gradient(180deg, var(--background-secondary) 0%, color-mix(in oklab, var(--background-secondary), #000 8%) 100%) !important;
+  background: var(--dh-card-bg) !important;
   color: var(--text-normal) !important;
   border-radius: 6px !important;
   cursor: pointer !important;
   transition: all 120ms ease !important;
-  box-shadow: var(--shadow-s) !important;
+  box-shadow: none !important;
   font-weight: 500 !important;
 }
 
 .dvjs-toolbar > button:hover {
-  background: linear-gradient(180deg, color-mix(in oklab, var(--background-secondary), #fff 8%) 0%, color-mix(in oklab, var(--background-secondary), #000 4%) 100%) !important;
+  background: var(--dh-card-bg) !important;
   border-color: var(--text-accent) !important;
 }
 
@@ -98,14 +105,17 @@
   width: 100% !important;
   border-collapse: collapse !important;
   border: 1px solid var(--background-modifier-border) !important;
-  border-radius: 8px !important;
+  border-radius: var(--dh-radius-card) !important;
   overflow: hidden !important;
-  box-shadow: var(--shadow-s) !important;
-  background: var(--background-primary) !important;
+  box-shadow: none !important;
+  background: var(--dh-card-bg) !important;
+}
+
+.dvjstable th {
 }
 
 .dvjs-table th {
-  background: linear-gradient(180deg, var(--background-secondary) 0%, color-mix(in oklab, var(--background-secondary), #000 8%) 100%) !important;
+  background: var(--dh-card-bg) !important;
   padding: 8px 10px !important;
   text-align: left !important;
   font-weight: 700 !important;
@@ -113,6 +123,8 @@
   border-bottom: 2px solid var(--background-modifier-border) !important;
   font-size: 0.9em !important;
   letter-spacing: 0.2px !important;
+  white-space: nowrap !important; /* default: keep headers on one line */
+  word-break: normal !important;
 }
 
 .dvjs-table td {
@@ -121,10 +133,36 @@
   vertical-align: top !important;
   color: var(--text-normal) !important;
   background: transparent !important;
+  line-height: 1.4 !important;
+  white-space: nowrap !important; /* default: do not wrap short fields */
+  word-break: normal !important;
 }
 
-.dvjs-table tbody tr {
-  transition: background 80ms ease !important;
+/* Allow wrapping in specific long-text columns (tokens, feature text) */
+.dvjs-table th.dvjs-tokens-col,
+.dvjs-table td.dvjs-tokens-col {
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+
+/* Feature column: give it more width and allow readable wrapping in cells */
+.dvjs-table th.dvjs-col-feature,
+.dvjs-table td.dvjs-col-feature {
+  width: 34% !important;            /* larger slice of the table for feature text */
+}
+.dvjs-table th.dvjs-col-feature {
+  white-space: nowrap !important;   /* keep the "Feature" header on one line */
+  word-break: normal !important;
+}
+.dvjs-table td.dvjs-col-feature {
+  white-space: normal !important;   /* allow multi-line feature descriptions */
+  word-break: break-word !important;
+}
+
+/* Ensure actions column stays compact */
+.dvjs-table th.dvjs-col-actions,
+.dvjs-table td.dvjs-col-actions {
+  white-space: nowrap !important;
 }
 
 .dvjs-table tbody tr:hover {
@@ -151,18 +189,18 @@
   padding: 4px 8px !important;
   margin: 2px 2px 2px 0 !important;
   border: 1px solid var(--background-modifier-border) !important;
-  background: linear-gradient(180deg, var(--background-secondary) 0%, color-mix(in oklab, var(--background-secondary), #000 8%) 100%) !important;
+  background: var(--dh-card-bg) !important;
   color: var(--text-muted) !important;
   border-radius: 4px !important;
   cursor: pointer !important;
   font-size: 12px !important;
   font-weight: 500 !important;
   transition: all 80ms ease !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) !important;
+  box-shadow: none !important;
 }
 
 .dvjs-table button:hover {
-  background: linear-gradient(180deg, color-mix(in oklab, var(--background-secondary), #fff 8%) 0%, color-mix(in oklab, var(--background-secondary), #000 4%) 100%) !important;
+  background: var(--dh-card-bg) !important;
   border-color: var(--text-accent) !important;
   color: var(--text-normal) !important;
 }
@@ -188,11 +226,11 @@
   color: var(--text-normal) !important;
   border: 1px solid var(--background-modifier-border) !important;
   border-radius: 12px !important;
-  width: min(900px, 92vw) !important;
+  width: min(1400px, 100vw) !important; /* wider on desktop; still fits viewport */
   max-height: 80vh !important;
   display: flex !important;
   flex-direction: column !important;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: none !important;
 }
 
 .dvjs-modal-header {

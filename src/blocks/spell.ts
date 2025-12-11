@@ -286,6 +286,11 @@ function parseActiveItems(
     const permanentVault = String(vaultRaw).toLowerCase() === "permanent";
     const vaultDefault = permanentVault ? true : Boolean(vaultRaw === true);
 
+    // If no explicit tokens are defined, domain cards get a default pool so players can add tokens ad-hoc
+    if ((!tokensMax || tokensMax <= 0) && card === "domain") {
+      tokensMax = 15; // soft cap from Daggerheart guidance; can be tweaked later if needed
+    }
+
     return { label, kind, level, stress, feature, uses: usesMax, stateKey, tokensMax, tokenKey, card, vaultDefault, permanentVault };
   };
 
@@ -348,7 +353,7 @@ function renderActiveList(
   table.setAttribute('role', 'table');
   const thead = document.createElement('thead');
   const headRow = document.createElement('tr');
-  for (const h of ['Name', 'Card', 'Type', 'Level', 'Stress', 'Uses', 'Tokens', 'Location', 'Features']) {
+  for (const h of ['Name', 'Card', 'Type', 'Level', 'Stress', 'Uses', 'Tokens', 'Location', 'Features', 'Actions']) {
     const th = document.createElement('th'); th.scope = 'col'; th.textContent = h; headRow.appendChild(th);
   }
   thead.appendChild(headRow);
@@ -383,6 +388,16 @@ function renderActiveList(
   };
   const domainLoadoutCount = (): number => {
     let c = 0; for (const it of allItems) { if (it.card === 'domain' && readLoc(it) === 'loadout') c++; } return c;
+  };
+
+  const getDomainLimit = (): number | null => {
+    try {
+      const raw = (plugin.settings as any)?.maxDomainLoadout;
+      const n = Number(raw);
+      return Number.isFinite(n) && n > 0 ? Math.floor(n) : null;
+    } catch {
+      return null;
+    }
   };
 
   const applyFilters = (items: ActiveItem[]): ActiveItem[] => {
@@ -461,8 +476,23 @@ function renderActiveList(
     refresh();
   };
 
+  const adjustTokens = (it: ActiveItem, delta: number) => {
+    if (!it.tokensMax || it.tokensMax <= 0) return;
+    const current = it.stateKey ? readTokenState(it.tokenKey, it.tokensMax) : 0;
+    const next = Math.max(0, Math.min(it.tokensMax, current + delta));
+    if (next === current) return;
+    if (it.stateKey) writeTokenState(it.tokenKey, next);
+    renderBody();
+  };
+
   const updateCounter = () => {
-    counter.textContent = `Domain loadout: ${domainLoadoutCount()}/5`;
+    const limit = getDomainLimit();
+    const count = domainLoadoutCount();
+    if (limit != null) {
+      counter.textContent = `Domain loadout: ${count}/${limit}`;
+    } else {
+      counter.textContent = `Domain loadout: ${count} (no limit)`;
+    }
   };
 
   const renderBody = () => {
@@ -484,19 +514,52 @@ function renderActiveList(
       } else {
         const btn = document.createElement('button');
         const toLoadout = () => {
-          if (it.card === 'domain' && domainLoadoutCount() >= 5) {
-            window.alert('You can have a maximum of five active domain cards in your loadout.');
+          const limit = getDomainLimit();
+          if (it.card === 'domain' && limit != null && domainLoadoutCount() >= limit) {
+            const msgLimit = limit === 1
+              ? 'You can have a maximum of one active domain card in your loadout.'
+              : `You can have a maximum of ${limit} active domain cards in your loadout.`;
+            window.alert(msgLimit);
             return;
           }
           writeLoc(it, 'loadout'); renderBody(); updateCounter();
         };
         const toVault = () => { writeLoc(it, 'vault'); renderBody(); updateCounter(); };
-        if (loc === 'loadout') { btn.textContent = 'Move to Vault'; btn.onclick = toVault; }
-        else { btn.textContent = 'Move to Loadout'; btn.onclick = toLoadout; if (it.card==='domain' && domainLoadoutCount() >= 5) btn.disabled = true; }
+        if (loc === 'loadout') {
+          btn.textContent = 'Store in Vault';
+          btn.onclick = toVault;
+        } else {
+          btn.textContent = 'Equip to Loadout';
+          btn.onclick = toLoadout;
+          const limit = getDomainLimit();
+          if (it.card === 'domain' && limit != null && domainLoadoutCount() >= limit) btn.disabled = true;
+        }
         tdLoc.appendChild(btn);
       }
       tr.appendChild(tdLoc);
       const tdFeat = document.createElement('td'); tdFeat.textContent = it.feature || ''; tr.appendChild(tdFeat);
+
+      const tdActions = document.createElement('td');
+      tdActions.style.whiteSpace = 'nowrap';
+      tdActions.style.gap = '6px';
+      tdActions.style.alignItems = 'center';
+
+      const addTokenBtn = document.createElement('button');
+      addTokenBtn.textContent = 'Add token';
+      addTokenBtn.onclick = () => adjustTokens(it, +1);
+
+      const removeTokenBtn = document.createElement('button');
+      removeTokenBtn.textContent = 'Remove token';
+      removeTokenBtn.onclick = () => adjustTokens(it, -1);
+
+      const hasTokens = !!(it.tokensMax && it.tokensMax > 0);
+      addTokenBtn.disabled = !hasTokens;
+      removeTokenBtn.disabled = !hasTokens;
+
+      tdActions.appendChild(addTokenBtn);
+      tdActions.appendChild(removeTokenBtn);
+      tr.appendChild(tdActions);
+
       tbody.appendChild(tr);
     }
     updateCounter();

@@ -7,7 +7,8 @@ const T2_LIMITS = {
   opt2: 2, // +1 HP slot
   opt3: 2, // +1 Stress slot
   opt4: 1, // +1 to two experiences (stub)
-  opt5: 999, // shown as reminder (no counter used in T2)
+  // Additional domain card: single use per tier
+  opt5: 1,
   opt6: 1, // +1 Evasion
 } as const;
 
@@ -17,10 +18,12 @@ const T3_LIMITS = {
   opt2: 2,
   opt3: 2,
   opt4: 1,
+  // Additional domain card: single use per tier
   opt5: 1, // domain card up to level 7
   opt6: 1,
-  opt7: 2, // +1 proficiency
-  opt8: 2, // multiclass reminder/cross-outs
+  // Proficiency and multiclass are single-use options in this tier
+  opt7: 1, // +1 proficiency (costs both level-up points)
+  opt8: 1, // multiclass (costs both level-up points)
 } as const;
 
 // Limits for Tier 4 (Levels 8–10)
@@ -29,11 +32,12 @@ const T4_LIMITS = {
   opt2: 2,
   opt3: 2,
   opt4: 1,
+  // Additional domain card: single use per tier
   opt5: 1,
   opt6: 1,
-  opt7: 2,
-  opt8: 2,
-  opt9: 1, // upgraded subclass card
+  // Proficiency and multiclass are single-use options in this tier
+  opt7: 1, // +1 proficiency (costs both level-up points)
+  opt8: 1, // multiclass / upgraded subclass tradeoff (costs both level-up points)
 } as const;
 
 export class LevelUpModal extends Modal {
@@ -48,9 +52,17 @@ export class LevelUpModal extends Modal {
     this.modalEl.addClass('dh-levelup-modal-root');
     const { contentEl } = this; contentEl.empty(); contentEl.addClass('dh-levelup-chooser');
 
+    // Close when clicking anywhere on the overlay outside the Level Up card,
+    // to match the short-rest UX.
+    this.modalEl.onclick = (ev: MouseEvent) => {
+      if (!contentEl.contains(ev.target as Node)) this.close();
+    };
+
     const fm = this.app.metadataCache.getFileCache(this.file)?.frontmatter ?? {};
     const curLevel = Number((fm as any).level ?? 1);
     const nextLevelPreview = curLevel + 1;
+    // Tier after this level up (used to lock higher-tier options)
+    const nextTierNum = nextLevelPreview >= 8 ? 4 : nextLevelPreview >= 5 ? 3 : nextLevelPreview >= 2 ? 2 : 1;
 
     const head = contentEl.createDiv({ cls: 'dh-levelup-headerbar' });
     const titleWrap = head.createDiv({ cls: 'dh-levelup-titlewrap' });
@@ -70,11 +82,23 @@ export class LevelUpModal extends Modal {
     const list2 = col2.createDiv({ cls: 'dh-levelup-list' });
 
     const col3 = grid.createDiv({ cls: 'dh-levelup-col' });
+    if (nextTierNum < 3) {
+      col3.createDiv({
+        cls: 'dh-levelup-tier-lock',
+        text: 'Locked until Tier 3 (levels 5–7). Level up to 5+ to unlock these options.',
+      });
+    }
     col3.createDiv({ cls: 'dh-levelup-title', text: 'TIER 3: LEVELS 5–7' });
     col3.createDiv({ cls: 'dh-levelup-note', text: 'At level 5, gain +1 Proficiency. Clear all trait toggles. Choose two options below.' });
     const list3 = col3.createDiv({ cls: 'dh-levelup-list' });
 
     const col4 = grid.createDiv({ cls: 'dh-levelup-col' });
+    if (nextTierNum < 4) {
+      col4.createDiv({
+        cls: 'dh-levelup-tier-lock',
+        text: 'Locked until Tier 4 (levels 8–10). Level up to 8+ to unlock these options.',
+      });
+    }
     col4.createDiv({ cls: 'dh-levelup-title', text: 'TIER 4: LEVELS 8–10' });
     col4.createDiv({ cls: 'dh-levelup-note', text: 'At level 8, gain Experience +2 and clear all marks on traits, then +1 Proficiency. Choose two options below.' });
     const list4 = col4.createDiv({ cls: 'dh-levelup-list' });
@@ -114,20 +138,64 @@ export class LevelUpModal extends Modal {
     };
 
     const mkRow = (parent: HTMLElement, tier: 't2'|'t3'|'t4', id: string, label: string, totalLimit: number, usedCount: number, dupCount = 1) => {
-      const available = usedCount < totalLimit;
-      const row = parent.createDiv({ cls: 'dh-levelup-row' + (available? '' : ' disabled') });
-      const uses = row.createDiv({ cls: 'dh-lu-uses' });
-      for (let i=0;i<totalLimit;i++){ const b = document.createElement('div'); b.className = 'box' + (i<usedCount?' on':''); uses.appendChild(b); }
+      const tierNum = tier === 't2' ? 2 : tier === 't3' ? 3 : 4;
+      const lockedByTier = tierNum > nextTierNum; // cannot pick options above post-level-up tier
+      const exhausted = usedCount >= totalLimit;
+      const available = !exhausted;             // for visuals only (strike-through when fully used)
+      const interactable = !lockedByTier && !exhausted; // whether toggles can actually be changed
+      const isTwoPoint = (tier === 't3' || tier === 't4') && (id === 'opt7' || id === 'opt8');
+      const row = parent.createDiv({ cls: 'dh-levelup-row' + (available? '' : ' disabled') + (isTwoPoint ? ' dh-levelup-row-two-point' : '') });
+
+      // Left side: usage boxes (how many times this option has been taken)
+      const uses = row.createDiv({ cls: 'dh-lu-uses' + (isTwoPoint ? ' dh-lu-uses-two-point' : '') });
+      for (let i=0;i<totalLimit;i++){
+        const b = document.createElement('div');
+        b.className = 'box' + (i<usedCount?' on':'') + (isTwoPoint ? ' two-point' : '');
+        uses.appendChild(b);
+      }
+
       const remain = Math.max(0, totalLimit - usedCount);
-      const actives = Math.min(dupCount, remain);
+      const isLinkedTwoBox = isTwoPoint && dupCount === 2;
+      let actives = interactable ? Math.min(dupCount, remain) : 0;
+      if (isLinkedTwoBox && remain > 0 && interactable) actives = dupCount; // show two active boxes for the single remaining use
+
+      // Middle: interactive checkboxes. For two-point options, wrap them in a framed container
+      const cbHost: HTMLElement = isTwoPoint
+        ? row.createDiv({ cls: 'dh-levelup-two-point-toggle-wrap' })
+        : row;
+
+      const rowStartIndex = boxes.length;
       for (let i=0;i<dupCount;i++){
-        const cb = document.createElement('input'); cb.type = 'checkbox'; cb.disabled = i >= actives; cb.dataset['opt'] = id + '/' + (i+1); cb.dataset['tier']=tier; row.appendChild(cb);
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.disabled = !interactable || i >= actives;
+        cb.dataset['opt'] = id + '/' + (i+1);
+        cb.dataset['tier'] = tier;
+        cbHost.appendChild(cb);
         boxes.push({ el: cb, tier, id: id + '/' + (i+1) });
       }
-      const span = document.createElement('span'); span.className='label'; span.textContent = label; row.appendChild(span);
+      const rowBoxes = boxes.slice(rowStartIndex, rowStartIndex + dupCount);
+      if (isLinkedTwoBox) {
+        // Link the two boxes so checking either consumes both "points" for this option
+        rowBoxes.forEach(b => {
+          b.el.addEventListener('change', () => {
+            const checked = (b.el as HTMLInputElement).checked;
+            rowBoxes.forEach(other => {
+              if (other.el.disabled) return;
+              if (other.el.checked !== checked) {
+                (other.el as HTMLInputElement).checked = checked;
+              }
+            });
+          });
+        });
+      }
+      const span = document.createElement('span');
+      span.className = 'label';
+      span.textContent = label;
+      row.appendChild(span);
       if (!available) { try { span.classList.add('disabled'); } catch {} }
       if (id==='opt1') {
-        const picker = mkTraitPicker(parent, tier, available);
+        const picker = mkTraitPicker(parent, tier, interactable);
         const controller = boxes[boxes.length - dupCount];
         const setEnabled = (en:boolean)=>{
           const markedArr = tier==='t2'? markedT2 : tier==='t3'? markedT3 : markedT4;
@@ -165,16 +233,18 @@ export class LevelUpModal extends Modal {
     mkRow(list4, 't4', 'opt4', 'Permanently gain a +1 bonus to two Experiences.', (T4_LIMITS as any).opt4, (used4 as any).opt4||0);
     mkRow(list4, 't4', 'opt5', 'Choose an additional domain card (up to level 10).', (T4_LIMITS as any).opt5, (used4 as any).opt5||0);
     mkRow(list4, 't4', 'opt6', 'Permanently gain a +1 bonus to your Evasion.', (T4_LIMITS as any).opt6, (used4 as any).opt6||0);
-    mkRow(list4, 't4', 'opt7', 'Increase your Proficiency by +1.', (T4_LIMITS as any).opt7, (used4 as any).opt7||0);
-    mkRow(list4, 't4', 'opt8', 'Multiclass (see sheet for details).', (T4_LIMITS as any).opt8, (used4 as any).opt8||0, 2);
-    mkRow(list4, 't4', 'opt9', 'Take an upgraded subclass card (cross out multiclass for this tier).', (T4_LIMITS as any).opt9, (used4 as any).opt9||0, 2);
+    mkRow(list4, 't4', 'opt7', 'Increase your Proficiency by +1.', (T4_LIMITS as any).opt7, (used4 as any).opt7||0, 2);
+    mkRow(list4, 't4', 'opt8', 'Multiclass or take an upgraded subclass card (cross out multiclass for this tier; see sheet for details).', (T4_LIMITS as any).opt8, (used4 as any).opt8||0, 2);
 
     const actions = body.createDiv({ cls: 'dh-levelup-actions' });
     const applyBtn = actions.createEl('button', { cls: 'dh-event-btn', text: 'Apply Level Up' });
     const msg = actions.createDiv({ cls: 'dh-levelup-msg' });
 
     const picksCounter = head.querySelector('.dh-levelup-picks') as HTMLElement | null;
-    const updatePicks = () => { const selCount = boxes.filter(b=>b.el.checked && !b.el.disabled).length; if (picksCounter) picksCounter.setText(`Selected: ${selCount}/2`); };
+    const updatePicks = () => {
+      const selCount = boxes.filter(b => b.el.checked && !b.el.disabled).length;
+      if (picksCounter) picksCounter.setText(`Selected: ${selCount}/2`);
+    };
     body.addEventListener('change', updatePicks);
 
     applyBtn.onclick = async () => {
@@ -235,7 +305,6 @@ export class LevelUpModal extends Modal {
               case 'opt6': (tierC as any).opt6 = Number((tierC as any).opt6||0)+1; (front as any).evasion = Number((front as any).evasion||0)+1; break;
               case 'opt7': (tierC as any).opt7 = Number((tierC as any).opt7||0)+1; (front as any).proficiency = Number((front as any).proficiency ?? 0) + 1; break;
               case 'opt8': (tierC as any).opt8 = Number((tierC as any).opt8||0)+1; break;
-              case 'opt9': (tierC as any).opt9 = Number((tierC as any).opt9||0)+1; break;
             }
           }
         });
@@ -335,14 +404,20 @@ export class LevelUpModal extends Modal {
 
         new Notice('Level Up applied.', 4000);
 
-        // If a Domain Card option was chosen, open the Domain Picker modal
-        try {
-          if (sel.some(s => s.id.split('/')[0] === 'opt5')) {
+        // Optionally open Domain Picker after a level up so the player can pick domain cards
+        if (this.plugin.settings.autoOpenDomainPickerAfterLevelUp !== false) {
+          try {
             const filePath = (this.file as TFile).path;
             const level = nextLevelPreview;
-            window.dispatchEvent(new CustomEvent('dh:domainpicker:open', { detail: { filePath, level } }));
-          }
-        } catch {}
+            const extraFromOpt5 = selected.includes('opt5') ? 1 : 0;
+            const required = 1 + extraFromOpt5; // always at least 1 card per level; +1 if "additional domain card" option chosen
+            window.dispatchEvent(
+              new CustomEvent('dh:domainpicker:open', {
+                detail: { filePath, level, required },
+              }),
+            );
+          } catch {}
+        }
 
         this.close();
       } catch (e) {

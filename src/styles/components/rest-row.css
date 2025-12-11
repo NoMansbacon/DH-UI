@@ -4,20 +4,17 @@
   gap: 8px;
   margin: 6px 0;
   position: relative;
-  border: 1px solid var(--background-modifier-border);
-  border-left: 6px solid #2e7d32; /* rest accent */
-  border-radius: 8px;
-  padding: 8px 10px 8px 16px;
+
+  /* Layout-only: no border or background, just a container for the buttons */
+  border: none;
+  border-left: none;
+  border-radius: 0;
+  padding: 0;
   max-width: fit-content;
+  background: transparent;
 }
 .dh-rest-row::before{
-  position: absolute;
-  left: 6px; top: -9px;
-  padding: 0 6px;
-  font-size: 10px;
-  line-height: 1.2;
-  background: var(--background-primary);
-  color: var(--text-faint);
+  content: none;
 }
 
 .block-language-rest {
@@ -26,11 +23,14 @@
   gap: 8px;
   margin: 6px 0;
   position: relative;
-  border: 1px dashed var(--background-modifier-border);
-  border-left: 6px solid #2e7d32; /* rest accent */
-  border-radius: 8px;
-  padding: 8px 10px 8px 16px;
+
+  /* Layout-only: no dotted/colored border or background */
+  border: none;
+  border-left: none;
+  border-radius: 0;
+  padding: 0;
   max-width: fit-content;
+  background: transparent;
 }
 
 .dh-rest-block button {

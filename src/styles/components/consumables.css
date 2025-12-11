@@ -1,13 +1,5 @@
 /* ===== Consumables (label + uses boxes) ===== */
 
-:root {
-  /* Gold accent to match your traits toggle look */
-  --dh-gold: #e6c14f;
-  --dh-gold-fill: color-mix(in oklab, var(--dh-gold), transparent 82%);
-  --dh-gold-border: color-mix(in oklab, var(--dh-gold), #000 25%);
-  --dh-gold-glow: color-mix(in oklab, var(--dh-gold), transparent 60%);
-}
-
 /* Container for all consumables rows */
 .dh-consumables {
   display: flex;
@@ -15,21 +7,18 @@
   gap: 8px;
   margin: 6px 0;
   position: relative;
-  border: 1px dashed var(--background-modifier-border);
-  border-left: 6px solid #4caf50; /* consumables accent */
-  border-radius: 8px;
-  padding: 10px 12px 10px 16px;
+
+  /* Card shell: match vitals-style cards (soft gradient, light border) */
+  border: 1px solid color-mix(in oklab, var(--background-modifier-border), #fff 18%);
+  border-radius: var(--dh-radius-card);
+  padding: var(--dh-card-padding-y) var(--dh-card-padding-x);
   max-width: fit-content;
+
+  background: var(--dh-card-bg);
+  box-shadow: none;
 }
 .dh-consumables::before{
-  content: "";
-  position: absolute;
-  left: 6px; top: -9px;
-  padding: 0 6px;
-  font-size: 10px;
-  line-height: 1.2;
-  background: var(--background-primary);
-  color: var(--text-faint);
+  content: none;
 }
 
 /* One consumable row: tighter to bring boxes closer to the label */
@@ -66,42 +55,40 @@
   flex-wrap: wrap;          /* allow wrapping on small screens */
 }
 
-/* Individual box (off state) */
+/* Individual box (off state)
+   Square toggle, same gold color as Hope when filled. */
 .dh-consume-box {
   width: 18px;
   height: 18px;
   border-radius: 6px;
   border: 1px solid var(--background-modifier-border);
-  background: linear-gradient(
-    180deg,
-    var(--background-secondary) 0%,
-    color-mix(in oklab, var(--background-secondary), #000 12%) 100%
-  );
-  box-shadow: var(--shadow-s);
+  background: var(--background-secondary);
+  box-shadow: none;
   cursor: pointer;
+  margin: 0;
   transition:
-    transform 80ms ease,
-    box-shadow 120ms ease,
     border-color 120ms ease,
     background 160ms ease;
 }
-/* Filled = "gold toggle" look to match traits */
+/* Filled = Hope-style gold color (same as vitals Hope) */
 .dh-consume-box.on {
-  background: linear-gradient(180deg, #e2b64c, #b88418);
-  border-color: #ffcf5a;
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,.25) inset,
-    0 0 8px rgba(255, 199, 66, .45);
+  background: var(--dh-gold);
+  border-color: var(--dh-gold);
+  box-shadow: none;
 }
 
-/* Optional: a tiny “pressed” feel on click */
+/* No movement on click to keep layout stable */
 .dh-consume-box:active {
-  transform: translateY(0);
+  transform: none;
 }
 
 /* Mobile tweaks (keep things tight) */
 @media (max-width: 520px) {
   .dh-consumable { column-gap: 6px; }
   .dh-consumable-uses { gap: 5px; }
-  .dh-consume-box { width: 16px; height: 16px; border-radius: 5px; }
+  .dh-consume-box {
+    width: 16px;
+    height: 16px;
+    border-radius: 5px;
+  }
 }

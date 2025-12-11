@@ -1,49 +1,322 @@
+/* @settings
+name: Daggerheart UI
+id: daggerheart-ui-v2
+settings:
+  - id: dh-radius-card
+    title: Card corner radius
+    description: Border radius used for Daggerheart tooltip cards.
+    type: variable-number
+    default: 10
+    min: 0
+    max: 32
+    format: px
+  - id: dh-card-padding-y
+    title: Card padding (vertical)
+    description: Vertical padding inside DH-UI cards that use the shared card frame.
+    type: variable-number
+    default: 10
+    min: 4
+    max: 24
+    format: px
+  - id: dh-card-padding-x
+    title: Card padding (horizontal)
+    description: Horizontal padding inside DH-UI cards that use the shared card frame.
+    type: variable-number
+    default: 12
+    min: 6
+    max: 32
+    format: px
+  - id: dh-card-gap
+    title: Card gap
+    description: Gap between DH-UI cards in multi-card layouts (vitals grid, features grid, etc.).
+    type: variable-number
+    default: 10
+    min: 0
+    max: 32
+    format: px
+  - id: dh-card-border
+    title: Card border color
+    description: Border color for DH-UI cards (vitals, damage, consumables, etc.).
+    type: variable-color
+    format: hex
+    default: "#3f3f46"
+  - id: dh-card-shadow
+    title: Card shadow
+    description: Box shadow used for floating cards and toggles.
+    type: variable-text
+    default: "none"
+  - id: dh-card-bg-top-dark
+    title: Card background (top, dark mode)
+    description: Top color of the DH-UI card background in dark mode.
+    type: variable-color
+    format: hex
+    default: "#1f2933"
+  - id: dh-card-bg-bottom-dark
+    title: Card background (bottom, dark mode)
+    description: Bottom color of the DH-UI card background in dark mode.
+    type: variable-color
+    format: hex
+    default: "#111827"
+  - id: dh-card-bg-top-light
+    title: Card background (top, light mode)
+    description: Top color of the DH-UI card background in light mode.
+    type: variable-color
+    format: hex
+    default: "#f3f4f6"
+  - id: dh-card-bg-bottom-light
+    title: Card background (bottom, light mode)
+    description: Bottom color of the DH-UI card background in light mode.
+    type: variable-color
+    format: hex
+    default: "#e5e7eb"
+  - id: dh-red
+    title: HP color (red)
+    description: Accent color for HP trackers in vitals and individual HP blocks.
+    type: variable-color
+    format: hex
+    default: "#d85a56"
+  - id: dh-blue
+    title: Stress color (blue)
+    description: Accent color for Stress trackers in vitals and individual Stress blocks.
+    type: variable-color
+    format: hex
+    default: "#4f79e6"
+  - id: dh-gray
+    title: Armor color (gray)
+    description: Accent color for Armor trackers in vitals and individual Armor blocks.
+    type: variable-color
+    format: hex
+    default: "#9aa0a6"
+  - id: dh-gold
+    title: Hope color (gold)
+    description: Accent color for Hope trackers (diamonds) and Hope-related UI.
+    type: variable-color
+    format: hex
+    default: "#e6c14f"
+  - id: dh-accent
+    title: UI accent
+    description: Fallback accent for DH-UI elements (used when a more specific color is not provided).
+    type: variable-color
+    format: hex
+    default: "#e6c14f"
+  - id: dh-rest
+    title: Rest controls color
+    description: Accent color for `rest` block buttons (Short/Long Rest, Level Up, etc.).
+    type: variable-color
+    format: hex
+    default: "#2e7d32"
+  - id: dh-consumables
+    title: Consumables color
+    description: Accent color for `consumables` block boxes and labels.
+    type: variable-color
+    format: hex
+    default: "#4caf50"
+  - id: dh-spell
+    title: Spell card color
+    description: Accent color for spell cards and `active-hand` rows with type Spell.
+    type: variable-color
+    format: hex
+    default: "#8e75e3"
+  - id: dh-action
+    title: Action card color
+    description: Accent color for action cards and `active-hand` rows with type Action.
+    type: variable-color
+    format: hex
+    default: "#26a69a"
+  - id: dh-traits
+    title: Traits / abilities color
+    description: Accent color for traits/abilities cards (```traits / ```ability blocks).
+    type: variable-color
+    format: hex
+    default: "#a78bfa"
+  - id: dh-feature-ancestry
+    title: Features – Ancestry color
+    description: Accent color for `features` block Ancestry cards.
+    type: variable-color
+    format: hex
+    default: "#4caf50"
+  - id: dh-feature-class
+    title: Features – Class color
+    description: Accent color for `features` block Class cards.
+    type: variable-color
+    format: hex
+    default: "#2196f3"
+  - id: dh-feature-subclass
+    title: Features – Subclass color
+    description: Accent color for `features` block Subclass cards.
+    type: variable-color
+    format: hex
+    default: "#ff9800"
+  - id: dh-feature-community
+    title: Features – Community color
+    description: Accent color for `features` block Community cards.
+    type: variable-color
+    format: hex
+    default: "#9c27b0"
+*/
+
 :root{
-  --dh-radius-card: 12px;
+  --dh-radius-card: 10px;
   --dh-gap-s: 6px;
   --dh-gap-m: 10px;
 
-  --dh-card-border: var(--background-modifier-border);
-  --dh-card-shadow: var(--shadow-s);
-  --dh-bg-top:  color-mix(in oklab, var(--background-secondary), #fff 4%);
-  --dh-bg-bot:  color-mix(in oklab, var(--background-secondary), #000 12%);
+  /* Card/frame styling controlled by Style Settings */
+  --dh-card-border: #3f3f46;
+  --dh-card-shadow: none;
+
+  /* Default card padding & gap (overridable from Style Settings) */
+  --dh-card-padding-y: 10px;
+  --dh-card-padding-x: 12px;
+  --dh-card-gap: 10px;
+
+  /* Per-mode card background colors (wired from Style Settings)
+     Used as flat fill colors (no gradient). */
+  --dh-card-bg-top-dark: #1f2933;
+  --dh-card-bg-bottom-dark: #111827;
+  --dh-card-bg-top-light: #f3f4f6;
+  --dh-card-bg-bottom-light: #e5e7eb;
+
+  /* Resolved background color used by DH-UI cards (flat fill, no gradient) */
+  --dh-card-bg: #1f2933;
 
   --dh-text:        var(--text-normal);
   --dh-text-muted:  var(--text-muted);
   --dh-text-faint:  var(--text-faint);
   --dh-text-accent: var(--text-accent);
   --dh-text-error:  var(--text-error);
+
+  /* Accent palette (kept small; tuned to work in light & dark) */
+  --dh-accent:      #e6c14f;
+  --dh-red:         #d85a56;   /* HP */
+  --dh-blue:        #4f79e6;   /* Stress */
+  --dh-gray:        #9aa0a6;   /* Armor */
+  --dh-gold:        #e6c14f;   /* Hope */
+
+  --dh-rest:        #2e7d32;
+  --dh-consumables: #4caf50;
+  --dh-spell:       #8e75e3;
+  --dh-action:      #26a69a;
+  --dh-traits:      #a78bfa;
+
+  --dh-feature-ancestry:  #4caf50;
+  --dh-feature-class:     #2196f3;
+  --dh-feature-subclass:  #ff9800;
+  --dh-feature-community: #9c27b0;
+}
+
+/* Map per-mode card background colors into the shared flat card color */
+.theme-dark {
+  --dh-card-bg: var(--dh-card-bg-top-dark);
+}
+
+.theme-light {
+  --dh-card-bg: var(--dh-card-bg-top-light);
 }
 
 /* Floating card surface */
 .dh-surface{
   border-radius: var(--dh-radius-card);
   border: 1px solid var(--dh-card-border);
-  background: linear-gradient(180deg, var(--dh-bg-top) 0%, var(--dh-bg-bot) 100%);
+  background: var(--dh-card-bg);
   box-shadow: var(--dh-card-shadow);
+  padding: var(--dh-card-padding-y) var(--dh-card-padding-x);
 }
 
-/* Template preview styles */
-.dh-template-preview { display: grid; gap: 6px; margin-top: 6px; }
-.dh-template-input { width: 100%; font-family: var(--font-monospace); font-size: .9em; }
-.dh-template-output { padding: 6px 8px; border: 1px solid var(--dh-card-border); border-radius: 6px; font-family: var(--font-monospace); background: var(--background-secondary); }
+/* Keyboard focus styling for DH-UI interactive elements */
+.dh-rest-btn:focus-visible,
+.dh-event-btn:focus-visible,
+.dh-rest-close:focus-visible,
+.dh-rest-trigger:focus-visible,
+.dh-active-box:focus-visible,
+.dh-track-box:focus-visible,
+.dh-consume-box:focus-visible,
+.dh-ability-card .dh-toggle:focus-visible,
+.dvjs-table button:focus-visible,
+.dvjs-toolbar > button:focus-visible,
+.dvjs-close:focus-visible {
+  outline: 2px solid var(--interactive-accent);
+  outline-offset: 2px;
+}
 
 
-/* Gold toggle */
+/* Legacy pill toggle – keep visually minimal */
 .dh-toggle{
-  --size: 18px;
+  --size: 16px;
   width: calc(var(--size) * 1.8);
   height: var(--size);
   border-radius: 999px;
   border: 1px solid var(--dh-card-border);
-  background: linear-gradient(180deg, var(--background-secondary) 0%, color-mix(in oklab, var(--background-secondary), #000 10%) 100%);
+  background: var(--background-secondary);
   position: relative; cursor: pointer; display: inline-flex; align-items: center; padding: 0 2px;
-  box-shadow: var(--dh-card-shadow);
+  box-shadow: none;
 }
 .dh-toggle .dot{
   width: calc(var(--size) - 4px); height: calc(var(--size) - 4px); border-radius: 999px;
-  background: color-mix(in oklab, #d4af37, #000 8%);
+  background: var(--dh-accent);
   transform: translateX(0); transition: transform 120ms ease;
-  box-shadow: 0 0 0 1px rgba(0,0,0,.25), 0 2px 6px rgba(0,0,0,.25), 0 0 10px rgba(212,175,55,.35);
+  box-shadow: none;
 }
 .dh-toggle.on .dot{ transform: translateX(100%); }
+
+/* --- Style Settings integration ------------------------------------------ */
+/*
+  When viewed in the Style Settings plugin, the Pickr swatch for a color
+  setting falls back to the theme's global --pcr-color until Style Settings
+  has stored an override. To avoid the magenta placeholder, map each DH-UI
+  setting's swatch to the actual CSS var we use in the plugin. This affects
+  only the Style Settings view and does not change in-note rendering.
+*/
+body.css-settings-manager .style-settings-container .setting-item[data-id="dh-card-border"] .pickr .pcr-button::after {
+  background: var(--dh-card-border);
+}
+body.css-settings-manager .style-settings-container .setting-item[data-id="dh-card-bg-top-dark"] .pickr .pcr-button::after {
+  background: var(--dh-card-bg-top-dark);
+}
+body.css-settings-manager .style-settings-container .setting-item[data-id="dh-card-bg-bottom-dark"] .pickr .pcr-button::after {
+  background: var(--dh-card-bg-bottom-dark);
+}
+body.css-settings-manager .style-settings-container .setting-item[data-id="dh-card-bg-top-light"] .pickr .pcr-button::after {
+  background: var(--dh-card-bg-top-light);
+}
+body.css-settings-manager .style-settings-container .setting-item[data-id="dh-card-bg-bottom-light"] .pickr .pcr-button::after {
+  background: var(--dh-card-bg-bottom-light);
+}
+body.css-settings-manager .style-settings-container .setting-item[data-id="dh-red"] .pickr .pcr-button::after {
+  background: var(--dh-red);
+}
+body.css-settings-manager .style-settings-container .setting-item[data-id="dh-blue"] .pickr .pcr-button::after {
+  background: var(--dh-blue);
+}
+body.css-settings-manager .style-settings-container .setting-item[data-id="dh-gray"] .pickr .pcr-button::after {
+  background: var(--dh-gray);
+}
+body.css-settings-manager .style-settings-container .setting-item[data-id="dh-accent"] .pickr .pcr-button::after {
+  background: var(--dh-accent);
+}
+body.css-settings-manager .style-settings-container .setting-item[data-id="dh-rest"] .pickr .pcr-button::after {
+  background: var(--dh-rest);
+}
+body.css-settings-manager .style-settings-container .setting-item[data-id="dh-consumables"] .pickr .pcr-button::after {
+  background: var(--dh-consumables);
+}
+body.css-settings-manager .style-settings-container .setting-item[data-id="dh-spell"] .pickr .pcr-button::after {
+  background: var(--dh-spell);
+}
+body.css-settings-manager .style-settings-container .setting-item[data-id="dh-action"] .pickr .pcr-button::after {
+  background: var(--dh-action);
+}
+body.css-settings-manager .style-settings-container .setting-item[data-id="dh-traits"] .pickr .pcr-button::after {
+  background: var(--dh-traits);
+}
+body.css-settings-manager .style-settings-container .setting-item[data-id="dh-feature-ancestry"] .pickr .pcr-button::after {
+  background: var(--dh-feature-ancestry);
+}
+body.css-settings-manager .style-settings-container .setting-item[data-id="dh-feature-class"] .pickr .pcr-button::after {
+  background: var(--dh-feature-class);
+}
+body.css-settings-manager .style-settings-container .setting-item[data-id="dh-feature-subclass"] .pickr .pcr-button::after {
+  background: var(--dh-feature-subclass);
+}
+body.css-settings-manager .style-settings-container .setting-item[data-id="dh-feature-community"] .pickr .pcr-button::after {
+  background: var(--dh-feature-community);
+}

@@ -16,10 +16,11 @@ import { parseYamlSafe } from "../utils/yaml";
 import { processTemplate, createTemplateContext } from "../utils/template";
 import { registerLiveCodeBlock } from "../utils/liveBlock";
 import React from "react";
-import { createRoot, Root } from "react-dom/client";
+import { Root } from "react-dom/client";
 import { BadgesView, type BadgeRow } from "../components/badges-view";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { KVProvider } from "../components/state/kv-context";
+import { getOrCreateRoot } from "../utils/reactRoot";
 
 const roots = new WeakMap<HTMLElement, Root>();
 
@@ -67,8 +68,7 @@ export function registerBadgesBlock(plugin: DaggerheartPlugin) {
 
     const render = () => {
       const rows = computeRows();
-      let root = roots.get(el);
-      if (!root) { root = createRoot(el); roots.set(el, root); }
+      const root = getOrCreateRoot(roots, el);
       root.render(
         React.createElement(ErrorBoundary, { name: 'Badges' },
           React.createElement(KVProvider, null,

@@ -2,7 +2,7 @@
 import type DaggerheartPlugin from "../main";
 import { MarkdownPostProcessorContext, MarkdownRenderChild, Notice, TFile } from "obsidian";
 import { parseYamlSafe } from "../utils/yaml";
-import { LongRestModal } from "../ui/rest-modals";
+import { CombinedRestModal, RestType } from "../ui/rest-modals";
 import React from "react";
 import { createRoot, Root } from "react-dom/client";
 import { RestButtonView } from "../components/rest-button";
@@ -324,7 +324,7 @@ export function openLongRestUI(
   keys: { hp: string; stress: string; armor: string; hope: string }
 ) {
   const file = plugin.app.vault.getFileByPath(ctx.sourcePath) || plugin.app.workspace.getActiveFile();
-  if (!file) { new Notice('Long Rest: no active file'); return; }
+  if (!file || !(file instanceof TFile)) { new Notice('Rest: no active file'); return; }
   const scope = (el.closest('.markdown-preview-view') as HTMLElement) ?? document.body;
   const mk = (cls: string, key: string) => ({
     getMax: () => {
@@ -340,10 +340,16 @@ export function openLongRestUI(
       });
     },
   });
-  new LongRestModal(plugin.app, file as TFile, { hp: keys.hp, stress: keys.stress, armor: keys.armor, hope: keys.hope }, {
-    hp: mk('dh-track-hp', keys.hp),
-    stress: mk('dh-track-stress', keys.stress),
-    armor: mk('dh-track-armor', keys.armor),
-    hope: mk('dh-track-hope', keys.hope),
-  } as any).open();
+  new CombinedRestModal(
+    plugin.app,
+    file as TFile,
+    { hp: keys.hp, stress: keys.stress, armor: keys.armor, hope: keys.hope },
+    {
+      hp: mk('dh-track-hp', keys.hp),
+      stress: mk('dh-track-stress', keys.stress),
+      armor: mk('dh-track-armor', keys.armor),
+      hope: mk('dh-track-hope', keys.hope),
+    } as any,
+    'long'
+  ).open();
 }

@@ -34,20 +34,43 @@ export function DamageInlineView({
     ? (severeThreshold as number) + (Number.isFinite(level as any) ? (level as number) : 0)
     : undefined;
 
+  // Derive a simple visual "current tier" from the entered values.
+  // Mirrors the tier logic in core/damage-calculator.ts, including armor-based reduction.
+  const rawAmt = Number(dmg || 0) || 0;
+  const tierReduce = Math.max(0, Math.floor(Number(reduce || 0) || 0));
+  const hasMajor = Number.isFinite(displayMajor as any);
+  const hasSevere = Number.isFinite(displaySevere as any);
+  const finalMajor = hasMajor ? (displayMajor as number) : NaN;
+  const finalSevere = hasSevere ? (displaySevere as number) : NaN;
+
+  const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
+
+  let startTier = 0;
+  if (Number.isFinite(finalSevere) && rawAmt >= finalSevere) startTier = 3;
+  else if (Number.isFinite(finalMajor) && rawAmt >= finalMajor) startTier = 2;
+  else if (rawAmt > 0) startTier = 1;
+
+  const endTier = clamp(startTier - tierReduce, 0, 3);
+
+  let currentTier: "minor" | "major" | "severe" | null = null;
+  if (endTier === 1) currentTier = "minor";
+  else if (endTier === 2) currentTier = "major";
+  else if (endTier >= 3) currentTier = "severe";
+
   return (
     <div className="dh-damage-inline">
       <div className="dh-dmg-steps" role="group">
-        <div className="step">
+        <div className={`step${currentTier === "minor" ? " tier-active tier-minor" : ""}`}>
           <div className="label">MINOR<br/>DAMAGE</div>
           <div className="meta">Mark 1 HP</div>
         </div>
         <div className="conn"><span className="value">{Number.isFinite(displayMajor as any) ? displayMajor : ""}</span></div>
-        <div className="step">
+        <div className={`step${currentTier === "major" ? " tier-active tier-major" : ""}`}>
           <div className="label">MAJOR<br/>DAMAGE</div>
           <div className="meta">Mark 2 HP</div>
         </div>
         <div className="conn"><span className="value">{Number.isFinite(displaySevere as any) ? displaySevere : ""}</span></div>
-        <div className="step">
+        <div className={`step${currentTier === "severe" ? " tier-active tier-severe" : ""}`}>
           <div className="label">SEVERE<br/>DAMAGE</div>
           <div className="meta">Mark 3 HP</div>
         </div>

@@ -6,6 +6,7 @@ import React from "react";
 import { createRoot, Root } from "react-dom/client";
 import { RestButtonView } from "../components/rest-button";
 import * as store from "../lib/services/stateStore";
+import { CombinedRestModal, RestType } from "../ui/rest-modals";
 
 const roots = new WeakMap<HTMLElement, Root>();
 
@@ -162,6 +163,41 @@ function showShortRestModal(
 }
 
 // Unified entry used by rest block
-export function openShortRestUI(plugin: DaggerheartPlugin, el: HTMLElement, ctx: MarkdownPostProcessorContext, keys: { hp: string; stress: string; armor: string; hope: string }){
-  showShortRestModal(plugin, el, ctx, keys);
+// Now delegates to the combined Rest modal (short + long columns).
+export function openShortRestUI(
+  plugin: DaggerheartPlugin,
+  el: HTMLElement,
+  ctx: MarkdownPostProcessorContext,
+  keys: { hp: string; stress: string; armor: string; hope: string }
+) {
+  const file = plugin.app.vault.getFileByPath(ctx.sourcePath) || plugin.app.workspace.getActiveFile();
+  if (!file || !(file instanceof TFile)) {
+    new Notice('Rest: could not resolve file');
+    return;
+  }
+  const scope = scopeOf(el);
+  const mk = (cls: string, key: string) => ({
+    getMax: () => minBoxesFor(scope, cls, key),
+    repaint: () => {
+      const cont = scope.querySelector(`.dh-tracker-boxes.${cls}`) as HTMLElement | null;
+      if (!cont) return;
+      store.get<number>('tracker:' + key, 0).then((val) => {
+        const filled = Number(val ?? 0) || 0;
+        cont.querySelectorAll('.dh-track-box').forEach((n, i) => (n as HTMLDivElement).classList.toggle('on', i < filled));
+      });
+    },
+  });
+
+  new CombinedRestModal(
+    plugin.app,
+    file,
+    keys,
+    {
+      hp: mk('dh-track-hp', keys.hp),
+      stress: mk('dh-track-stress', keys.stress),
+      armor: mk('dh-track-armor', keys.armor),
+      hope: mk('dh-track-hope', keys.hope),
+    },
+    'short'
+  ).open();
 }

@@ -1,19 +1,21 @@
 /* ===== Combined Vitals (HP / Stress / Armor / Hope) ===== */
 
-/* Standalone Vitals container: dashed frame + colored left accent */
+/* Standalone Vitals container: layout-only, let inner cards provide visuals */
 .dh-vitals {
   position: relative;
   border-radius: 8px;
-  padding: 10px 12px 12px 16px;
-  background: transparent;
   max-width: fit-content;
+
+  border: none;
+  background: transparent;
+  box-shadow: none;
 }
 
 .dh-vitals-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 8px 12px;
-  color: var(--text-accent)
+  gap: var(--dh-card-gap);
+  color: var(--text-accent);
 }
 
 @container dhdash (min-width: 560px) {
@@ -28,16 +30,13 @@
 .dh-vitals .dh-tracker {
   /* keep the basic grid layout from trackers.css, but restyle the frame */
   margin: 0;
-  padding: 8px 10px;
+  padding: 10px 12px;
   border-radius: 12px;
 
-  border: 1px solid var(--background-modifier-border);
-  background: linear-gradient(
-    180deg,
-    var(--background-secondary) 0%,
-    color-mix(in oklab, var(--background-secondary), #000 12%) 100%
-  );
-  box-shadow: var(--shadow-s);
+  /* Card shell: use shared flat card background color */
+  border: 1px solid color-mix(in oklab, var(--background-modifier-border), #fff 18%);
+  background: var(--dh-card-bg);
+  box-shadow: none;
 }
 .dh-vitals .dh-tracker::before { content: none; }
 
@@ -86,13 +85,11 @@
 
   border-radius: 12px;
   padding: 8px 10px;
-  border: 1px solid var(--background-modifier-border);
-  background: linear-gradient(
-    180deg,
-    var(--background-secondary) 0%,
-    color-mix(in oklab, var(--background-secondary), #000 12%) 100%
-  );
-  box-shadow: var(--shadow-s);
+
+  /* Slightly brighter than the main panel so the Hope feature area is clearly separated */
+  border: 1px solid color-mix(in oklab, var(--background-modifier-border), #fff 18%);
+  background: var(--dh-card-bg);
+  box-shadow: none;
 }
 .dh-vitals-hope-row .label {
   font-size: 13px;

@@ -1,13 +1,5 @@
 /* ===== Trackers (HP / Stress / Armor / Hope) ===== */
 
-/* Color tokens */
-:root {
-  --dh-red:   #d85a56;   /* HP */
-  --dh-blue:  #4f79e6;   /* Stress */
-  --dh-gray:  #9aa0a6;   /* Armor */
-  --dh-gold:  #e6c14f;   /* Hope */
-}
-
 /* One tracker row */
 .dh-tracker {
   display: grid;
@@ -21,29 +13,17 @@
 /* Inline frame to visualize each tracker row area */
 .dh-tracker {
   position: relative;
-  border: 1px dashed var(--background-modifier-border);
-  border-left: 6px solid var(--background-modifier-border);
-  border-radius: 8px;
-  padding: 8px 10px 8px 16px;
+  margin: 6px 0;
+  padding: var(--dh-card-padding-y) var(--dh-card-padding-x);
+  border-radius: 10px;
   max-width: fit-content;
+
+  border: 1px solid var(--dh-card-border);
+  background: var(--dh-card-bg);
 }
 .dh-tracker::before{
-  content: "📊 Tracker";
-  position: absolute;
-  left: 6px;
-  top: -9px;
-  padding: 0 6px;
-  font-size: 10px;
-  line-height: 1.2;
-  background: var(--background-primary);
-  color: var(--text-faint);
+  content: none;
 }
-
-/* Accent the left border by tracker kind */
-.dh-tracker:has(.dh-track-hp)     { border-left-color: var(--dh-red); }
-.dh-tracker:has(.dh-track-stress) { border-left-color: var(--dh-blue); }
-.dh-tracker:has(.dh-track-armor)  { border-left-color: var(--dh-gray); }
-.dh-tracker:has(.dh-track-hope)   { border-left-color: var(--dh-gold); }
 
 /* Label */
 .dh-tracker-head {
@@ -63,23 +43,12 @@
 .dh-track-box {
   width: 25px;
   height: 15px;
-  border-radius: 6px; /* rectangle corners by default */
+  border-radius: 4px; /* rectangle corners by default */
   border: 1px solid var(--background-modifier-border);
-  background: linear-gradient(
-    180deg,
-    var(--background-secondary) 0%,
-    rgba(0,0,0,0.12)
-  );
-  box-shadow: var(--shadow-s);
+  background: var(--background-secondary);
+  box-shadow: none;
   cursor: pointer;
-  transition:
-    transform 80ms ease,
-    box-shadow 120ms ease,
-    border-color 120ms ease,
-    background 140ms ease;
 }
-.dh-track-box:hover { transform: translateY(-1px); }
-.dh-track-box:active { transform: translateY(0); }
 
 /* ================== SHAPES ================== */
 /* Rectangles (HP / Stress / Armor) stay default (no transform) */
@@ -99,35 +68,23 @@
 
 /* ================== FILLED COLORS (ON) ================== */
 .dh-track-hp .dh-track-box.on {
-  border-color: #b94b47;
-  background:
-    radial-gradient(120% 70% at 50% -10%, rgba(255,255,255,.20), transparent 45%),
-    linear-gradient(180deg, #e47a76 0%, #bb4e4a 100%);
-  box-shadow: 0 0 8px rgba(216,90,86,.4), var(--shadow-s);
+  border-color: var(--dh-red);
+  background: var(--dh-red);
 }
 
 .dh-track-stress .dh-track-box.on {
-  border-color: #3f66c0;
-  background:
-    radial-gradient(120% 70% at 50% -10%, rgba(255,255,255,.20), transparent 45%),
-    linear-gradient(180deg, #6f93f0 0%, #3f66c0 100%);
-  box-shadow: 0 0 8px rgba(79,121,230,.4), var(--shadow-s);
+  border-color: var(--dh-blue);
+  background: var(--dh-blue);
 }
 
 .dh-track-armor .dh-track-box.on {
-  border-color: #878d94;
-  background:
-    radial-gradient(120% 70% at 50% -10%, rgba(255,255,255,.22), transparent 45%),
-    linear-gradient(180deg, #b4b9bf 0%, #8a9096 100%);
-  box-shadow: 0 0 8px rgba(154,160,166,.38), var(--shadow-s);
+  border-color: var(--dh-gray);
+  background: var(--dh-gray);
 }
 
 .dh-track-hope .dh-track-box.on {
-  border-color: #bfa33d;
-  background:
-    radial-gradient(120% 70% at 50% -10%, rgba(255,255,255,.20), transparent 45%),
-    linear-gradient(180deg, #f0d975 0%, #bfa33d 100%);
-  box-shadow: 0 0 8px rgba(230,193,79,.45), var(--shadow-s);
+  border-color: var(--dh-gold);
+  background: var(--dh-gold);
 }
 
 /* Mobile tweaks */

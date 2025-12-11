@@ -1,6 +1,7 @@
 // src/lib/views/abilityscoreview.tsx
 import React from "react";
-import { createRoot, Root } from "react-dom/client";
+import { Root } from "react-dom/client";
+import { getOrCreateRoot } from "../utils/reactRoot";
 import type { App, MarkdownPostProcessorContext } from "obsidian";
 
 import { AbilityView } from "./traits";
@@ -24,11 +25,8 @@ export class AbilityScoreView {
     const filePath = (filePathOverride ?? ctx.sourcePath) || "unknown";
     const cards = buildCards(filePath, src);
 
-    // Mount React into this codeblock’s container
-    let root = this.roots.get(el);
-    // If something external cleared the container, recreate the root to avoid React warnings
-    if (root && (el.childElementCount === 0)) { try { root.unmount(); } catch {} this.roots.delete(el); root = undefined as any; }
-    if (!root) { root = createRoot(el); this.roots.set(el, root); }
+    // Mount React into this codeblock’s container using shared helper
+    const root = getOrCreateRoot(this.roots, el);
     root.render(<AbilityView data={cards} />);
   }
 }

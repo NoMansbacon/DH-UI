@@ -17,12 +17,13 @@ import { MarkdownPostProcessorContext } from "obsidian";
 import { parseYamlSafe } from "../utils/yaml";
 import { processTemplate, createTemplateContext } from "../utils/template";
 import React from "react";
-import { createRoot, Root } from "react-dom/client";
+import { Root } from "react-dom/client";
 import { TrackerRowView } from "../components/trackers-view";
 import { registerLiveCodeBlock } from "../utils/liveBlock";
 import * as store from "../lib/services/stateStore";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { KVProvider } from "../components/state/kv-context";
+import { getOrCreateRoot } from "../utils/reactRoot";
 const roots = new WeakMap<HTMLElement, Root>();
 /**
  * Trackers: hp | stress | armor | hope
@@ -122,8 +123,7 @@ function registerOneTracker(
     const count = resolveCount(rawCount, el, app, ctx);
     const saved = stateKey ? await readState(stateKey, count) : 0;
     const shape = extraBoxCls.includes("dh-track-diamond") ? "diamond" : "rect";
-    root = roots.get(el) || null;
-    if (!root) { root = createRoot(el); roots.set(el, root); }
+    root = getOrCreateRoot(roots, el);
     root.render(
       React.createElement(ErrorBoundary, { name: `Tracker:${blockName}` },
         React.createElement(KVProvider, null,

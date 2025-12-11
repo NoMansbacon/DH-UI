@@ -14,7 +14,8 @@
 import type DaggerheartPlugin from "../main";
 import { MarkdownPostProcessorContext, Notice, TFile } from "obsidian";
 import React from "react";
-import { createRoot, Root } from "react-dom/client";
+import { Root } from "react-dom/client";
+import { getOrCreateRoot } from "../utils/reactRoot";
 import { DamageInlineView } from "../components/damage-inline";
 import { parseYamlSafe } from "../utils/yaml";
 import { registerLiveCodeBlock } from "../utils/liveBlock";
@@ -170,8 +171,7 @@ export function registerDamage(plugin: DaggerheartPlugin) {
 
       const render = () => {
         const r = resolveThresholds();
-        let root = roots.get(el);
-        if (!root) { root = createRoot(el); roots.set(el, root); }
+        const root = getOrCreateRoot(roots, el);
         root.render(React.createElement(DamageInlineView, { 
           majorThreshold: r.finalMajor,
           severeThreshold: r.finalSevere,

@@ -4,9 +4,10 @@ import { MarkdownPostProcessorContext } from "obsidian";
 import { parseYamlSafe } from "../utils/yaml";
 import { processTemplate, createTemplateContext } from "../utils/template";
 import React from "react";
-import { createRoot, Root } from "react-dom/client";
+import { Root } from "react-dom/client";
 import { ConsumablesView, type ConsumableRow } from "../components/consumables-view";
 import { registerLiveCodeBlock } from "../utils/liveBlock";
+import { getOrCreateRoot } from "../utils/reactRoot";
 const roots = new WeakMap<HTMLElement, Root>();
 
 /**
@@ -146,8 +147,7 @@ export function registerConsumablesBlock(plugin: DaggerheartPlugin) {
 
     const render = () => {
       const rows = computeRows();
-      let root = roots.get(el);
-      if (!root) { root = createRoot(el); roots.set(el, root); }
+      const root = getOrCreateRoot(roots, el);
       root.render(
         React.createElement(ConsumablesView, {
           rows,

@@ -4,15 +4,24 @@
  * Discovers equipment via tags (equipment/weapon/armor) or frontmatter type
  */
 
-import { MarkdownPostProcessorContext, TFile } from "obsidian";
+import { MarkdownPostProcessorContext, MarkdownRenderChild, TFile } from "obsidian";
 import type DaggerheartPlugin from "../main";
+import { parseYamlSafe } from "../utils/yaml";
+
+type EquipmentPickerBlockYaml = {
+  folder?: string | string[];
+  folders?: string | string[];
+  enforce_tier?: boolean;
+  // Optional per-block view override for the Add Equipment modal: 'card' | 'table'
+  view?: "card" | "table";
+};
 
 export function registerEquipmentPickerBlock(plugin: DaggerheartPlugin) {
   plugin.registerMarkdownCodeBlockProcessor(
     "equipmentpicker",
     async (src: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
       try {
-        await renderEquipmentPicker(el, plugin, ctx);
+        await renderEquipmentPicker(el, plugin, ctx, src);
       } catch (e) {
         console.error("[DH-UI] Equipment picker render error:", e);
         el.setText("Error rendering equipment picker. See console for details.");
@@ -24,9 +33,17 @@ export function registerEquipmentPickerBlock(plugin: DaggerheartPlugin) {
 export async function renderEquipmentPicker(
   el: HTMLElement,
   plugin: DaggerheartPlugin,
-  ctx: MarkdownPostProcessorContext
+  ctx: MarkdownPostProcessorContext,
+  src: string
 ) {
   const root = el.createDiv();
+
+  let blockCfg: EquipmentPickerBlockYaml = {};
+  try {
+    blockCfg = (parseYamlSafe<EquipmentPickerBlockYaml>(src)) ?? {};
+  } catch {
+    blockCfg = {};
+  }
 
   const dataviewPlugin = (plugin.app as any).plugins?.plugins?.dataview;
   if (!dataviewPlugin) {
@@ -44,6 +61,13 @@ export async function renderEquipmentPicker(
   // Read character lists
   const cur = dv.page(file.path);
   const charTier = toNumber(getField(cur, ["tier", "Tier"], 0));
+
+  // Per-block override or global default for tier enforcement
+  let enforceTier = plugin.settings.equipmentPickerEnforceTier !== false;
+  if (typeof blockCfg.enforce_tier === "boolean") {
+    enforceTier = blockCfg.enforce_tier;
+  }
+
   const state = {
     inventory: toPaths(getField(cur, ["inventory", "Inventory"], [])),
     equipped: toPaths(getField(cur, ["equipped", "Equipped"], [])),
@@ -56,6 +80,17 @@ export async function renderEquipmentPicker(
     currentFilter: "equipped" as "inventory" | "equipped",
   };
 
+  // Ensure any open modal is cleaned up when this block is unloaded (e.g., switching notes)
+  const child = new MarkdownRenderChild(el);
+  child.onunload = () => {
+    try {
+      if (ui.modal) {
+        ui.modal.remove();
+        ui.modal = null;
+      }
+    } catch {}
+  };
+  ctx.addChild(child);
   // Toolbar filter buttons
   const filterDiv = ui.header.createEl("div", { cls: "dvjs-filter-buttons" });
   const btnEquipped = filterDiv.createEl("button", { text: "Equipped" });
@@ -77,13 +112,38 @@ export async function renderEquipmentPicker(
   const addBtn = ui.header.createEl("button", { text: "Add equipment" });
   addBtn.addEventListener("click", () => openModal());
 
-  // Discover equipment notes, optionally scoped by settings.equipmentFolder
+  // Discover equipment notes, optionally scoped by per-block folders or settings.equipmentFolder
   const discoverEquipment = () => {
-    const raw = plugin.settings.equipmentFolder?.trim();
-    if (raw && raw.length > 0) {
+    // Block-level folder(s) take precedence when provided
+    const folderValue = (blockCfg.folders ?? blockCfg.folder) as any;
+    let folders: string[] = [];
+    if (Array.isArray(folderValue)) {
+      folders = folderValue.map((v) => String(v).trim()).filter(Boolean);
+    } else if (typeof folderValue === "string" && folderValue.trim()) {
+      folders = [folderValue.trim()];
+    }
+
+    const normalizePrefix = (raw: string) => {
       const folder = raw.replace(/\\/g, "/");
       const prefix = folder.endsWith("/") ? folder : folder + "/";
-      const prefixLC = prefix.toLowerCase();
+      return prefix.toLowerCase();
+    };
+
+    if (folders.length > 0) {
+      const prefixes = folders.map(normalizePrefix);
+      return dv
+        .pages()
+        .where((p: any) => {
+          const path = String(p?.file?.path || "").toLowerCase();
+          if (!path) return false;
+          return prefixes.some((pre) => path.startsWith(pre)) && isEquipment(p);
+        });
+    }
+
+    // Fallback to plugin setting when no per-block folders provided
+    const raw = plugin.settings.equipmentFolder?.trim();
+    if (raw && raw.length > 0) {
+      const prefixLC = normalizePrefix(raw);
       return dv
         .pages()
         .where((p: any) => typeof p?.file?.path === 'string' && p.file.path.toLowerCase().startsWith(prefixLC) && isEquipment(p));
@@ -95,7 +155,7 @@ export async function renderEquipmentPicker(
   renderTables();
 
   function getVisibleColumns() {
-    // Columns cover both weapons and armor schemas
+    // Base superset of columns, used to derive per-section subsets
     return [
       "Name",
       "Category",
@@ -111,18 +171,62 @@ export async function renderEquipmentPicker(
     ] as const;
   }
 
-  function renderTables() {
-    ui.tables.empty();
-    const list = ui.currentFilter === "inventory" ? state.inventory : state.equipped;
-    const title = ui.currentFilter === "inventory" ? "Inventory" : "Equipped";
-    ui.tables.appendChild(buildSection(title, list));
+  type EqSectionKind = "weapon" | "armor" | "other";
+
+  function getVisibleColumnsFor(kind: EqSectionKind) {
+    if (kind === "weapon") {
+      // Weapons: show just name + the combat-relevant fields
+      return [
+        "Name",
+        "Type",
+        "Damage",
+        "Trait",
+        "Range",
+        "Burden",
+        "Feature",
+      ] as const;
+    }
+    if (kind === "armor") {
+      // Armor: show just name + tier, base score, thresholds, and feature
+      return [
+        "Name",
+        "Tier",
+        "Base",
+        "Thresholds",
+        "Feature",
+      ] as const;
+    }
+    // Other: keep full superset
+    return Array.from(getVisibleColumns());
   }
 
-  function buildSection(title: string, list: string[]) {
+  function renderTables() {
+    ui.tables.empty();
+    const listName: "inventory" | "equipped" = ui.currentFilter === "inventory" ? "inventory" : "equipped";
+    const list = listName === "inventory" ? state.inventory : state.equipped;
+    const baseTitle = listName === "inventory" ? "Inventory" : "Equipped";
+
+    const rows = list.map((path) => pathToRow(path));
+    const weapons = rows.filter((r) => r.category === "Weapon");
+    const armor = rows.filter((r) => r.category === "Armor");
+    const other = rows.filter((r) => r.category !== "Weapon" && r.category !== "Armor");
+
+    if (weapons.length) ui.tables.appendChild(buildSectionFromRows(listName, "weapon", `${baseTitle} – Weapons`, weapons));
+    if (armor.length) ui.tables.appendChild(buildSectionFromRows(listName, "armor", `${baseTitle} – Armor`, armor));
+    if (other.length) ui.tables.appendChild(buildSectionFromRows(listName, "other", `${baseTitle} – Other`, other));
+
+    // If there are no items at all, still show separate empty tables for Weapons and Armor
+    if (!weapons.length && !armor.length && !other.length) {
+      ui.tables.appendChild(buildSectionFromRows(listName, "weapon", `${baseTitle} – Weapons`, []));
+      ui.tables.appendChild(buildSectionFromRows(listName, "armor", `${baseTitle} – Armor`, []));
+    }
+  }
+
+  function buildSectionFromRows(listName: "inventory" | "equipped", kind: EqSectionKind, title: string, rows: any[]) {
     const section = createDiv({ cls: "dvjs-section" });
     section.createEl("h3", { text: title });
 
-    const visibleCols = getVisibleColumns();
+    const visibleCols = getVisibleColumnsFor(kind);
 
     const table = section.createEl("table", { cls: "dvjs-table" });
     const thead = table.createEl("thead");
@@ -131,7 +235,6 @@ export async function renderEquipmentPicker(
     trh.createEl("th", { text: "Actions" });
 
     const tbody = table.createEl("tbody");
-    const rows = list.map((path) => pathToRow(path));
 
     if (rows.length === 0) {
       const tr = tbody.createEl("tr");
@@ -171,19 +274,19 @@ export async function renderEquipmentPicker(
         });
 
         const tdActions = tr.createEl("td");
-        const otherListName = title === "Equipped" ? "inventory" : "equipped";
+        const otherListName: "inventory" | "equipped" = listName === "equipped" ? "inventory" : "equipped";
         const btnSwitch = tdActions.createEl("button", {
           text: `→ ${otherListName}`,
         });
         btnSwitch.addEventListener("click", async () => {
-          await removeFromList(title.toLowerCase(), r.path);
-          await addToList(otherListName as any, r.path);
+          await removeFromList(listName, r.path);
+          await addToList(otherListName, r.path);
         });
 
         const btnRemove = tdActions.createEl("button", { text: "Remove" });
         (btnRemove as HTMLElement).style.color = "var(--text-error)";
         btnRemove.addEventListener("click", async () => {
-          await removeFromList(title.toLowerCase(), r.path);
+          await removeFromList(listName, r.path);
         });
       });
     }
@@ -211,16 +314,27 @@ export async function renderEquipmentPicker(
     return { path: p?.file?.path || path, name, category, type, damage, thresholds, base, tier, trait, range, burden, feature };
   }
 
+  function closeModal() {
+    if (ui.modal) {
+      ui.modal.remove();
+      ui.modal = null;
+    }
+  }
+
   function openModal() {
-    if (ui.modal) ui.modal.remove();
+    closeModal();
     ui.modal = document.body.createDiv({ cls: "dvjs-modal-backdrop" });
+    ui.modal.addEventListener("click", (ev) => {
+      if (ev.target === ui.modal) {
+        closeModal();
+      }
+    });
     const modal = ui.modal.createDiv({ cls: "dvjs-modal" });
 
     const header = modal.createDiv({ cls: "dvjs-modal-header" });
     header.createEl("h3", { text: "Add Equipment" });
     const closeBtn = header.createEl("button", { text: "✕", cls: "dvjs-close" });
-    closeBtn.addEventListener("click", () => ui.modal?.remove());
-
+    closeBtn.addEventListener("click", () => closeModal());
     // Ensure card styles present (shared with Domain Picker look-and-feel)
     ensureCardStyles();
 
@@ -236,15 +350,17 @@ export async function renderEquipmentPicker(
     categories.forEach((c) => catSel.appendChild(new Option(c, c)));
     catSel.addEventListener("change", () => { selCat = catSel.value || null; renderCards(); });
 
-    // Slot filter
-    let selSlot: string | null = null;
-    const slotWrap = filters.createDiv({ cls: "filter" });
-    slotWrap.createEl("label", { text: "Slot" });
-    const slotSel = slotWrap.createEl("select", { cls: "dropdown" });
-    const slots = getSlotOptions();
-    slotSel.appendChild(new Option("Any", ""));
-    slots.forEach((s) => slotSel.appendChild(new Option(s, s)));
-    slotSel.addEventListener("change", () => { selSlot = slotSel.value || null; renderCards(); });
+    // Tier filter
+    let selTier: number | null = null;
+    const tierWrap = filters.createDiv({ cls: "filter" });
+    tierWrap.createEl("label", { text: "Tier" });
+    const tierSel = tierWrap.createEl("select", { cls: "dropdown" });
+    tierSel.appendChild(new Option("Any", ""));
+    for (let i = 1; i <= 4; i++) tierSel.appendChild(new Option(String(i), String(i)));
+    tierSel.addEventListener("change", () => {
+      selTier = tierSel.value ? Number(tierSel.value) : null;
+      renderCards();
+    });
 
     // Search filter
     let q = "";
@@ -261,29 +377,106 @@ export async function renderEquipmentPicker(
       const base = allEq;
 
       const curNow = dv.page(file.path);
-      const charTierNow = toNumber(getField(curNow, ["tier", "Tier"], charTier));
+      const charTierNow = enforceTier ? toNumber(getField(curNow, ["tier", "Tier"], charTier)) : 0;
 
       const candidates = base
         .filter((c: any) => {
-          const cat = detectCategory(c) || normalizeCategory(getField(c, ["category", "Category", "type", "Type"], ""));
-          const slot = String(getField(c, ["slot", "Slot"], ""));
+          const cat = detectCategory(c) || normalizeCategory(getField(c, ["category", "Category"], ""));
           const name = String(c.file?.name || "");
           const props = toList(getField(c, ["properties", "Properties", "tags", "Tags"], []));
           const cTierNum = toNumber(getField(c, ["tier", "Tier"], 0));
 
           const catOK = selCat ? cat === selCat : true;
-          const slotOK = selSlot ? slot === selSlot : true;
           const qOK = q
             ? name.toLowerCase().includes(q) || props.some((p: string) => p.toLowerCase().includes(q))
             : true;
           const tierOK = charTierNow > 0 ? cTierNum <= charTierNow : true;
-          return catOK && slotOK && qOK && tierOK;
+          const tierFilterOK = selTier != null ? cTierNum === selTier : true;
+          return catOK && qOK && tierOK && tierFilterOK;
         })
         .sort((a: any, b: any) => (a.file?.name || "").localeCompare(b.file?.name || ""));
 
       if (candidates.length === 0) {
         const empty = listRoot.createDiv({ cls: "dvjs-empty", text: "No matching equipment" });
         (empty as HTMLElement).style.opacity = "0.7";
+        return;
+      }
+
+      // Determine view: block-level override; default to 'card'
+      let view: "card" | "table" = "card";
+      if (blockCfg.view === "card" || blockCfg.view === "table") {
+        view = blockCfg.view;
+      }
+
+      if (view === "table") {
+        const visibleCols = getVisibleColumns();
+        const table = listRoot.createEl("table", { cls: "dvjs-table" });
+        const thead = table.createEl("thead");
+        const trh = thead.createEl("tr");
+        visibleCols.forEach((h) => {
+          const th = trh.createEl("th", { text: h });
+          if (h === "Feature") th.addClass("dvjs-col-feature");
+        });
+        const thActions = trh.createEl("th", { text: "Actions" });
+        thActions.addClass("dvjs-col-actions");
+        const tbody = table.createEl("tbody");
+
+        candidates.forEach((c: any) => {
+          const cPath = c.file?.path;
+        const cName = c.file?.name || basenameNoExt(cPath || "");
+        const cCat = detectCategory(c) || normalizeCategory(getField(c, ["category", "Category"], ""));
+          const cType = String(getField(c, ["type", "Type"], ""));
+          const cDmg = String(getField(c, ["damage", "Damage"], ""));
+          const cThr = String(getField(c, ["thresholds", "Thresholds"], ""));
+          const cBase = String(getField(c, ["base_score", "base", "Base", "Base_Score"], ""));
+          const cTier = String(getField(c, ["tier", "Tier"], ""));
+          const cTrait = String(getField(c, ["trait", "Trait"], ""));
+          const cRange = String(getField(c, ["range", "Range"], ""));
+          const cBurden = String(getField(c, ["burden", "Burden"], ""));
+          const cFeature = String(getField(c, ["feature", "Feature"], ""));
+
+          const tr = tbody.createEl("tr");
+          visibleCols.forEach((col) => {
+            const td = tr.createEl("td");
+            if (col === "Feature") td.addClass("dvjs-col-feature");
+
+            if (col === "Name") {
+              renderFileLink(td, cPath, cName);
+            } else if (col === "Category") {
+              td.innerText = cCat || "";
+            } else if (col === "Type") {
+              td.innerText = cType || "";
+            } else if (col === "Damage") {
+              td.innerText = cDmg || "";
+            } else if (col === "Thresholds") {
+              td.innerText = cThr || "";
+            } else if (col === "Base") {
+              td.innerText = cBase || "";
+            } else if (col === "Tier") {
+              td.innerText = cTier || "";
+            } else if (col === "Trait") {
+              td.innerText = cTrait || "";
+            } else if (col === "Range") {
+              td.innerText = cRange || "";
+            } else if (col === "Burden") {
+              td.innerText = cBurden || "";
+            } else if (col === "Feature") {
+              td.innerText = cFeature || "";
+            }
+          });
+
+          const tdActions = tr.createEl("td");
+          tdActions.addClass("dvjs-col-actions");
+          const inInv = added("inventory", cPath);
+          const inEqp = added("equipped", cPath);
+          const btnInv = tdActions.createEl("button", { text: "Add to Inventory" });
+          const btnEqp = tdActions.createEl("button", { text: "Add to Equipped" });
+          btnInv.disabled = inInv;
+          btnEqp.disabled = inEqp;
+          btnInv.addEventListener("click", async () => { await addToList("inventory", cPath); renderCards(); });
+          btnEqp.addEventListener("click", async () => { await addToList("equipped", cPath); renderCards(); });
+        });
+
         return;
       }
 
@@ -386,28 +579,27 @@ export async function renderEquipmentPicker(
   function getCategoryOptions(): string[] {
     const cats = new Set<string>();
     for (const c of allEq) {
-      const v = normalizeCategory(getField(c, ["category", "Category", "type", "Type"], ""));
+      const v = normalizeCategory(getField(c, ["category", "Category"], ""));
       if (v) cats.add(v);
+      // Also respect tags: notes tagged #weapon or #armor should show up as categories
+      const tagCat = detectCategory(c);
+      if (tagCat) cats.add(tagCat);
     }
     // Ensure common ones exist
     ["Weapon", "Armor"].forEach((x) => cats.add(x));
     return Array.from(cats).sort();
   }
 
-  function getSlotOptions(): string[] {
-    const slots = new Set<string>();
-    for (const c of allEq) {
-      const v = String(getField(c, ["slot", "Slot"], ""));
-      if (v) slots.add(v);
-    }
-    return Array.from(slots).sort();
-  }
+  // Slot information is still read from frontmatter when present, but we no longer
+  // expose a dedicated Slot filter in the Add Equipment modal to keep the UI simple.
 
   function normalizeCategory(v: any): string {
     const s = String(v || "").trim();
     if (!s) return "";
     if (/weapon/i.test(s)) return "Weapon";
     if (/armor/i.test(s)) return "Armor";
+    // Treat anything else as a free-form category (e.g., "Shield"), but do not
+    // collapse type/slot values like "primary" / "secondary" into categories.
     return s;
   }
 
@@ -488,6 +680,8 @@ export async function renderEquipmentPicker(
     a.addEventListener("click", (e) => {
       e.preventDefault();
       plugin.app.workspace.openLinkText(path, "", true);
+      // If the equipment picker modal is open, close it after navigation
+      try { closeModal(); } catch {}
     });
   }
 

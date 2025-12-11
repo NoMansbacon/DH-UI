@@ -2,14 +2,16 @@
 
 .dh-spell-card {
   position: relative;
-  border: 1px dashed var(--background-modifier-border);
-  border-left: 6px solid #8e75e3; /* default spell accent */
-  border-radius: 8px;
-  padding: 10px 12px 10px 16px;
-  background: transparent;
+  border: 1px solid var(--dh-card-border);
+  border-left: 4px solid var(--dh-spell); /* default spell accent */
+  border-radius: var(--dh-radius-card);
+  padding: var(--dh-card-padding-y) var(--dh-card-padding-x) var(--dh-card-padding-y) calc(var(--dh-card-padding-x) + 4px);
   max-width: min(760px, 100%);
+
+  background: var(--dh-card-bg);
+  box-shadow: none;
 }
-.dh-action-card { border-left-color: #26a69a; }
+.dh-action-card { border-left-color: var(--dh-action); }
 
 /* optional art */
 .dh-spell-art { margin-bottom: 8px; }
@@ -22,7 +24,7 @@
 .dh-spell-head .tags .pill {
   display:inline-flex; align-items:center; padding:2px 8px; border-radius:999px;
   border:1px solid var(--background-modifier-border);
-  background: linear-gradient(180deg, var(--background-secondary) 0%, color-mix(in oklab, var(--background-secondary), #000 10%) 100%);
+  background: var(--background-secondary);
   font-size:11px; color:var(--text-muted);
 }
 

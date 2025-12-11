@@ -27,7 +27,7 @@ Big-picture architecture
   - CSS theming: `applyGlobalArtCssVars()` writes CSS variables on `:root` (e.g. `--dh-art-w`, `--dh-art-maxh`, `--dh-art-fit`, `--dh-art-radius`, `--dh-art-align`) based on user settings.
   - Markdown processors:
     - React-rendered: registers code blocks `ability` and `traits`, rendered by `AbilityScoreView` (React) created with the current `App`.
-    - Domain blocks: registers additional processors via helpers from `src/lib/domains/*` (e.g., badges, consumables, trackers, short/long rest, unified rest, damage, dashboard, vitals). Each registration is wrapped in `try/catch` with console errors on failure.
+    - Domain blocks: registers additional processors via helpers from `src/lib/domains/*` (e.g., badges, consumables, trackers, short/long rest, unified rest, damage, vitals). Each registration is wrapped in `try/catch` with console errors on failure.
 - State and persistence: A lightweight key-value store is initialized via `initializeStateStore(this, path)` where `path` comes from settings.
   - Implementation (visible in the bundled `main.js`):
     - `JsonDataStore` uses Obsidian’s `vault.adapter` to read/write a JSON file at the configured path.

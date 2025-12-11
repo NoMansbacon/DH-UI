@@ -67,6 +67,67 @@ export class DaggerheartSettingTab extends PluginSettingTab {
       });
 
     new Setting(containerEl)
+      .setName("Max domain cards in loadout")
+      .setDesc(
+        "Maximum number of domain cards allowed in a character's loadout. Leave blank for no limit."
+      )
+      .addText((text) => {
+        text
+          .setPlaceholder("5")
+          .setValue(
+            this.plugin.settings.maxDomainLoadout != null && Number.isFinite(this.plugin.settings.maxDomainLoadout)
+              ? String(this.plugin.settings.maxDomainLoadout)
+              : ""
+          )
+          .onChange(async (value) => {
+            const trimmed = value.trim();
+            if (!trimmed) {
+              this.plugin.settings.maxDomainLoadout = null;
+            } else {
+              const n = Number(trimmed);
+              this.plugin.settings.maxDomainLoadout = Number.isFinite(n) && n > 0 ? Math.floor(n) : null;
+            }
+            await this.plugin.saveSettings();
+          });
+      });
+
+    new Setting(containerEl)
+      .setName("Restrict domain picker to character level & domains")
+      .setDesc("When enabled, Add Domain Cards defaults to cards at or below the character's level and matching their domains.")
+      .addToggle((toggle) => {
+        toggle
+          .setValue(this.plugin.settings.domainPickerUseCharacterFilters !== false)
+          .onChange(async (value) => {
+            this.plugin.settings.domainPickerUseCharacterFilters = value;
+            await this.plugin.saveSettings();
+          });
+      });
+
+    new Setting(containerEl)
+      .setName("Restrict equipment picker to character tier")
+      .setDesc("When enabled, Add Equipment hides items above the character's tier.")
+      .addToggle((toggle) => {
+        toggle
+          .setValue(this.plugin.settings.equipmentPickerEnforceTier !== false)
+          .onChange(async (value) => {
+            this.plugin.settings.equipmentPickerEnforceTier = value;
+            await this.plugin.saveSettings();
+          });
+      });
+
+    new Setting(containerEl)
+      .setName("Auto-open Domain Picker after Level Up")
+      .setDesc("When enabled, applying a Level Up automatically opens the Domain Picker so you can add domain cards.")
+      .addToggle((toggle) => {
+        toggle
+          .setValue(this.plugin.settings.autoOpenDomainPickerAfterLevelUp !== false)
+          .onChange(async (value) => {
+            this.plugin.settings.autoOpenDomainPickerAfterLevelUp = value;
+            await this.plugin.saveSettings();
+          });
+      });
+
+    new Setting(containerEl)
       .setName("Domain picker view")
       .setDesc("Choose between card grid or table view (no art) for the Add Domain Cards modal.")
       .addDropdown((dd) => {
@@ -78,52 +139,6 @@ export class DaggerheartSettingTab extends PluginSettingTab {
           await this.plugin.saveSettings();
         });
       });
-
-    containerEl.createEl("h3", { text: "Domain Picker Table Columns" });
-    const columns: (keyof typeof this.plugin.settings.domainPickerColumns)[] = [
-      "name",
-      "type",
-      "domain",
-      "level",
-      "stress",
-      "feature",
-      "tokens",
-    ];
-    columns.forEach((col) => {
-      new Setting(containerEl)
-        .setName(`Show ${col.charAt(0).toUpperCase() + col.slice(1)} column`)
-        .addToggle((toggle) => {
-          toggle
-            .setValue(this.plugin.settings.domainPickerColumns[col])
-            .onChange(async (value) => {
-              this.plugin.settings.domainPickerColumns[col] = value;
-              await this.plugin.saveSettings();
-            });
-        });
-    });
-
-
-
-    // Template preview
-    containerEl.createEl("h3", { text: "Template Preview" });
-    const previewWrap = containerEl.createDiv({ cls: 'dh-template-preview' });
-    const input = new (Setting as any)(previewWrap).settingEl.createEl('textarea', { cls: 'dh-template-input', attr: { rows: '3', placeholder: "Enter a template, e.g. {{ frontmatter.level }}" } }) as HTMLTextAreaElement;
-    const out = previewWrap.createDiv({ cls: 'dh-template-output' });
-    const render = () => {
-      try {
-        const app = this.app;
-        const file = app.workspace.getActiveFile();
-        const fm = file ? (app.metadataCache.getFileCache(file)?.frontmatter ?? {}) : {};
-        // create a minimal mdctx so createTemplateContext can build a context
-        const mdctx: any = { sourcePath: file?.path || '', getSectionInfo: (_: any)=> undefined };
-        const ctx = (require('../utils/template') as any).createTemplateContext(document.body, app, mdctx, fm);
-        const text = String(input.value || '');
-        const outStr = (require('../utils/template') as any).processTemplate(text, ctx);
-        out.setText(outStr);
-      } catch (e) { out.setText(''); }
-    };
-    input.addEventListener('input', render);
-    render();
 
     // Grid/layout customization removed by request; CSS drives layout via container queries
   }

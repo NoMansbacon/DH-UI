@@ -19,8 +19,6 @@ import { AbilityScoreView } from "./components/abilityscoreview";
 import { registerBadgesBlock } from "./blocks/badges";
 import { registerConsumablesBlock } from "./blocks/consumables-block";
 import { registerTrackersBlocks } from "./blocks/trackers-block";
-import { registerShortRest } from "./blocks/short-rest";
-import { registerLongRest } from "./blocks/long-rest";
 import { registerDamage } from "./blocks/damage-vault";
 import { registerRest } from "./blocks/rest";
 import { registerVitals } from "./blocks/vitals";
@@ -28,8 +26,8 @@ import { registerLevelUp } from "./blocks/level-up";
 import { registerSpellBlocks } from "./blocks/spell";
 import { registerDomainPickerBlock } from "./blocks/domain-picker";
 import { registerFeaturesBlock } from "./blocks/features";
-import { registerDashboard } from "./blocks/dashboard";
 import { registerEquipmentPickerBlock } from "./blocks/equipment-picker";
+import { registerExperiencesBlock } from "./blocks/experiences";
 
 export default class DaggerheartPlugin extends Plugin {
   settings: DaggerheartSettings;
@@ -74,8 +72,7 @@ export default class DaggerheartPlugin extends Plugin {
     try { registerBadgesBlock(this); }       catch (e) { console.error('[DH-UI] badges load error', e); }
     try { registerConsumablesBlock(this); }  catch (e) { console.error('[DH-UI] consumables load error', e); }
     try { registerTrackersBlocks(this); }    catch (e) { console.error('[DH-UI] trackers load error', e); }
-    try { registerShortRest(this); }         catch (e) { console.error('[DH-UI] short-rest load error', e); }
-    try { registerLongRest(this); }          catch (e) { console.error('[DH-UI] long-rest load error', e); }
+    // Standalone ```short-rest/```long-rest blocks removed; use ```rest instead.
     try { registerDamage(this); }            catch (e) { console.error('[DH-UI] damage load error', e); }
 
     // NEW: unified rest block
@@ -86,7 +83,7 @@ export default class DaggerheartPlugin extends Plugin {
     try { registerDomainPickerBlock(this); } catch (e) { console.error('[DH-UI] domain-picker load error', e); }
     try { registerEquipmentPickerBlock(this); } catch (e) { console.error('[DH-UI] equipment-picker load error', e); }
     try { registerFeaturesBlock(this); } catch (e) { console.error('[DH-UI] features load error', e); }
-    try { registerDashboard(this); } catch (e) { console.error('[DH-UI] dashboard load error', e); }
+    try { registerExperiencesBlock(this); } catch (e) { console.error('[DH-UI] experiences load error', e); }
 
     // Grid/layout customization via settings removed; layout controlled by CSS only
 

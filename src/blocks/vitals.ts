@@ -14,7 +14,8 @@
  */
 import type DaggerheartPlugin from "../main";
 import React from "react";
-import { createRoot, Root } from "react-dom/client";
+import { Root } from "react-dom/client";
+import { getOrCreateRoot } from "../utils/reactRoot";
 import { MarkdownPostProcessorContext } from "obsidian";
 import { parseYamlSafe } from "../utils/yaml";
 import { processTemplate, createTemplateContext } from "../utils/template";
@@ -93,10 +94,13 @@ export function registerVitals(plugin: DaggerheartPlugin) {
       el.addClass('dh-vitals-block');
       if (klass) el.addClass(klass);
 
+      // HP uses a stable default key so long-rest "Cure all wounds" continues
+      // to work out of the box with older notes. For per-note HP, set hp_key
+      // explicitly. Other trackers default to note-scoped keys.
       const hpKey     = String(y.hp_key     ?? 'din_health');
-      const stressKey = String(y.stress_key ?? (`din_stress::${ctx.sourcePath}`));
-      const armorKey  = String(y.armor_key  ?? (`din_armor::${ctx.sourcePath}`));
-      const hopeKey   = String(y.hope_key   ?? (`din_hope::${ctx.sourcePath}`));
+      const stressKey = String(y.stress_key ?? `din_stress::${ctx.sourcePath}`);
+      const armorKey  = String(y.armor_key  ?? `din_armor::${ctx.sourcePath}`);
+      const hopeKey   = String(y.hope_key   ?? `din_hope::${ctx.sourcePath}`);
 
       let hpCount     = resolveCount(y.hp,     el, app, ctx);
       let stressCount = resolveCount(y.stress, el, app, ctx);
@@ -140,8 +144,7 @@ export function registerVitals(plugin: DaggerheartPlugin) {
         else if (rawHF != null) normOne(rawHF);
       } catch {}
 
-      let root = roots.get(el) || null;
-      if (!root) { root = createRoot(el); roots.set(el, root); }
+      const root = getOrCreateRoot(roots, el);
 
       const onFilled = (key: string) => async (v: number) => {
         await writeState(key, v);

@@ -34,7 +34,46 @@
 .dh-levelup-row{ 
     display:flex; 
     align-items:flex-start; 
-    gap:1px;
+    gap:4px;
+}
+/* Special styling for two-point (tier 3/4 proficiency & multiclass) options */
+.dh-levelup-row-two-point .label {
+    font-weight: 600;
+}
+/* Usage boxes for two-point options are hidden; we only show the gold board with the two toggles. */
+.dh-lu-uses-two-point {
+    display: none;
+}
+
+/* Gold framed board around the interactive two checkboxes for two-point options */
+.dh-levelup-two-point-toggle-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    /* tuned so the gold frame looks visually even around the two boxes */
+    padding: 3px 3px 6px 3px; /* top right bottom left */
+    border-radius: 8px;
+    border: 2px solid 
+}
+.dh-levelup-two-point-toggle-wrap input[type=checkbox] {
+    /* remove browser/theme margins so the gold frame is evenly spaced */
+    margin: 0;
+    width: 14px;
+    height: 14px;
+    transform: translateY(0);
+}
+.dh-levelup-row.disabled .dh-lu-uses-two-point {
+    opacity: 0.6;
+}
+.dh-levelup-row input[type=checkbox]{ 
+    transform:translateY(2px); 
+}
+.dh-lu-uses .box.two-point {
+    width: 8px;
+    height: 10px;
+    border-radius: 2px;
+    /* neutral look so the only gold element is the board around the toggles */
+    border: 1px solid var(--background-modifier-border);
 }
 .dh-levelup-row.disabled{ 
     text-decoration: line-through; 
@@ -96,7 +135,7 @@
   border-radius: 12px;
   border: 1px solid var(--background-modifier-border);
   background: linear-gradient(180deg, var(--background-secondary) 0%, color-mix(in oklab, var(--background-secondary), #000 12%) 100%);
-  box-shadow: var(--shadow-l, 0 12px 28px rgba(0,0,0,.3));
+  box-shadow: none;
 }
 
 .dh-levelup-headerbar {
@@ -125,7 +164,7 @@
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: var(--shadow-s);
+  box-shadow: none;
 }
 .dh-levelup-close:hover { color: var(--text-normal); border-color: color-mix(in oklab, var(--background-modifier-border), #fff 18%); }
 

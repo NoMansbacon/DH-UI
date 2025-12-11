@@ -9,6 +9,8 @@ type RestTrackers = {
   hope: { getMax(): number; repaint(): void } | null;
 };
 
+export type RestType = 'short' | 'long';
+
 function asNum(v: unknown, def = 0): number { if (v === null || v === undefined) return def; const n = Number(String(v).trim()); return Number.isFinite(n) ? n : def; }
 function clamp(n: number, min: number, max: number) { return Math.max(min, Math.min(max, n)); }
 function readFM(app: App, f: TFile) { return app.metadataCache.getFileCache(f)?.frontmatter ?? {}; }
@@ -91,6 +93,250 @@ export class ShortRestModal extends Modal {
   }
 }
 
+// Combined Rest modal: exposes both short- and long-rest moves in one UI, with a soft
+// rest type selector (short/long) used only for labeling and summary text.
+export class CombinedRestModal extends Modal {
+  private initialType: RestType;
+
+  constructor(
+    app: App,
+    private file: TFile,
+    private keys: RestKeys,
+    private trackers: RestTrackers,
+    initialType: RestType
+  ) {
+    super(app);
+    this.initialType = initialType;
+  }
+
+  onOpen(): void {
+    this.modalEl.addClass('dh-rest-modal-root');
+    const fm = readFM(this.app, this.file);
+    const tier = asNum(fm.tier ?? fm.level ?? 1, 1);
+
+    const { contentEl } = this;
+    contentEl.empty();
+    contentEl.addClass('dh-rest-chooser');
+
+    // Rest type selector (short/long) used only for labeling and summary text.
+    let restType: RestType = this.initialType;
+
+    const head = contentEl.createDiv({ cls: 'dh-rest-headerbar' });
+    const titleWrap = head.createDiv({ cls: 'dh-rest-titlewrap' });
+    titleWrap.createDiv({ cls: 'dh-rest-title', text: 'Rest' });
+    titleWrap.createDiv({
+      cls: 'dh-rest-sub',
+      text: 'Use short- and long-rest moves as appropriate. This UI does not enforce limits.',
+    });
+
+    const typeWrap = head.createDiv({ cls: 'dh-rest-party' });
+    typeWrap.createSpan({ text: 'Rest type:' });
+    const btnShort = typeWrap.createEl('button', { cls: 'dh-rest-pill', text: 'Short' });
+    const btnLong = typeWrap.createEl('button', { cls: 'dh-rest-pill', text: 'Long' });
+
+    const picksEl = head.createDiv({ cls: 'dh-rest-picks' });
+
+    const closeBtn = head.createEl('button', { cls: 'dh-rest-close', text: 'X' });
+    closeBtn.onclick = () => this.close();
+
+    const grid = contentEl.createDiv({ cls: 'dh-rest-grid' });
+    const shortCol = grid.createDiv({ cls: 'dh-rest-col dh-rest-col-short' });
+    shortCol.createDiv({ cls: 'dh-rest-col-title', text: 'Short Rest moves' });
+    const longCol = grid.createDiv({ cls: 'dh-rest-col dh-rest-col-long' });
+    longCol.createDiv({ cls: 'dh-rest-col-title', text: 'Long Rest moves' });
+
+    type ShortChoiceKey = 'heal' | 'stress' | 'armor' | 'prepare' | 'prepare_party';
+    type LongChoiceKey = 'heal_all' | 'stress_all' | 'armor_all' | 'prepare_long' | 'prepare_party_long' | 'project';
+
+    const SHORT_CHOICES: { key: ShortChoiceKey; label: string }[] = [
+      { key: 'heal', label: 'Tend to Wounds (1d4 + tier HP)' },
+      { key: 'stress', label: 'Clear Stress (1d4 + tier)' },
+      { key: 'armor', label: 'Repair Armor (1d4 + tier)' },
+      { key: 'prepare', label: 'Prepare (+1 Hope)' },
+      { key: 'prepare_party', label: 'Prepare with Party (+2 Hope)' },
+    ];
+
+    const LONG_CHOICES: { key: LongChoiceKey; label: string }[] = [
+      { key: 'heal_all', label: 'Tend to All Wounds (Clear ALL HP)' },
+      { key: 'stress_all', label: 'Clear All Stress' },
+      { key: 'armor_all', label: 'Repair All Armor' },
+      { key: 'prepare_long', label: 'Prepare (+1 Hope)' },
+      { key: 'prepare_party_long', label: 'Prepare with Party (+2 Hope)' },
+      { key: 'project', label: 'Work on a Project' },
+    ];
+
+    type AnyKey = ShortChoiceKey | LongChoiceKey;
+    const counts: Record<AnyKey, number> = Object.fromEntries(
+      [...SHORT_CHOICES, ...LONG_CHOICES].map((c) => [c.key, 0])
+    ) as any;
+
+    const selectedShort = () => SHORT_CHOICES.reduce((acc, c) => acc + (counts[c.key] || 0), 0);
+    const selectedLong = () => LONG_CHOICES.reduce((acc, c) => acc + (counts[c.key] || 0), 0);
+
+    const updateCountsInfo = () => {
+      picksEl.setText(`Short moves: ${selectedShort()}  •  Long moves: ${selectedLong()}`);
+    };
+
+    const labelWithCount = (label: string, count: number) =>
+      count === 0 ? label : `${label} ×${count}`;
+
+    const makeButtonGroup = <K extends AnyKey>(
+      col: HTMLElement,
+      defs: { key: K; label: string }[],
+      group: 'short' | 'long'
+    ) => {
+      const wrap = col.createDiv({ cls: 'dh-rest-actions' });
+      const btns: Record<string, HTMLButtonElement> = {};
+      for (const c of defs) {
+        const b = wrap.createEl('button', { text: c.label, cls: 'dh-rest-btn' });
+        btns[c.key] = b;
+        const update = () => {
+          const ct = counts[c.key] || 0;
+          b.textContent = labelWithCount(c.label, ct);
+          b.classList.toggle('on', ct > 0);
+        };
+        update();
+
+        b.onclick = () => {
+          // Mutual exclusion within each group between prepare and prepare_party variants.
+          if (group === 'short') {
+            if (c.key === 'prepare' && counts['prepare_party'] > 0) {
+              counts['prepare_party'] = 0;
+              btns['prepare_party'].textContent = defs.find((x) => x.key === 'prepare_party')!.label;
+              btns['prepare_party'].classList.remove('on');
+            }
+            if (c.key === 'prepare_party' && counts['prepare'] > 0) {
+              counts['prepare'] = 0;
+              btns['prepare'].textContent = defs.find((x) => x.key === 'prepare')!.label;
+              btns['prepare'].classList.remove('on');
+            }
+          } else {
+            if (c.key === 'prepare_long' && counts['prepare_party_long'] > 0) {
+              counts['prepare_party_long'] = 0;
+              btns['prepare_party_long'].textContent = defs.find((x) => x.key === 'prepare_party_long')!.label;
+              btns['prepare_party_long'].classList.remove('on');
+            }
+            if (c.key === 'prepare_party_long' && counts['prepare_long'] > 0) {
+              counts['prepare_long'] = 0;
+              btns['prepare_long'].textContent = defs.find((x) => x.key === 'prepare_long')!.label;
+              btns['prepare_long'].classList.remove('on');
+            }
+          }
+
+          const cur = counts[c.key] || 0;
+          const next = (cur + 1) % 3; // 0 → 1 → 2 → 0
+          counts[c.key] = next;
+          update();
+          updateCountsInfo();
+        };
+      }
+    };
+
+    makeButtonGroup(shortCol, SHORT_CHOICES, 'short');
+    makeButtonGroup(longCol, LONG_CHOICES, 'long');
+    updateCountsInfo();
+
+    const applyRow = contentEl.createDiv({ cls: 'dh-rest-apply' });
+    const applyBtn = applyRow.createEl('button', { text: 'Apply Short Rest', cls: 'dh-event-btn' });
+
+    const syncRestType = () => {
+      btnShort.classList.toggle('on', restType === 'short');
+      btnLong.classList.toggle('on', restType === 'long');
+      applyBtn.setText(restType === 'short' ? 'Apply Short Rest' : 'Apply Long Rest');
+    };
+    btnShort.onclick = () => { restType = 'short'; syncRestType(); };
+    btnLong.onclick = () => { restType = 'long'; syncRestType(); };
+    syncRestType();
+
+    applyBtn.onclick = async () => {
+      const roll1d4 = () => 1 + Math.floor(Math.random() * 4);
+
+      let hpFilled = await readFilled(this.keys.hp);
+      let stressFilled = await readFilled(this.keys.stress);
+      let armorFilled = await readFilled(this.keys.armor);
+      let hopeFilled = await readFilled(this.keys.hope);
+
+      const hpMax = this.trackers.hp?.getMax() ?? 0;
+      const stressMax = this.trackers.stress?.getMax() ?? 0;
+      const armorMax = this.trackers.armor?.getMax() ?? 0;
+      const hopeMax = this.trackers.hope?.getMax() ?? 0;
+
+      const lines: string[] = [];
+
+      // Short rest-style moves (1d4 + tier rolls)
+      for (let i = 0; i < (counts['heal'] || 0); i++) {
+        const r = roll1d4() + tier;
+        const before = hpFilled;
+        hpFilled = clamp(hpFilled - r, 0, hpMax || 999);
+        lines.push(`Tend to Wounds: 1d4 + Tier = ${r}; HP ${before} -> ${hpFilled}`);
+      }
+      for (let i = 0; i < (counts['stress'] || 0); i++) {
+        const r = roll1d4() + tier;
+        const before = stressFilled;
+        stressFilled = clamp(stressFilled - r, 0, stressMax || 999);
+        lines.push(`Clear Stress: 1d4 + Tier = ${r}; Stress ${before} -> ${stressFilled}`);
+      }
+      for (let i = 0; i < (counts['armor'] || 0); i++) {
+        const r = roll1d4() + tier;
+        const before = armorFilled;
+        armorFilled = clamp(armorFilled - r, 0, armorMax || 999);
+        lines.push(`Repair Armor: 1d4 + Tier = ${r}; Armor ${before} -> ${armorFilled}`);
+      }
+      for (let i = 0; i < (counts['prepare'] || 0); i++) {
+        const before = hopeFilled;
+        hopeFilled = clamp(hopeFilled + 1, 0, hopeMax || 999);
+        lines.push(`Prepare (short): Hope ${before} -> ${hopeFilled}`);
+      }
+      for (let i = 0; i < (counts['prepare_party'] || 0); i++) {
+        const before = hopeFilled;
+        hopeFilled = clamp(hopeFilled + 2, 0, hopeMax || 999);
+        lines.push(`Prepare with Party (short): Hope ${before} -> ${hopeFilled}`);
+      }
+
+      // Long rest-style moves (full clears + hope + project)
+      for (let i = 0; i < (counts['heal_all'] || 0); i++) {
+        hpFilled = 0;
+        lines.push('Tend to All Wounds: HP fully restored.');
+      }
+      for (let i = 0; i < (counts['stress_all'] || 0); i++) {
+        stressFilled = 0;
+        lines.push('Clear All Stress: Stress fully cleared.');
+      }
+      for (let i = 0; i < (counts['armor_all'] || 0); i++) {
+        armorFilled = 0;
+        lines.push('Repair All Armor: Armor fully repaired.');
+      }
+      for (let i = 0; i < (counts['prepare_long'] || 0); i++) {
+        const before = hopeFilled;
+        hopeFilled = clamp(hopeFilled + 1, 0, hopeMax || 999);
+        lines.push(`Prepare (long): Hope ${before} -> ${hopeFilled}`);
+      }
+      for (let i = 0; i < (counts['prepare_party_long'] || 0); i++) {
+        const before = hopeFilled;
+        hopeFilled = clamp(hopeFilled + 2, 0, hopeMax || 999);
+        lines.push(`Prepare with Party (long): Hope ${before} -> ${hopeFilled}`);
+      }
+      for (let i = 0; i < (counts['project'] || 0); i++) {
+        lines.push('Work on a Project: progress recorded.');
+      }
+
+      await writeFilled(this.keys.hp, hpFilled);
+      await writeFilled(this.keys.stress, stressFilled);
+      await writeFilled(this.keys.armor, armorFilled);
+      await writeFilled(this.keys.hope, hopeFilled);
+
+      this.trackers.hp?.repaint();
+      this.trackers.stress?.repaint();
+      this.trackers.armor?.repaint();
+      this.trackers.hope?.repaint();
+
+      const summaryPrefix = restType === 'short' ? 'Short Rest: ' : 'Long Rest: ';
+      new Notice(summaryPrefix + lines.join(' | '), 8000);
+      this.close();
+    };
+  }
+}
+
 export class LongRestModal extends Modal {
   constructor(
     app: App,
@@ -103,6 +349,13 @@ export class LongRestModal extends Modal {
     // Tag the root modal element so we can safely scope CSS overrides
     this.modalEl.addClass('dh-rest-modal-root');
     const { contentEl } = this; contentEl.empty(); contentEl.addClass('dh-rest-chooser');
+
+    // Close when clicking anywhere on the overlay outside the card,
+    // matching the behavior of the custom short-rest backdrop.
+    this.modalEl.onclick = (ev: MouseEvent) => {
+      // If the click target is NOT inside the content/card, treat it as overlay
+      if (!contentEl.contains(ev.target as Node)) this.close();
+    };
     const head = contentEl.createDiv({ cls: 'dh-rest-headerbar' });
     const titleWrap = head.createDiv({ cls: 'dh-rest-titlewrap' });
     titleWrap.createDiv({ cls: 'dh-rest-title', text: 'Long Rest' });

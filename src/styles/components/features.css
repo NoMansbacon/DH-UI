@@ -4,19 +4,25 @@
 .dh-features-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--dh-card-gap);
   max-width: min(760px, 100%);
 }
 
-/* Grid variant to mirror dashboard card-features */
+/* Grid variant: two columns on wide screens.
+   Column 1 (left): Ancestry, Community, Class (stacked)
+   Column 2 (right): Subclass (typically tallest at high levels)
+*/
 .dh-features-list.dh-features--grid,
 .dh-features-list.grid {
   display: grid;
-  gap: 10px;
+  gap: var(--dh-card-gap);
   width: 100%;
   max-width: none; /* allow full width like dashboard */
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-areas: "anc cla" "com sub";
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr);
+  grid-template-areas:
+    "anc sub"
+    "com sub"
+    "cla sub";
   align-items: start;
 }
 .dh-features-list.dh-features--grid .dh-features-ancestry,
@@ -34,8 +40,8 @@
     grid-template-columns: 1fr;
     grid-template-areas:
       "anc"
-      "cla"
       "com"
+      "cla"
       "sub";
   }
 }
@@ -55,35 +61,125 @@
   letter-spacing: 0.5px;
 }
 
-/* Feature card */
-.dh-feature-item {
-  border: 1px solid var(--background-modifier-border);
-  border-left: 4px solid var(--background-modifier-border);
-  border-radius: 6px;
-  padding: 8px 12px;
-  background: transparent;
+/* Subclass group heading (e.g., Stalwart) */
+.dh-features-subclass-heading {
+  margin-top: 6px;
+  margin-bottom: 2px;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-accent);
 }
 
-/* Label + value */
+/* Lineage groups for ancestry/class (e.g., Drakona, Guardian) */
+.dh-features-lineage-heading {
+  margin-top: 6px;
+  margin-bottom: 2px;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-accent);
+}
+.dh-features-lineage-group {
+  margin-top: 0;
+  margin-bottom: 4px;
+  border-radius: var(--dh-radius-card);
+  padding: var(--dh-card-padding-y) var(--dh-card-padding-x);
+  border: 1px solid color-mix(in oklab, var(--background-modifier-border), #fff 18%);
+  background: var(--dh-card-bg);
+  box-shadow: none;
+}
+
+/* Tier container inside subclass (Foundation / Specialization / Mastery) */
+.dh-features-subtier-group {
+  margin-top: 2px;
+  margin-bottom: 4px;
+  border-radius: var(--dh-radius-card);
+  padding: var(--dh-card-padding-y) var(--dh-card-padding-x);
+  border: 1px solid color-mix(in oklab, var(--background-modifier-border), #fff 18%);
+  background: var(--dh-card-bg);
+  box-shadow: none;
+}
+
+/* Sub-tier headings inside subclass (inside the tier container) */
+.dh-features-subtier-heading {
+  margin-top: 0;
+  margin-bottom: 4px;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-muted);
+}
+
+/* Label + meta + value */
+.dh-feature-item {
+  border-radius: var(--dh-radius-card);
+  padding: var(--dh-card-padding-y) var(--dh-card-padding-x);
+
+  /* Match shared flat card style */
+  border: 1px solid color-mix(in oklab, var(--background-modifier-border), #fff 18%);
+  background: var(--dh-card-bg);
+  box-shadow: none;
+}
+
+/* For grouped sections (ancestry/class/subclass), remove the inner card
+   frame so only the lineage/tier container has a card shell. */
+.dh-features-ancestry .dh-feature-item,
+.dh-features-class .dh-feature-item,
+.dh-features-subclass .dh-feature-item {
+  border: none;
+  background: transparent;
+  padding: 2px 0 4px 0;
+}
+
+/* Label + meta + value */
 .dh-feature-label {
   font-weight: 700;
   font-size: 13px;
   color: var(--text-accent);
+  margin-bottom: 2px;
+}
+.dh-feature-meta {
+  font-size: 11px;
+  color: var(--text-faint);
   margin-bottom: 4px;
 }
 .dh-feature-value {
   font-size: 12px;
   color: var(--text-normal);
-  white-space: pre-wrap;
 }
 
-/* Per-section accent colors */
-.dh-features-ancestry .dh-features-heading { color: #4caf50; }
-.dh-features-class    .dh-features-heading { color: #2196f3; }
-.dh-features-subclass .dh-features-heading { color: #ff9800; }
-.dh-features-community .dh-features-heading { color: #9c27b0; }
+/* Tighten spacing between paragraphs and lists rendered inside feature values */
+.dh-feature-value p {
+  margin-block-start: 0.25em;
+  margin-block-end: 0.35em;
+}
+.dh-feature-value p:first-child {
+  margin-top: 0;
+}
+.dh-feature-value p:last-child {
+  margin-bottom: 0.1em;
+}
+.dh-feature-value ul,
+.dh-feature-value ol {
+  margin-top: 0.15em;
+  margin-bottom: 0.1em;
+  padding-left: 1.2em;
+}
+.dh-feature-value li {
+  margin-block: 0.1em;
+}
 
-.dh-features-ancestry .dh-feature-item { border-left-color: #4caf50; }
-.dh-features-class    .dh-feature-item { border-left-color: #2196f3; }
-.dh-features-subclass .dh-feature-item { border-left-color: #ff9800; }
-.dh-features-community .dh-feature-item { border-left-color: #9c27b0; }
+/* Per-section accent colors (hooked into common palette)
+   Use color on headings + labels, keep borders neutral. */
+.dh-features-ancestry .dh-features-heading,
+.dh-features-ancestry .dh-feature-label  { color: var(--dh-feature-ancestry); }
+.dh-features-class    .dh-features-heading,
+.dh-features-class    .dh-feature-label  { color: var(--dh-feature-class); }
+.dh-features-subclass .dh-features-heading,
+.dh-features-subclass .dh-feature-label  { color: var(--dh-feature-subclass); }
+.dh-features-community .dh-features-heading,
+.dh-features-community .dh-feature-label { color: var(--dh-feature-community); }

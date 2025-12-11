@@ -7,21 +7,16 @@
   gap: 10px;
   margin: 6px 0;
   position: relative;
-  border: 1px dashed var(--background-modifier-border);
-  border-left: 6px solid gray; /* you can customize this independently */
-  border-radius: 8px;
-  padding: 10px 12px 10px 16px;
+  border: 1px solid var(--dh-card-border);
+  border-radius: var(--dh-radius-card);
+  padding: var(--dh-card-padding-y) var(--dh-card-padding-x);
   max-width: 100%;
+
+  background: var(--dh-card-bg);
+  box-shadow: none;
 }
 .dh-active-hand::before{
-  content: "";
-  position: absolute;
-  left: 6px; top: -9px;
-  padding: 0 6px;
-  font-size: 10px;
-  line-height: 1.2;
-  background: var(--background-primary);
-  color: var(--text-faint);
+  content: none;
 }
 
 /* Filters */
@@ -59,7 +54,7 @@
   font-size: 12px;
   color: var(--text-muted);
   border-bottom: 1px solid var(--background-modifier-border);
-  background: linear-gradient(180deg, var(--background-secondary) 0%, color-mix(in oklab, var(--background-secondary), #000 8%) 100%);
+  background: var(--dh-card-bg);
 }
 .dh-active-table tbody td {
   padding: 8px;
@@ -82,32 +77,17 @@
 .dh-active-box {
   width: 18px;
   height: 18px;
-  border-radius: 6px;
+  border-radius: 4px;
   border: 1px solid var(--background-modifier-border);
-  background: linear-gradient(
-    180deg,
-    var(--background-secondary) 0%,
-    color-mix(in oklab, var(--background-secondary), #000 12%) 100%
-  );
-  box-shadow: var(--shadow-s);
+  background: var(--background-secondary);
+  box-shadow: none;
   cursor: pointer;
-  transition:
-    transform 80ms ease,
-    box-shadow 120ms ease,
-    border-color 120ms ease,
-    background 160ms ease;
 }
 /* Filled state */
 .dh-active-box.on {
-  background: linear-gradient(180deg, #e2b64c, #b88418);
-  border-color: #ffcf5a;
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,.25) inset,
-    0 0 8px rgba(255, 199, 66, .45);
+  background: var(--dh-accent);
+  border-color: color-mix(in oklab, var(--dh-accent), #000 25%);
 }
-
-/* Tiny pressed feel on click */
-.dh-active-box:active { transform: translateY(0); }
 
 /* Deprecated grid layout (kept for compatibility) */
 .dh-active-list { display: none; }
