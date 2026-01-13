@@ -9,6 +9,7 @@ export type ControlsRowProps = {
   showResetAll?: boolean;
 
   // Labels
+  restLabel?: string;
   shortLabel?: string;
   longLabel?: string;
   levelupLabel?: string;
@@ -16,6 +17,7 @@ export type ControlsRowProps = {
   resetAllLabel?: string;
 
   // Handlers
+  onRest?: () => void;
   onShort?: () => void;
   onLong?: () => void;
   onLevelUp?: () => void;
@@ -31,12 +33,14 @@ export function ControlsRowView(props: ControlsRowProps) {
     showFullHeal = false,
     showResetAll = false,
 
+    restLabel = "Rest",
     shortLabel = "Short Rest",
     longLabel = "Long Rest",
     levelupLabel = "Level Up",
     fullHealLabel = "Full Heal",
     resetAllLabel = "Reset All",
 
+    onRest,
     onShort,
     onLong,
     onLevelUp,
@@ -44,21 +48,41 @@ export function ControlsRowView(props: ControlsRowProps) {
     onResetAll,
   } = props;
 
+  const showCombinedRest = showShort && showLong;
+
   const onKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (e) => {
     const k = e.key.toLowerCase();
+
+    if (showCombinedRest) {
+      // Keyboard shortcuts still work to bias the initially-highlighted column.
+      if (k === 's' && onShort) { e.preventDefault(); onShort(); }
+      else if (k === 'l' && onLong) { e.preventDefault(); onLong(); }
+      else if (k === 'enter' && (onRest || onShort)) { e.preventDefault(); (onRest || onShort)?.(); }
+      return;
+    }
+
     if (k === 's' && showShort && onShort) { e.preventDefault(); onShort(); }
     else if (k === 'l' && showLong && onLong) { e.preventDefault(); onLong(); }
     else if (k === 'enter' && showShort && onShort) { e.preventDefault(); onShort(); }
   };
 
+  const restTitle = showCombinedRest ? `${restLabel} (S / L / Enter)` : undefined;
+
   return (
     <div className="dh-control-row" tabIndex={0} onKeyDown={onKeyDown}>
-      {showShort && (
-        <button className="dh-rest-trigger" onClick={onShort} title={`${shortLabel} (S or Enter)`}>{shortLabel}</button>
+      {showCombinedRest ? (
+        <button className="dh-rest-trigger" onClick={onRest || onShort} title={restTitle}>{restLabel}</button>
+      ) : (
+        <>
+          {showShort && (
+            <button className="dh-rest-trigger" onClick={onShort} title={`${shortLabel} (S or Enter)`}>{shortLabel}</button>
+          )}
+          {showLong && (
+            <button className="dh-rest-trigger" onClick={onLong} title={`${longLabel} (L)`}>{longLabel}</button>
+          )}
+        </>
       )}
-      {showLong && (
-        <button className="dh-rest-trigger" onClick={onLong} title={`${longLabel} (L)`}>{longLabel}</button>
-      )}
+
       {showLevelUp && (
         <button className="dh-rest-trigger" onClick={onLevelUp}>{levelupLabel}</button>
       )}

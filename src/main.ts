@@ -23,7 +23,6 @@ import { registerDamage } from "./blocks/damage-vault";
 import { registerRest } from "./blocks/rest";
 import { registerVitals } from "./blocks/vitals";
 import { registerLevelUp } from "./blocks/level-up";
-import { registerSpellBlocks } from "./blocks/spell";
 import { registerDomainPickerBlock } from "./blocks/domain-picker";
 import { registerFeaturesBlock } from "./blocks/features";
 import { registerEquipmentPickerBlock } from "./blocks/equipment-picker";
@@ -72,14 +71,13 @@ export default class DaggerheartPlugin extends Plugin {
     try { registerBadgesBlock(this); }       catch (e) { console.error('[DH-UI] badges load error', e); }
     try { registerConsumablesBlock(this); }  catch (e) { console.error('[DH-UI] consumables load error', e); }
     try { registerTrackersBlocks(this); }    catch (e) { console.error('[DH-UI] trackers load error', e); }
-    // Standalone ```short-rest/```long-rest blocks removed; use ```rest instead.
+    // Legacy standalone rest blocks removed; use ```rest instead.
     try { registerDamage(this); }            catch (e) { console.error('[DH-UI] damage load error', e); }
 
     // NEW: unified rest block
     try { registerRest(this); }         catch (e) { console.error('[DH-UI] rest load error', e); }
     try { registerVitals(this); }       catch (e) { console.error('[DH-UI] vitals load error', e); }
     try { registerLevelUp(this); }      catch (e) { console.error('[DH-UI] level-up load error', e); }
-    try { registerSpellBlocks(this); }   catch (e) { console.error('[DH-UI] spell/action load error', e); }
     try { registerDomainPickerBlock(this); } catch (e) { console.error('[DH-UI] domain-picker load error', e); }
     try { registerEquipmentPickerBlock(this); } catch (e) { console.error('[DH-UI] equipment-picker load error', e); }
     try { registerFeaturesBlock(this); } catch (e) { console.error('[DH-UI] features load error', e); }

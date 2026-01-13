@@ -52,8 +52,8 @@ export class LevelUpModal extends Modal {
     this.modalEl.addClass('dh-levelup-modal-root');
     const { contentEl } = this; contentEl.empty(); contentEl.addClass('dh-levelup-chooser');
 
-    // Close when clicking anywhere on the overlay outside the Level Up card,
-    // to match the short-rest UX.
+    // Close when clicking anywhere on the overlay outside the card,
+    // matching the rest modal UX.
     this.modalEl.onclick = (ev: MouseEvent) => {
       if (!contentEl.contains(ev.target as Node)) this.close();
     };

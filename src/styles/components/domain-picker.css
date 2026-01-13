@@ -3,13 +3,15 @@
 /* Tokens column: compact but readable header */
 .dvjs-table th.dvjs-tokens-col,
 .dvjs-table td.dvjs-tokens-col {
-  width: auto;
+  width: 120px; /* just wide enough for a 3x5 grid of dots */
+  padding-left: 4px !important;
+  padding-right: 4px !important;
 }
 /* Header: keep "Tokens" on one line */
 .dvjs-table th.dvjs-tokens-col {
   white-space: nowrap !important;
 }
-/* Cells: allow dot grid to wrap naturally if needed */
+/* Cells: allow dot grid to wrap naturally inside the fixed-width column */
 .dvjs-table td.dvjs-tokens-col {
   white-space: normal !important;
   word-break: normal !important;
@@ -259,7 +261,18 @@
   padding: 8px 16px 0 !important;
   font-size: 0.9em !important;
   color: var(--text-muted) !important;
+  margin-bottom: 0 !important;
+}
+
+/* Level Up guidance line shown when opened from the Level Up modal */
+.dvjs-levelup-info {
+  padding: 4px 16px 0 !important;
+  font-size: 0.9em !important;
+  color: var(--text-accent) !important;
   margin-bottom: 8px !important;
+}
+.dvjs-levelup-info--hidden {
+  display: none !important;
 }
 
 .dvjs-close {

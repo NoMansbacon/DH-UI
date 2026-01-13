@@ -95,5 +95,3 @@
   .dh-track-diamond .dh-track-box { width: 14px; height: 14px; border-radius: 4px; }
 }
 
-/* Override corrupted label text from earlier builds */
-.dh-tracker::before { content: "Tracker"; }

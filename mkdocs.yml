@@ -1,0 +1,24 @@
+site_name: Daggerheart Tooltips (DH-UI)
+site_description: Obsidian plugin that turns fenced code blocks into rich, live-updating Daggerheart UI.
+# Replace these with your actual GitHub username and repo name
+site_url: https://<your-username>.github.io/<your-repo-name>/
+repo_url: https://github.com/<your-username>/<your-repo-name>
+
+theme:
+  name: material
+  features:
+    - navigation.instant
+    - navigation.sections
+    - navigation.tracking
+    - content.code.copy
+
+nav:
+  - Home: index.md
+  - Usage Guide: USAGE.md
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - tables
+  - fenced_code

@@ -63,13 +63,14 @@
   padding: 0 6px;
   height: auto;
   align-self: center;
-  display: flex; align-items: center; justify-content: center;
-  
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .dh-dmg-steps .conn .value {
   font-weight: 800;
   font-size: 20px;
-  color: #d4af37;;
+  color: #d4af37;
 }
 /* Add thin lines above and below the connector value to frame it */
 .dh-dmg-steps .conn::before,
@@ -88,12 +89,36 @@
   box-shadow: var(--shadow-s);
 }
 
-.dh-dmg-steps .conn::before {
-  top: -6px;
-}
+.dh-dmg-steps .conn::before { top: -6px; }
+.dh-dmg-steps .conn::after  { bottom: -6px; }
 
-.dh-dmg-steps .conn::after {
-  bottom: -6px;
+/* Mobile: stack tiers vertically so thresholds never overflow */
+@media (max-width: 700px) {
+  .dh-dmg-steps {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .dh-dmg-steps .step {
+    max-width: none;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .dh-dmg-steps .conn {
+    padding: 2px 0;
+  }
+
+  /* The little framing lines are tuned for horizontal layout; hide on mobile. */
+  .dh-dmg-steps .conn::before,
+  .dh-dmg-steps .conn::after {
+    display: none !important;
+    content: none !important;
+  }
+
+  .dh-dmg-steps .conn .value {
+    font-size: 18px;
+  }
 }
 
 

@@ -24,6 +24,7 @@ import * as store from "../lib/services/stateStore";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { KVProvider } from "../components/state/kv-context";
 import { getOrCreateRoot } from "../utils/reactRoot";
+import { emitTrackerChanged } from "../utils/events";
 const roots = new WeakMap<HTMLElement, Root>();
 /**
  * Trackers: hp | stress | armor | hope
@@ -146,7 +147,7 @@ function registerOneTracker(
                   boxes.forEach((b, i) => (b as HTMLDivElement).classList.toggle('on', i < v));
                 });
               } catch {}
-              try { window.dispatchEvent(new CustomEvent('dh:tracker:changed', { detail: { key: stateKey, filled: v } })); } catch {}
+              emitTrackerChanged({ key: stateKey, filled: v });
             }
           })
         )

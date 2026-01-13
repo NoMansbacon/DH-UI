@@ -105,12 +105,15 @@ class: my-hp
 
 **Block:** `rest`
 
-Renders Short/Long Rest controls with optional Level Up, Full Heal, and Reset All buttons.
+Renders a single **Rest** row with:
+
+- A **Rest** button that opens the combined rest-actions modal.
+- Optional **Short Rest** / **Long Rest** buttons (keyboard-friendly shortcuts into the same modal).
+- Optional **Level Up**, **Full Heal**, and **Reset All** buttons.
 
 ```markdown
 ```rest
-short_label: "Short Rest"
-long_label: "Long Rest"
+rest_label: "Rest"
 levelup_label: "Level Up"
 full_heal_label: "Full Heal"
 reset_all_label: "Reset All"
@@ -129,9 +132,24 @@ show_reset_all: true
 ```
 ```
 
-- **Short / Long rest** open modal dialogs to guide rest actions.
+**Rest modal behavior:**
+
+- The **combined rest modal** has two columns:
+  - **Short rest moves** (left): 1d4 + tier style heals/clears/repairs and small Hope bumps.
+  - **Long rest moves** (right): full clears (HP/Stress/Armor), Hope bumps, and a "Work on a Project" note.
+- By default you can select **up to 2 actions in total** per rest (configurable with `max_picks:` in the `rest` block). The plugin enforces this selection limit, but **your table/GM still decides which moves are legal**.
+- The modal reads HP/Stress/Armor/Hope **tracker keys** from the `rest` block YAML when provided, or automatically from visible `vitals` / tracker rows in the same note.
+- When you apply a rest, the plugin updates the matching tracker state (`tracker:<key>`) and repaints any visible tracker blocks.
+
+**Other buttons:**
+
+- **Short / Long rest** buttons in the row simply open the same modal focusing the relevant column.
 - **Full Heal** scans the current note for HP trackers and clears them.
 - **Reset All** resets HP/Stress/Armor/Hope trackers found in the current note.
+- **Level Up** opens the Level Up chooser modal for this character note (see `docs/USAGE.md` → *Level Up & multiclassing*).
+
+> Legacy `short-rest` / `long-rest` fenced blocks have been removed. Replace any old
+> ```short-rest / ```long-rest fences in your notes with a single ```rest block.
 
 ---
 
@@ -159,6 +177,12 @@ class: my-damage
 ```
 
 The block reads frontmatter and/or YAML fields to compute final major/severe thresholds, then applies damage via the shared state store and broadcasts updates to tracker views.
+
+Threshold resolution rules (in order):
+- If `major_threshold` / `severe_threshold` are provided in the block (and templates resolve to numbers), those are used.
+- Otherwise, frontmatter aliases like `majorthreshold` / `severethreshold` (or `major_threshold` / `severe_threshold`) are used.
+- Otherwise, `base_major` / `base_severe` in the block are used.
+- In all cases, your `level` (from YAML or frontmatter) is added on top.
 
 ---
 
@@ -239,9 +263,16 @@ Future/advanced blocks should prefer importing the helpers from `src/utils/event
 
 Open **Settings → Community plugins → Daggerheart Tooltips** to configure:
 
-- **State file path** – where the shared tracker state file is stored in your vault.
+- **State file path** – where the shared tracker state JSON file is stored in your vault (used by vitals, trackers, rest, damage, etc.).
+- **Domain cards folder** – optional vault folder where domain card notes live. Used by the `domainpicker` block when searching for cards.
+- **Equipment folder** – optional vault folder where equipment notes live. Used by the `equipmentpicker` block when discovering weapons/armor.
+- **Max domain cards in loadout** – optional recommended cap for domain cards in a character's loadout. Enforced by the Domain Picker when moving cards into loadout.
+- **Restrict domain picker to character level & domains** – when enabled (default), Add Domain Cards prefers cards at or below the character's `level` and matching their `domains` frontmatter.
+- **Restrict equipment picker to character tier** – when enabled (default), Add Equipment hides items above the character's `tier` frontmatter.
+- **Auto-open Domain Picker after Level Up** – when enabled (default), applying a Level Up automatically opens the Domain Picker with a reminder to add domain cards for that level.
+- **Domain picker view** – choose whether the Add Domain Cards modal uses a **card grid** (with art) or a compact **table** layout.
 
-Other behavior (layout, colors) is controlled primarily via CSS.
+Other behavior (layout, colors) is controlled primarily via CSS and the Style Settings plugin.
 
 ---
 
@@ -258,7 +289,7 @@ For a longer, example‑driven guide (character frontmatter, blocks, Level Up, d
 - This plugin **does not enforce Daggerheart rules** (including multiclass rules, card limits, or build legality). It only tracks the numbers and choices you record in frontmatter and YAML.
 - The **Level Up** modal updates frontmatter fields like `level`, `tier`, `hp`, `stress`, `evasion`, `proficiency`, and `dh_levelup.*` counters. It does *not* automatically change your `class` / `subclass` / `domains` frontmatter; you should keep those in sync with your sheet.
 - Taking the **multiclass** option in the Level Up modal simply records that choice and then opens the domain picker so you can add cards; the plugin does not decide which class/domain cards are legal.
-- The **Domain Picker** and **active-hand** views rely on your frontmatter (`level`, `domains`, etc.) and the Dataview plugin to work correctly.
+- The **Domain Picker** relies on your frontmatter (`level`, `domains`, etc.) and the Dataview plugin to work correctly.
 
 ---
 

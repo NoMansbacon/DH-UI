@@ -115,11 +115,7 @@
 }
 
 /* Rest blocks: we let the inner controls row handle its own styling, no pre-frame. */
-.markdown-rendered pre:has(> code.language-rest),
-.markdown-rendered pre:has(> code.language-short-rest),
-.markdown-rendered pre:has(> code.language-short),
-.markdown-rendered pre:has(> code.language-long-rest),
-.markdown-rendered pre:has(> code.language-long) {
+.markdown-rendered pre:has(> code.language-rest) {
   border: none;
   border-radius: 0;
   padding: 0;
@@ -127,19 +123,11 @@
   background: transparent;
 }
 
-.markdown-rendered pre:has(> code.language-rest)::before,
-.markdown-rendered pre:has(> code.language-short-rest)::before,
-.markdown-rendered pre:has(> code.language-short)::before,
-.markdown-rendered pre:has(> code.language-long-rest)::before,
-.markdown-rendered pre:has(> code.language-long)::before {
+.markdown-rendered pre:has(> code.language-rest)::before {
   content: none;
 }
 
-.markdown-rendered pre:has(> code.language-rest) code,
-.markdown-rendered pre:has(> code.language-short-rest) code,
-.markdown-rendered pre:has(> code.language-short) code,
-.markdown-rendered pre:has(> code.language-long-rest) code,
-.markdown-rendered pre:has(> code.language-long) code {
+.markdown-rendered pre:has(> code.language-rest) code {
   padding: 0;
   background: transparent;
 }

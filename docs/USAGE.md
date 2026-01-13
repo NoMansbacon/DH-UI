@@ -144,8 +144,7 @@ uses: "{{ frontmatter.stress }}"
 
 ```markdown
 ```rest
-short_label: "Short Rest"
-long_label: "Long Rest"
+rest_label: "Rest"
 levelup_label: "Level Up"
 full_heal_label: "Full Heal"
 reset_all_label: "Reset All"
@@ -158,7 +157,7 @@ show_reset_all: true
 ```
 ```
 
-- **Short / Long Rest**: open dedicated rest modals.
+- **Rest**: opens the rest-actions modal.
 - **Level Up**: opens the level‑up chooser modal tied to this note.
 - **Full Heal / Reset All**: update all matching trackers in the current note.
 
@@ -240,78 +239,6 @@ ancestry:
 
 ---
 
-## Spells, actions, and domain cards
-
-The plugin provides two main ways to work with domain cards and powers:
-
-1. **Spell / action cards** – pretty cards rendered from a single note.
-2. **Active hand** – a table for quickly managing multiple spells/actions.
-
-### Single spell or action card
-
-```markdown
-```spell-components
-name: "Radiant Lance"
-level: 2
-stress: 2
-hope: 0
-feature: |
-  Make a ranged attack against one creature you can see. On a hit, deal 2d8 radiant damage and mark them with light.
-
-domain: "light"
-casting_time: "1 action"
-range: "60 feet"
-components: "V, S"
-duration: "Instantaneous"
-art: "z_assets/spells/radiant-lance.png"
-```
-```
-
-For a martial power or non‑spell ability, use `action` instead:
-
-```markdown
-```action
-name: "Shield Bash"
-level: 1
-stress: 1
-feature: "Deal 1d6 damage and push the target 5 feet."
-```
-```
-
-### Active hand
-
-Use the `active-hand` block to list multiple powers and manage uses/tokens:
-
-```markdown
-```active-hand
-items:
-  - label: "Radiant Lance"
-    type: spell
-    level: 2
-    stress: 2
-    feature: "2d8 radiant damage and mark with light."
-    uses: 3
-    tokens: 10
-    card: domain
-    vault: true
-  - label: "Shield Bash"
-    type: action
-    level: 1
-    stress: 1
-    feature: "1d6 damage and push 5 feet."
-    uses: 2
-    card: subclass
-```
-```
-
-This view lets you:
-
-- Filter by level, type, location (loadout vs vault).
-- Track per‑power uses and tokens.
-- Move domain cards between loadout and vault, respecting an optional loadout limit from settings.
-
----
-
 ## Domain Picker
 
 The `domainpicker` block helps manage which domain cards are in a character's **Vault** vs **Loadout**.
@@ -331,6 +258,36 @@ How it works:
 - Lets you move cards between Vault and Loadout and adjust token counts.
 
 You can configure where domain card notes live via plugin settings (e.g. a specific folder).
+
+---
+
+## Equipment Picker
+
+Use the `equipmentpicker` block to manage your character's weapons, armor, and other gear between **Inventory** and **Equipped** lists.
+
+Basic usage in a character note:
+
+```markdown
+```equipmentpicker
+# optional per-block overrides
+# folders:
+#   - "Cards/Equipment"
+# enforce_tier: true   # default: use character tier to hide too-high-tier items
+# view: table          # or "card" for card-style tiles
+```
+```
+
+How it works:
+
+- Reads your character note's frontmatter, including `tier`.
+- Uses the Dataview plugin to discover equipment notes, either:
+  - from per-block `folder` / `folders` in the YAML, or
+  - from the global **Equipment folder** setting, or
+  - from the whole vault when no folder is configured.
+- Detects likely **weapons** and **armor** from tags/frontmatter and groups them into separate tables (Weapons, Armor, Other).
+- Lets you move items between **Inventory** and **Equipped** and remove them from both lists.
+
+You can configure where equipment notes live and whether the picker should hide items above the character's tier via plugin settings.
 
 ---
 

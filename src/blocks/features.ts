@@ -105,7 +105,8 @@ function renderFeaturesList(
   if (Number.isFinite(colsNum) && colsNum > 0) root.style.setProperty('--dh-features-cols', String(Math.floor(colsNum)));
 
   const tctx = createTemplateContext(el, app, ctx);
-  const isGroupedSection = (key: string) => key === "ancestry" || key === "class" || key === "subclass";
+  const isGroupedSection = (key: string) =>
+    key === "ancestry" || key === "class" || key === "subclass" || key === "community";
   const renderValue = (raw: FeatureItem["value"]): string => {
     if (raw === null || raw === undefined) return "";
     if (typeof raw === "number" || typeof raw === "boolean") return String(raw);
@@ -168,15 +169,15 @@ function renderFeaturesList(
       ? sectionEl.createDiv({ cls: "dh-features-heading", text: section.title })
       : null;
 
-    // Ancestry and Class: group by source name (from/origin), single card per
-    // source with stacked features inside.
-    if (section.key === "ancestry" || section.key === "class") {
+    // Ancestry, Class, and Community: group by source name (from/origin),
+    // single card per source with stacked features inside.
+    if (section.key === "ancestry" || section.key === "class" || section.key === "community") {
       const bySource: Record<string, FeatureItem[]> = {};
       const sourceOrder: string[] = [];
 
       const getSourceName = (it: FeatureItem): string => {
         const raw = (it as any).from ?? (it as any).source ?? (it as any).origin;
-        const fallback = section.key === "ancestry" ? "Ancestry" : "Class";
+        const fallback = section.title;
         const s = String(raw ?? fallback).trim();
         return s || fallback;
       };

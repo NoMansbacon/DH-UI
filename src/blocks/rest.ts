@@ -13,8 +13,6 @@
 import type DaggerheartPlugin from "../main";
 import { MarkdownPostProcessorContext, Notice, TFile } from "obsidian";
 import { parseYamlSafe } from "../utils/yaml";
-import { openShortRestUI } from "./short-rest";
-import { openLongRestUI } from "./long-rest";
 import React from "react";
 import { Root } from "react-dom/client";
 import { ControlsRowView } from "../components/controls-row";
@@ -24,10 +22,14 @@ import * as store from "../lib/services/stateStore";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { KVProvider } from "../components/state/kv-context";
 import { LevelUpModal } from "../ui/levelup-modal";
+import { CombinedRestModal } from "../ui/rest-modals";
+import { emitTrackerChanged } from "../utils/events";
+
 const roots = new WeakMap<HTMLElement, Root>();
 
 type RestYaml = {
   // Labels
+  rest_label?: string;
   short_label?: string;
   long_label?: string;
   levelup_label?: string;
@@ -46,6 +48,10 @@ type RestYaml = {
   show_levelup?: boolean;
   show_full_heal?: boolean;
   show_reset_all?: boolean;
+
+  // Optional: maximum number of rest moves a player can select in the modal.
+  // Defaults to 2 (official rules allow two moves total per rest).
+  max_picks?: number;
 
   class?: string;
 };
@@ -74,19 +80,48 @@ export function registerRest(plugin: DaggerheartPlugin) {
       const armorKey  = String(conf.armor_key  ?? detectKey('dh-track-armor',  `din_armor::${ctx.sourcePath}`));
       const hopeKey   = String(conf.hope_key   ?? detectKey('dh-track-hope',   `din_hope::${ctx.sourcePath}`));
 
+      const maxPicks = (() => {
+        const raw = (conf as any).max_picks;
+        const n = Number(raw);
+        return Number.isFinite(n) && n > 0 ? Math.floor(n) : 2;
+      })();
+
       const mk = (scope: HTMLElement, cls: string, key: string) => ({
         getMax: () => (scope.querySelector(`.dh-tracker-boxes.${cls}`)?.querySelectorAll('.dh-track-box').length ?? 0),
         repaint: () => {
-          const cont = scope.querySelector(`.dh-tracker-boxes.${cls}`);
-          if (!cont) return;
+          // Repaint via the shared tracker event so React-based tracker rows stay in sync.
           store.get<number>(`tracker:${key}`, 0).then((val) => {
             const filled = Number(val ?? 0) || 0;
-            cont.querySelectorAll('.dh-track-box').forEach((n, i) => (n as HTMLDivElement).classList.toggle('on', i < filled));
+            emitTrackerChanged({ key, filled });
           });
         },
       });
 
+      const trackers = {
+        hp: mk(scope, 'dh-track-hp', hpKey),
+        stress: mk(scope, 'dh-track-stress', stressKey),
+        armor: mk(scope, 'dh-track-armor', armorKey),
+        hope: mk(scope, 'dh-track-hope', hopeKey),
+      };
+
+      const openCombined = (initial: 'short' | 'long') => {
+        const file = plugin.app.vault.getFileByPath(ctx.sourcePath) || plugin.app.workspace.getActiveFile();
+        if (!file || !(file instanceof TFile)) {
+          new Notice('Rest: could not resolve file');
+          return;
+        }
+        new CombinedRestModal(
+          plugin.app,
+          file,
+          { hp: hpKey, stress: stressKey, armor: armorKey, hope: hopeKey },
+          trackers,
+          maxPicks,
+          initial,
+        ).open();
+      };
+
       const render = () => {
+        const restLabel = String(conf.rest_label ?? "Rest");
         const shortLabel = String(conf.short_label ?? "Short Rest");
         const longLabel = String(conf.long_label ?? "Long Rest");
         const levelupLabel = String(conf.levelup_label ?? "Level Up");
@@ -105,9 +140,13 @@ export function registerRest(plugin: DaggerheartPlugin) {
             React.createElement(KVProvider, null,
               React.createElement(ControlsRowView, {
                 showShort, showLong, showLevelUp, showFullHeal, showResetAll,
+                restLabel,
                 shortLabel, longLabel, levelupLabel, fullHealLabel, resetAllLabel,
-                onShort: () => openShortRestUI(plugin, el, ctx, { hp: hpKey, stress: stressKey, armor: armorKey, hope: hopeKey }),
-                onLong: () => openLongRestUI(plugin, el, ctx, { hp: hpKey, stress: stressKey, armor: armorKey, hope: hopeKey }),
+                // Combined "Rest" button opens with the combined modal focused on Short Rest by default.
+                onRest: () => openCombined('short'),
+                // Keyboard shortcuts still open with the relevant column highlighted.
+                onShort: () => openCombined('short'),
+                onLong: () => openCombined('long'),
                 onLevelUp: () => {
                   const f = plugin.app.vault.getFileByPath(ctx.sourcePath) || plugin.app.workspace.getActiveFile();
                   if (f && f instanceof TFile) new LevelUpModal(plugin.app as any, plugin, f).open();
@@ -121,7 +160,10 @@ export function registerRest(plugin: DaggerheartPlugin) {
                     const k = (n.closest('.dh-tracker') as HTMLElement | null)?.getAttribute('data-dh-key') || '';
                     if (k) keys.add(k);
                   });
-                  for (const k of keys){ await store.set<number>('tracker:' + k, 0); try { window.dispatchEvent(new CustomEvent('dh:tracker:changed', { detail: { key: k, filled: 0 } })); } catch {} }
+                  for (const k of keys){
+                    await store.set<number>('tracker:' + k, 0);
+                    emitTrackerChanged({ key: k, filled: 0 });
+                  }
                   new Notice(keys.size ? 'HP fully restored for this note.' : 'No HP tracker found in this note.');
                 },
                 onResetAll: async () => {
@@ -141,7 +183,7 @@ export function registerRest(plugin: DaggerheartPlugin) {
                     for (const k of keysByKind[kind]){
                       await store.set<number>('tracker:' + k, 0);
                       changed++;
-                      try { window.dispatchEvent(new CustomEvent('dh:tracker:changed', { detail: { key: k, filled: 0 } })); } catch {}
+                      emitTrackerChanged({ key: k, filled: 0 });
                     }
                   }
                   new Notice(changed ? 'All trackers in this note reset.' : 'No trackers found in this note.');

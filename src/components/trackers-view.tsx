@@ -8,6 +8,7 @@
  * Used by: individual tracker blocks, vitals, dashboard
  */
 import React, { useEffect, useState } from "react";
+import { onTrackerChanged } from "../utils/events";
 
 export type TrackerKind = "hp" | "stress" | "armor" | "hope";
 
@@ -54,15 +55,13 @@ export function TrackerRowView({
   // Sync when other parts of the app change the same tracker key
   useEffect(() => {
     if (!stateKey) return;
-    const handler = (e: Event) => {
-      const ev = e as CustomEvent<{ key: string; filled: number }>;
-      if (ev.detail && ev.detail.key === stateKey) {
-        const next = Math.max(0, Math.min(total, Number(ev.detail.filled || 0)));
+    const off = onTrackerChanged(({ key, filled }) => {
+      if (key === stateKey) {
+        const next = Math.max(0, Math.min(total, Number(filled || 0)));
         setFilled(next);
       }
-    };
-    window.addEventListener('dh:tracker:changed', handler as any);
-    return () => window.removeEventListener('dh:tracker:changed', handler as any);
+    });
+    return () => off();
   }, [stateKey, total]);
 
   const onClickBox = (idx: number) => {

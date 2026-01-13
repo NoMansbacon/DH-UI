@@ -18,5 +18,9 @@ main.js
 # obsidian
 data.json
 
+# Local plugin state files (do not commit)
+state.json
+dh_state.json
+
 # Exclude macOS Finder (System Explorer) View States
 .DS_Store

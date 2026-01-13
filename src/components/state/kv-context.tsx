@@ -1,5 +1,6 @@
 import React from "react";
 import * as store from "../../lib/services/stateStore";
+import { onKvChanged, onTrackerChanged } from "../../utils/events";
 
 export type KVContextType = {
   getValue: <T>(key: string, fallback?: T) => Promise<T>;
@@ -33,18 +34,19 @@ export function useKV<T = any>(key: string, fallback?: T){
         if (alive) { setValue(v as T); setLoading(false); }
       } catch { if (alive) setLoading(false); }
     })();
-    const onKV = (e: any) => {
-      if (e?.detail?.key === key) setValue(e.detail.val as T);
-    };
-    const onTracker = (e: any) => {
-      if (e?.detail?.key === key) setValue((e.detail.filled as any) as T);
-    };
-    window.addEventListener('dh:kv:changed', onKV as any);
-    window.addEventListener('dh:tracker:changed', onTracker as any);
+
+    const offKv = onKvChanged((detail) => {
+      if (detail.key === key) setValue(detail.val as T);
+    });
+
+    const offTracker = onTrackerChanged((detail) => {
+      if (detail.key === key) setValue((detail.filled as any) as T);
+    });
+
     return () => {
       alive = false;
-      window.removeEventListener('dh:kv:changed', onKV as any);
-      window.removeEventListener('dh:tracker:changed', onTracker as any);
+      offKv();
+      offTracker();
     };
   }, [key]);
 

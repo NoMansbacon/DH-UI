@@ -129,7 +129,8 @@
    frame so only the lineage/tier container has a card shell. */
 .dh-features-ancestry .dh-feature-item,
 .dh-features-class .dh-feature-item,
-.dh-features-subclass .dh-feature-item {
+.dh-features-subclass .dh-feature-item,
+.dh-features-community .dh-feature-item {
   border: none;
   background: transparent;
   padding: 2px 0 4px 0;

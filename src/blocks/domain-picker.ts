@@ -49,7 +49,6 @@ export async function renderDomainPicker(
   let levelOverride: number | null = null;
   let requiredAdds: number | null = null;
   let addsSoFar = 0;
-  let closeOnAddOnce = false;
 
   const dataviewPlugin = (plugin.app as any).plugins?.plugins?.dataview;
   if (!dataviewPlugin) {
@@ -128,6 +127,8 @@ export async function renderDomainPicker(
 
   // Element inside the modal to show loadout limit / error messages
   let modalLimitMsg: HTMLDivElement | null = null;
+  // Element inside the modal to show Level Up-specific guidance (cards required/remaining)
+  let levelupInfoEl: HTMLDivElement | null = null;
 
   // Block-level override or global setting for domain loadout limit
   const blockMax = (() => {
@@ -344,6 +345,26 @@ export async function renderDomainPicker(
     }
   }
 
+  function updateLevelupInfo() {
+    if (!ui.modal || !levelupInfoEl) return;
+    levelupInfoEl.empty();
+
+    if (requiredAdds == null) {
+      levelupInfoEl.addClass("dvjs-levelup-info--hidden");
+      return;
+    }
+
+    const remaining = Math.max(0, requiredAdds - addsSoFar);
+    const remainingText = remaining === 0
+      ? "All required domain cards for this level have been added."
+      : `Add ${remaining} more domain card${remaining === 1 ? "" : "s"} for this level.`;
+
+    levelupInfoEl.removeClass("dvjs-levelup-info--hidden");
+    levelupInfoEl.createSpan({
+      text: `Level Up: ${remainingText}`,
+    });
+  }
+
   function pathToRow(path: string) {
     let p = dv.page(path);
     if (!p) {
@@ -406,6 +427,10 @@ export async function renderDomainPicker(
     filterInfo.setText(
       `Filters: level ≤ ${charLevel} • domains: ${charDomains.join(", ") || "—"}`
     );
+
+    // Slot for Level Up-specific guidance (how many domain cards to add at this level)
+    levelupInfoEl = modal.createDiv({ cls: "dvjs-levelup-info dvjs-levelup-info--hidden" });
+    updateLevelupInfo();
 
     // Slot for showing errors / limit messages related to loadout
     modalLimitMsg = modal.createDiv({ cls: "dvjs-modal-limit" });
@@ -716,9 +741,10 @@ export async function renderDomainPicker(
       state[listName].push(path);
     }
     renderTables();
-    // When opened from a Level Up selection, close once the required number of cards has been added
+    // When opened from a Level Up selection, update guidance and close once the required number of cards has been added
     if (requiredAdds != null) {
       addsSoFar++;
+      updateLevelupInfo();
       if (addsSoFar >= requiredAdds) {
         closeModal();
         requiredAdds = null;

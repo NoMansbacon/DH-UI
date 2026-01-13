@@ -7,7 +7,7 @@
     display:grid; 
     grid-template-columns: 1fr 1fr 1fr; 
     gap:12px; 
-    margin:8px 0; 
+    margin:8px 0;
 }
 .dh-levelup-col{ 
     border:1px dashed var(--background-modifier-border); 
@@ -15,6 +15,50 @@
     border-radius:8px; 
     padding:10px 12px 10px 16px;
     width:fit-content;
+}
+
+/* In the dedicated Level Up modal, restyle tier columns to reuse the shared card frame
+   so they visually match the rest modal columns. Keep inline grid styling unchanged. */
+.dh-levelup-chooser .dh-levelup-grid{
+  /* align with rest modal: grid inside a single card panel */
+  column-gap: calc(var(--dh-card-gap) * 1.6);
+  row-gap: var(--dh-card-gap);
+  margin-top: 4px;
+  margin-bottom: 10px; /* small gap above the Apply row */
+  /* Nudge content in so the first tier's left border isn't hidden by the card border */
+  padding-left: 2px;
+}
+
+.dh-levelup-chooser .dh-levelup{
+  /* layout-only inside the modal card */
+  border-radius: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  margin-top: 4px;
+}
+.dh-levelup-chooser .dh-levelup-body{
+  margin-top: 4px;
+}
+.dh-levelup-chooser .dh-levelup-col{
+  /* Stronger visual separation for each tier inside the modal */
+  border: 2px solid var(--text-accent);
+  border-radius: 8px;
+  width: auto;
+  /* Slightly darker strip so each tier reads as its own column */
+  background: color-mix(in oklab, var(--dh-card-bg), #000 6%);
+}
+.dh-levelup-chooser .dh-levelup-title{
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-size: 11px;
+  margin-bottom: 4px;
+  color: var(--text-muted);
+}
+.dh-levelup-chooser .dh-levelup-note{
+  font-size: 11px;
+  color: var(--text-faint);
 }
 .dh-levelup-title{ 
     font-weight:800; 
@@ -53,7 +97,8 @@
     /* tuned so the gold frame looks visually even around the two boxes */
     padding: 3px 3px 6px 3px; /* top right bottom left */
     border-radius: 8px;
-    border: 2px solid 
+    /* use Hope gold so it matches other Hope/rest accents */
+    border: 2px solid var(--dh-gold);
 }
 .dh-levelup-two-point-toggle-wrap input[type=checkbox] {
     /* remove browser/theme margins so the gold frame is evenly spaced */
@@ -112,7 +157,9 @@
     align-self:start; 
     display:flex; 
     flex-direction:column; 
-    gap:8px; }
+    gap:8px; 
+    margin-top: 0; /* grid already has bottom margin; keep Apply row closer like rest modal */
+}
 .dh-levelup-msg{ 
     font-size:12px; 
     color:var(--text-faint); 
@@ -121,32 +168,42 @@
     width: fit-content;
 }
 
-/* Level Up Modal (scoped to avoid rest modal interference) */
+/* Level Up Modal (scoped to avoid rest modal interference)
+   Match the Combined Rest modal shell (border, background, spacing) for a unified look. */
 .dh-levelup-chooser {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%,-50%);
-  width: min(1040px, calc(100vw - 24px)) !important;
-  max-height: 68vh; 
-  overflow: auto;
+  width: min(880px, calc(100vw - 32px));
   margin: 0 auto;
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid var(--background-modifier-border);
-  background: linear-gradient(180deg, var(--background-secondary) 0%, color-mix(in oklab, var(--background-secondary), #000 12%) 100%);
+  /* Tighter bottom padding now that chooser can grow with content */
+  padding: 14px 14px 4px;
+  border-radius: var(--dh-radius-card);
+  border: 1px solid color-mix(in oklab, var(--background-modifier-border), #fff 18%);
+  background: var(--dh-card-bg);
   box-shadow: none;
+
+  /* Allow the chooser card to grow with content; let Obsidian's modal handle scrolling */
+  max-height: none;
+  overflow: visible;
 }
 
 .dh-levelup-headerbar {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   align-items: center;
   margin-bottom: 8px;
 }
-.dh-levelup-titlewrap { display: flex; flex-direction: column; gap: 2px; }
-.dh-levelup-title { font-weight: 800; font-size: 13px; color: var(--text-accent); }
+.dh-levelup-titlewrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 280px;
+  min-width: 240px;
+}
+.dh-levelup-title { font-weight: 800; font-size: 13px; color: var(--text-normal); }
 .dh-levelup-sub   { font-size: 11px; color: var(--text-faint); }
 .dh-levelup-picks { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
 
@@ -159,22 +216,50 @@
   padding: 0;
   border-radius: 8px;
   border: 1px solid var(--background-modifier-border);
-  background: linear-gradient(180deg, var(--background-secondary) 0%, color-mix(in oklab, var(--background-secondary), #000 10%) 100%);
+  background: var(--dh-card-bg);
   color: var(--text-muted);
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
   box-shadow: none;
 }
-.dh-levelup-close:hover { color: var(--text-normal); border-color: color-mix(in oklab, var(--background-modifier-border), #fff 18%); }
+.dh-levelup-close:hover {
+  color: var(--text-normal);
+  border-color: color-mix(in oklab, var(--background-modifier-border), #fff 18%);
+}
 
-/* When rendered inside Obsidian's core modal */
-.modal .dh-levelup-chooser { position: static; left: auto; top: auto; transform: none; margin: 0 auto; width: min(820px, calc(100vw - 24px)); }
-.modal.dh-levelup-modal-root { overflow: visible !important; max-height: none; background: transparent !important; border: 0 !important; box-shadow: none !important; padding: 0 !important; width: auto !important; max-width: none !important; min-height: 0 !important; }
-.modal.dh-levelup-modal-root .modal-close-button { display: none !important; }
+/* When rendered inside Obsidian's core modal, disable absolute centering like rest modal */
+.modal .dh-levelup-chooser {
+  position: static;
+  left: auto;
+  top: auto;
+  transform: none;
+  margin: 0 auto;
+  width: min(880px, calc(100vw - 32px));
+}
+.modal.dh-levelup-modal-root {
+  overflow: visible !important;
+  max-height: none;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  width: auto !important;
+  max-width: none !important;
+  min-height: 0 !important;
+}
+.modal.dh-levelup-modal-root .modal-close-button {
+  display: none !important;
+}
 .modal.dh-levelup-modal-root .modal-content,
-.modal.dh-levelup-modal-root .modal-scroll { overflow: visible !important; }
+.modal.dh-levelup-modal-root .modal-scroll {
+  overflow: visible !important;
+}
 
 @media (max-width: 560px) {
-  .dh-levelup-chooser { width: calc(100vw - 20px); padding: 10px; }
+  .dh-levelup-chooser {
+    width: calc(100vw - 20px);
+    /* Slightly smaller padding on mobile but still room under the button */
+    padding: 10px 10px 18px;
+  }
 }

@@ -22,6 +22,7 @@ import { processTemplate, createTemplateContext } from "../utils/template";
 import { TrackerRowView } from "../components/trackers-view";
 import * as store from "../lib/services/stateStore";
 import { registerLiveCodeBlock } from "../utils/liveBlock";
+import { emitTrackerChanged } from "../utils/events";
 
 type VitalsYaml = {
   class?: string;
@@ -94,7 +95,7 @@ export function registerVitals(plugin: DaggerheartPlugin) {
       el.addClass('dh-vitals-block');
       if (klass) el.addClass(klass);
 
-      // HP uses a stable default key so long-rest "Cure all wounds" continues
+      // HP uses a stable default key so the rest tools continue
       // to work out of the box with older notes. For per-note HP, set hp_key
       // explicitly. Other trackers default to note-scoped keys.
       const hpKey     = String(y.hp_key     ?? 'din_health');
@@ -148,7 +149,7 @@ export function registerVitals(plugin: DaggerheartPlugin) {
 
       const onFilled = (key: string) => async (v: number) => {
         await writeState(key, v);
-        try { window.dispatchEvent(new CustomEvent('dh:tracker:changed', { detail: { key, filled: v } })); } catch {}
+        emitTrackerChanged({ key, filled: v });
       };
 
       root.render(

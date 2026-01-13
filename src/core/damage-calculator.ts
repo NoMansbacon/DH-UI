@@ -11,16 +11,8 @@
  * Used by: damage block, dashboard damage component
  */
 import * as store from "../lib/services/stateStore";
-
-function asNum(v: unknown, def = 0): number {
-  if (v === null || v === undefined) return def;
-  const n = Number(String(v).trim());
-  return Number.isFinite(n) ? n : def;
-}
-
-function clamp(n: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, n));
-}
+import { emitTrackerChanged } from "../utils/events";
+import { asNum, clamp } from "../utils/number";
 
 async function readFilled(key: string): Promise<number> {
   const raw = await store.get<number>(`tracker:${key}`, 0);
@@ -104,11 +96,7 @@ export async function applyDamage(params: {
       await writeFilled(armorKey, armorFilled1);
       paintBoxes(armorBoxesEl, armorFilled1);
 
-      try {
-        window.dispatchEvent(new CustomEvent('dh:tracker:changed', {
-          detail: { key: armorKey, filled: armorFilled1 }
-        }));
-      } catch {}
+      emitTrackerChanged({ key: armorKey, filled: armorFilled1 });
     }
   }
 
@@ -122,11 +110,7 @@ export async function applyDamage(params: {
     for (const el of queryBoxesAllByKey("dh-track-hp", hpKey)) paintBoxes(el, hpFilled1);
   } catch {}
 
-  try {
-    window.dispatchEvent(new CustomEvent('dh:tracker:changed', {
-      detail: { key: hpKey, filled: hpFilled1 }
-    }));
-  } catch {}
+  emitTrackerChanged({ key: hpKey, filled: hpFilled1 });
 
   // Build success message
   const armorBoxesEl = queryBoxesInScope(scope, "dh-track-armor");

@@ -52,17 +52,28 @@
   /* Use shared flat card color */
   background: var(--dh-card-bg);
   box-shadow: none;
+
+  /* Mobile/tablet: allow the modal content to scroll instead of clipping */
+  max-height: min(85vh, 780px);
+  overflow: auto;
 }
 
 /* Header bar */
 .dh-rest-headerbar {
-  display: grid;
-  grid-template-columns: 1fr auto auto auto;
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   align-items: center;
   margin-bottom: 8px;
 }
-.dh-rest-titlewrap { display: flex; flex-direction: column; gap: 2px; }
+
+.dh-rest-titlewrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 280px;
+  min-width: 240px;
+}
 .dh-rest-title { font-weight: 800; font-size: 13px; color: var(--text-normal); }
 .dh-rest-sub   { font-size: 11px; color: var(--text-faint); }
 
@@ -74,18 +85,33 @@
   color: var(--text-normal);
   white-space: nowrap;
 }
-.dh-rest-pill {
-  padding: 2px 8px;
-  border-radius: 999px;
-  border: 1px solid var(--background-modifier-border);
-  background: var(--background-secondary);
-  box-shadow: none !important;
-}
 
 .dh-rest-picks {
   font-size: 12px;
   color: var(--text-muted);
   white-space: nowrap;
+}
+
+.dh-rest-header-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.dh-rest-reset {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--background-modifier-border);
+  background: var(--background-secondary);
+  color: var(--text-muted);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: none !important;
+}
+.dh-rest-reset:hover {
+  color: var(--text-normal);
+  border-color: color-mix(in oklab, var(--background-modifier-border), #fff 18%);
 }
 
 /* Close (×) button */

@@ -22,81 +22,15 @@ import { registerLiveCodeBlock } from "../utils/liveBlock";
 import { createTemplateContext, processTemplate } from "../utils/template";
 import { applyDamage } from "../core/damage-calculator";
 import * as store from "../lib/services/stateStore";
+import { asNum, clamp } from "../utils/number";
 
 const roots = new WeakMap<HTMLElement, Root>();
 
 const HP_KEY = "din_health";
 const ARMOR_KEY = "din_armor";
 
-function asNum(v: unknown, def = 0): number {
-  if (v === null || v === undefined) return def;
-  const n = Number(String(v).trim());
-  return Number.isFinite(n) ? n : def;
-}
-function clamp(n: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, n));
-}
-async function readFilled(key: string): Promise<number> {
-  const raw = await store.get<number>(`tracker:${key}`, 0);
-  return asNum(raw, 0);
-}
-async function writeFilled(key: string, v: number) {
-  await store.set<number>(`tracker:${key}`, asNum(v, 0));
-}
 function getPreviewScope(el: HTMLElement): HTMLElement {
   return (el.closest(".markdown-preview-view") as HTMLElement) ?? document.body;
-}
-function queryBoxesInScope(scope: HTMLElement, typeCls: string): HTMLElement | null {
-  return scope.querySelector(`.dh-tracker-boxes.${typeCls}`) as HTMLElement | null;
-}
-function maxBoxesOf(container: HTMLElement | null): number {
-  if (!container) return 0;
-  return container.querySelectorAll(".dh-track-box").length;
-}
-function paintBoxes(container: HTMLElement | null, filled: number) {
-  if (!container) return;
-  const nodes = container.querySelectorAll(".dh-track-box");
-  
-  nodes.forEach((n, i) => {
-    const box = n as HTMLDivElement;
-    box.classList.toggle("on", i < filled);
-    
-    if (!box.hasAttribute('data-click-handler')) {
-      box.setAttribute('data-click-handler', 'true');
-      box.addEventListener('click', async (e) => {
-        const clickIndex = i;
-        const currentlyOn = box.classList.contains("on");
-        
-        // If clicking an "on" box, clear it and all above
-        // If clicking an "off" box, fill up to and including it
-        const newFilled = currentlyOn ? clickIndex : clickIndex + 1;
-        
-        // Update all boxes based on the new filled value
-        nodes.forEach((node, idx) => {
-          (node as HTMLDivElement).classList.toggle("on", idx < newFilled);
-        });
-
-        const trackerContainer = box.closest('.dh-tracker-boxes');
-        if (trackerContainer) {
-          let key = "";
-          if (trackerContainer.classList.contains('dh-track-hp')) {
-            key = HP_KEY;
-          } else if (trackerContainer.classList.contains('dh-track-armor')) {
-            key = ARMOR_KEY;
-          }
-
-          if (key) {
-            await writeFilled(key, newFilled);
-            try {
-              window.dispatchEvent(new CustomEvent('dh:tracker:changed', { 
-                detail: { key: key, filled: newFilled }
-              }));
-            } catch {}
-          }
-        }
-      });
-    }
-  });
 }
 function readFmNumber(fm: Record<string, any>, aliases: string[], def = NaN): number {
   for (const k of aliases) {
