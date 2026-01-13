@@ -1,36 +1,44 @@
 # Daggerheart Tooltips (DH-UI)
 
-Daggerheart Tooltips is an Obsidian plugin that turns fenced code blocks into rich, live-updating UI for Daggerheart campaigns.
+An Obsidian plugin for **Daggerheart** that turns fenced code blocks into rich, live-updating character sheet UI.
 
-It renders traits, vitals, trackers, rest controls, damage calculators, badges, and more – all driven by simple YAML and your note frontmatter.
+Use simple Markdown + YAML to render traits, vitals, trackers, rest controls, damage calculators, badges, domain/equipment pickers, and more – all driven by your note frontmatter.
+
+> **Warning**
+> This plugin is under active development. Things may change or break between versions.
 
 ---
 
-## Installation
+## 📖 Documentation
 
-### Recommended: via BRAT (Beta Reviewers Auto-update Tester)
+For complete documentation, examples, and guides, visit the docs site:
+
+- 📚 **https://NoMansbacon.github.io/DH-UI/**
+
+The docs include:
+
+- **Quick Start / Usage Guide** – set up a character note and basic blocks in minutes.
+- **Code Block Reference** – detailed options for every block (traits, vitals, rest, damage, consumables, badges, pickers, etc.).
+- **Concepts & Guides** – state storage, template helpers, rest & level-up flow.
+- **Examples** – full character note examples and recommended frontmatter.
+
+---
+
+## 🔧 Installation
+
+### Via BRAT (recommended)
 
 1. In Obsidian, install and enable **BRAT**.
-2. In BRAT settings, add this repository URL as a beta plugin:
+2. In BRAT settings, add this repo as a beta plugin:
    `https://github.com/NoMansbacon/DH-UI`
 3. Let BRAT install/update the plugin.
-4. In Obsidian, enable **Daggerheart Tooltips (DH-UI)** in *Settings → Community plugins*.
+4. Enable **Daggerheart Tooltips (DH-UI)** in *Settings → Community plugins*.
 
-### Manual install (developers / advanced users)
+### Manual (for developers)
 
-1. Copy this folder into your vault under `.obsidian/plugins/daggerheart-tooltips` (or use your preferred Obsidian plugin workflow).
+1. Copy this folder into your vault under `.obsidian/plugins/daggerheart-tooltips`.
 2. Run `npm install` in the plugin folder.
-3. Run `npm run dev` to build `main.js` from the TypeScript sources.
-4. In Obsidian, enable **Daggerheart Tooltips** in *Settings → Community plugins*.
+3. Run `npm run dev` to build `main.js`.
+4. Enable **Daggerheart Tooltips** in *Settings → Community plugins*.
 
 The plugin requires Obsidian `minAppVersion` as specified in `manifest.json`.
-
----
-
-## Documentation
-
-The full docs, examples, and code block reference are hosted on GitHub Pages:
-
-- **Docs site:** https://NoMansbacon.github.io/DH-UI/
-
-Start with **Get Started** / **Usage Guide** on the docs site for character frontmatter, example blocks, and detailed behavior.
