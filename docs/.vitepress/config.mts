@@ -20,17 +20,32 @@ export default defineConfig({
         ],
       },
       {
-        text: "Code Blocks",
+        text: "Character Sheet",
         items: [
-          { text: "Overview", link: "/blocks" },
+          { text: "Code Blocks Overview", link: "/blocks" },
           { text: "Traits & Abilities", link: "/blocks/traits-abilities" },
           { text: "Vitals & Trackers", link: "/blocks/vitals-trackers" },
           { text: "Rest & Level Up", link: "/blocks/rest-levelup" },
           { text: "Damage", link: "/blocks/damage" },
+        ],
+      },
+      {
+        text: "Resources & Inventory",
+        items: [
           { text: "Consumables", link: "/blocks/consumables" },
+          { text: "Domain & Equipment Pickers", link: "/blocks/pickers" },
+        ],
+      },
+      {
+        text: "Display & Story",
+        items: [
           { text: "Badges & Features", link: "/blocks/badges-features" },
           { text: "Experiences", link: "/blocks/experiences" },
-          { text: "Domain & Equipment Pickers", link: "/blocks/pickers" },
+        ],
+      },
+      {
+        text: "Concepts",
+        items: [
           { text: "Templates & Events", link: "/blocks/templates-events" },
         ],
       },
