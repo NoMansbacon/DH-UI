@@ -4,7 +4,8 @@
 
 Simple label–value badges, often used for level, ancestry, class, etc.
 
-```markdown
+![Badges](/images/Badges.webp.png)
+
 ```badges
 class: my-badges
 items:
@@ -15,7 +16,6 @@ items:
   - label: "Class"
     value: "{{ frontmatter.class }}"
 ```
-```
 
 - `items[].label` – badge label.
 - `items[].value` – text/value (literal or template).
@@ -25,7 +25,6 @@ items:
 
 Displays ancestry, class, subclass, and community features in either list or grid layouts.
 
-```markdown
 ```features
 ancestry:
   - label: "Emberborn"
@@ -40,11 +39,9 @@ community:
   - label: "Free City Guard"
     value: "Sworn to protect the city of Vyr."
 ```
-```
 
 Grid layout variant:
 
-```markdown
 ```features
 layout: grid
 ancestry:
