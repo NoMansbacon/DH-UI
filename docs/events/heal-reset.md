@@ -7,7 +7,7 @@ In addition to Short/Long Rest, the rest block can render two powerful utility b
 
 These are great for:
 
-> For an overview of related blocks (rest, vitals, damage, etc.), see the [Code Block Reference](/blocks/).
+> For an overview of related blocks (rest, vitals, damage, etc.), see the [Code Block Reference](/blocks).
 
 •  Starting a new session with everyone at full health.  
 •  Quickly resetting a test or one‑shot character sheet.  

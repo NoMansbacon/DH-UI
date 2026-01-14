@@ -82,7 +82,7 @@ The block updates trackers by writing to the same state keys that HP and Armor t
   - Set this explicitly if you want separate HP pools or a custom naming scheme.  
 
 - **`armor_key`**  
-  - Default: a note‑scoped Armor key like `"din_armor::<note-path>"`.  
+  - Default: a note‑scoped Armor key like `"din_armor::&lt;note-path&gt;"`.  
   - Set this if you want a shared Armor pool across multiple notes or characters.  
 
 When you click **Apply**, the damage calculator:

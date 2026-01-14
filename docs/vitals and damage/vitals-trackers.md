@@ -24,7 +24,7 @@ How the trackers work
 Each of the four trackers draws a row of boxes:
 
 •  Click a box to fill or unfill it.  
-•  Filled boxes are saved using a state key (like `din_health`, `din_stress::<note-path>`).  
+•  Filled boxes are saved using a state key (like `din_health`, `din_stress::&lt;note-path&gt;`).  
 •  When you reopen the note, the filled counts are restored from the state store.  
 
 These same keys are what rest and damage use to apply healing and damage.
@@ -34,9 +34,9 @@ Default keys and overrides
 By default:
 
 •  hp_key: "din_health" (shared across notes so damage/rest can always find your HP).  
-•  stress_key: "din_stress::<note-path>" (scoped per note).  
-•  armor_key: "din_armor::<note-path>" (scoped per note).  
-•  hope_key: "din_hope::<note-path>" (scoped per note).
+•  stress_key: "din_stress::&lt;note-path&gt;" (scoped per note).  
+•  armor_key: "din_armor::&lt;note-path&gt;" (scoped per note).  
+•  hope_key: "din_hope::&lt;note-path&gt;" (scoped per note).
 
 You can override any of these in the vitals YAML if you want to share a pool across notes or separate multiple characters in one file.
 
@@ -171,8 +171,8 @@ Top‑level options:
 | `armor`        | Number / String   | `0`                            | Number of Armor boxes; templates allowed.                                  |
 | `hope`         | Number / String   | `6` if missing/0               | Number of Hope diamonds; templates allowed (defaults to 6 if falsy).       |
 | `hp_key`       | String            | `"din_health"`                 | State key for HP tracker.                                                  |
-| `stress_key`   | String            | `"din_stress::<note-path>"`    | State key for Stress tracker.                                              |
-| `armor_key`    | String            | `"din_armor::<note-path>"`     | State key for Armor tracker.                                               |
-| `hope_key`     | String            | `"din_hope::<note-path>"`      | State key for Hope tracker.                                                |
+|| `stress_key`   | String            | `"din_stress::&lt;note-path&gt;"`    | State key for Stress tracker.                                              |
+|| `armor_key`    | String            | `"din_armor::&lt;note-path&gt;"`     | State key for Armor tracker.                                               |
+|| `hope_key`     | String            | `"din_hope::&lt;note-path&gt;"`      | State key for Hope tracker.                                                |
 | `hope_feature` | String / Object / Array | _none_                 | Optional text or list of `{label, value}` rows under the Hope tracker.     |
 | `footer`       | (alias)           | _none_                         | Alias for `hope_feature` (for backwards compatibility).                     |

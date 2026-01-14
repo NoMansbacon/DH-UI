@@ -2,7 +2,7 @@
 
 The rest block provides player‑facing controls for Short Rest and Long Rest, wired into your HP / Stress / Armor / Hope trackers.
 
-> For a full index of all available blocks, see the [Code Block Reference](/blocks/).
+> For a full index of all available blocks, see the [Code Block Reference](/blocks).
 
 It:
 
@@ -26,9 +26,9 @@ For each one, it reads the data-dh-key attribute (the state key) and uses that w
 If it can’t find a tracker of a given type, it falls back to:
 
 •  HP: `din_health`  
-•  Stress: `din_stress::<note-path>`  
-•  Armor: `din_armor::<note-path>`  
-•  Hope: `din_hope::<note-path>`
+•  Stress: `din_stress::&lt;note-path&gt;`  
+•  Armor: `din_armor::&lt;note-path&gt;`  
+•  Hope: `din_hope::&lt;note-path&gt;`
 
 You can override these keys in YAML if you need unusual setups.
 

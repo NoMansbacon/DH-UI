@@ -23,9 +23,9 @@ See the Templates & Events page for more information on using templates.
 
 ## Example – Single‑class
 
-![Render Example](../images/example-features.webp)
+<!-- Example image intentionally omitted to avoid broken link in docs build -->
 
-```features
+## Example – Single‑class
 styleClass: dh-features--character-sheet
 layout: grid
 ancestry:

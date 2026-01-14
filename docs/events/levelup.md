@@ -7,7 +7,7 @@ The Level Up feature gives you a dedicated UI for advancing a character. It can 
 
 Both open the same Level Up modal, tied to the current character note.
 
-> For an overview of all blocks, including rest and vitals, see the [Code Block Reference](/blocks/).
+> For an overview of all blocks, including rest and vitals, see the [Code Block Reference](/blocks).
 
 What the Level Up modal does (conceptually)
 

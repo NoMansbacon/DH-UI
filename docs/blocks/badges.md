@@ -2,7 +2,7 @@
 
 The badges component can be used to display any generic Key/Value data in a more condensed view. Optionally, you can also omit they Key/Value and display only one.
 
-![Render Example](../images/example-badges.webp)
+<!-- Example image intentionally omitted to avoid broken link in docs build -->
 
 ## Dynamic Content
 
