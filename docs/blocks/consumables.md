@@ -17,14 +17,14 @@ Each consumable row:
 
 ## Dynamic Content
 
-uses supports dynamic content using template variables with <span v-pre>{{ }}</span> style templates. This lets you compute the maximum number of uses from frontmatter or other values, for example:
+`uses` supports dynamic content using template variables with <span v-pre>`{{ }}`</span> style templates. This lets you compute the maximum number of uses from frontmatter or other values, for example:
 
-•  Tie a potion’s uses to a frontmatter field like frontmatter.hp_potions.  
-•  Compute uses from a formula like {{ add 1 frontmatter.slots }}.  
+•  Tie a potion’s uses to a frontmatter field like <span v-pre>`frontmatter.hp_potions`</span>.  
+•  Compute uses from a formula like <span v-pre>`{{ add 1 frontmatter.slots }}`</span>.  
 
 The uses field is processed with the same template engine as other blocks (badges, vitals, damage, features, etc.).
 
-See the Templates & Events page for more information on using templates.
+See the [Templates & Events](../events/templates-events.md) page for more information on using templates.
 
 ## Example – Multiple consumables
 

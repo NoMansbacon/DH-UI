@@ -60,9 +60,9 @@ bonus: +2
 
 You can also define experiences as a map instead of a list:
 
-```yaml path=null start=null
+```yaml
 ```experiences
-styleClass: 
+styleClass: dh-experiences--sidebar
 items:
   river:
     name: "Friend of the Riverfolk"

@@ -2,6 +2,8 @@
 
 The rest block provides player‑facing controls for Short Rest and Long Rest, wired into your HP / Stress / Armor / Hope trackers.
 
+> For a full index of all available blocks, see the [Code Block Reference](/blocks/).
+
 It:
 
 •  Finds the relevant trackers in the current note.  

@@ -121,6 +121,8 @@ This section gives short examples for the most common blocks. See the README for
 
 ```markdown
 ```vitals
+styleClass: dh-vitals--sheet
+
 hp: "{{ frontmatter.hp }}"
 stress: "{{ frontmatter.stress }}"
 armor: "{{ frontmatter.armor }}"
@@ -137,12 +139,14 @@ hope_key: din_hope::{{ file.path }}
 
 ```markdown
 ```hp
+styleClass: dh-tracker--hp
 label: HP
 state_key: din_health
 uses: "{{ frontmatter.hp }}"
 ```
 
 ```stress
+styleClass: dh-tracker--stress
 label: Stress
 state_key: din_stress::{{ file.path }}
 uses: "{{ frontmatter.stress }}"
@@ -153,6 +157,8 @@ uses: "{{ frontmatter.stress }}"
 
 ```markdown
 ```rest
+styleClass: dh-rest--sheet
+
 rest_label: "Rest"
 levelup_label: "Level Up"
 full_heal_label: "Full Heal"
@@ -174,6 +180,7 @@ show_reset_all: true
 
 ```markdown
 ```damage
+styleClass: dh-damage--inline
 title: "Damage"
 
 hp_key: din_health
@@ -191,6 +198,7 @@ level: "{{ frontmatter.level }}"
 
 ```markdown
 ```consumables
+styleClass: dh-consumables--sheet
 items:
   - label: "Health Potion"
     state_key: hero_hp_pots
@@ -205,6 +213,7 @@ items:
 
 ```markdown
 ```badges
+styleClass: dh-badges--sheet
 items:
   - label: "Level"
     value: "{{ frontmatter.level }}"
@@ -219,6 +228,7 @@ items:
 
 ```markdown
 ```features
+styleClass: dh-features--sheet
 ancestry:
   - label: "Emberborn"
     value: "Fire‑aligned ancestry from the Ashen Realms."
@@ -238,6 +248,7 @@ To use a grid layout instead of a simple list:
 
 ```markdown
 ```features
+styleClass: dh-features--grid
 layout: grid
 ancestry:
   - label: "Emberborn"
@@ -364,21 +375,21 @@ note: "You bear a strange symbol that reacts to ancient magic."
 
 ## Template engine quick reference
 
-Anywhere you can write a string in block YAML, you can usually use template expressions like `{{ frontmatter.hp }}`.
+Anywhere you can write a string in block YAML, you can usually use template expressions like <span v-pre>`{{ frontmatter.hp }}`</span>.
 
 Supported paths include:
 
-- `frontmatter.*` – note frontmatter, e.g. `{{ frontmatter.level }}`.
-- `abilities.*` – totals from the nearest ```traits block, e.g. `{{ abilities.Agility }}`.
+- `frontmatter.*` – note frontmatter, e.g. <span v-pre>`{{ frontmatter.level }}`</span>.
+- `abilities.*` – totals from the nearest ```traits block, e.g. <span v-pre>`{{ abilities.Agility }}`</span>.
 - `skills.*` – from a `skills` map in frontmatter.
-- `character.*` – a derived summary, e.g. `{{ character.level }}`, `{{ character.hp }}`.
+- `character.*` – a derived summary, e.g. <span v-pre>`{{ character.level }}`</span>, <span v-pre>`{{ character.hp }}`</span>.
 
 Basic helpers:
 
-- `{{ add 2 frontmatter.level }}` – numeric addition.
-- `{{ subtract frontmatter.hp 2 }}` – subtraction.
-- `{{ multiply 2 frontmatter.level }}` – multiplication.
-- `{{ floor divide frontmatter.hp 2 }}` – integer division.
+- <span v-pre>`{{ add 2 frontmatter.level }}`</span> – numeric addition.
+- <span v-pre>`{{ subtract frontmatter.hp 2 }}`</span> – subtraction.
+- <span v-pre>`{{ multiply 2 frontmatter.level }}`</span> – multiplication.
+- <span v-pre>`{{ floor divide frontmatter.hp 2 }}`</span> – integer division.
 
 If a template expression fails, it resolves to an empty string instead of throwing.
 

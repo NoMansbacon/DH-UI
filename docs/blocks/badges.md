@@ -14,7 +14,7 @@ Badges support dynamic content using template variables with <span v-pre>`{{ }}`
 
 Using dynamic content helps keep your character sheet updated as you level up.
 
-See the [Dynamic Content](../concepts/dynamic-content.md) page for more information on using templates.
+See the [Templates & Events](../events/templates-events.md) page for more information on using templates.
 
 ## Example
 

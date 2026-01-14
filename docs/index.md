@@ -69,18 +69,18 @@ It covers:
 
 If you want to preview this docs site locally before pushing to GitHub Pages:
 
-1. Install MkDocs with the Material theme (once per machine):
+1. From the root of this repository, install dependencies:
 
    ```bash
-   pip install mkdocs-material
+   npm install
    ```
 
-2. From the root of this repository, run:
+2. Run the VitePress dev server:
 
    ```bash
-   mkdocs serve
+   npm run docs:dev
    ```
 
-3. Open the printed `http://127.0.0.1:8000/` URL in your browser.
+3. Open the printed local URL in your browser.
 
 When you're happy with the docs, push your changes and let GitHub Pages host them.

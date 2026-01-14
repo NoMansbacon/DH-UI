@@ -21,7 +21,7 @@ The block is registered under:
 •  traits – primary name.  
 •  ability – alias.
 
-YAML structure
+## YAML structure
 
 The traits block expects a small YAML document with:
 
@@ -48,7 +48,7 @@ bonuses:
 ```
 ```
 
-## Rendered cards will show:
+### Rendered cards will show:
 
 - **AGI**: base 1 + bonus 1 = `+2`  
 - **PRE**: base 0 + bonus 2 = `+2`  
@@ -76,7 +76,7 @@ bonuses:
 ```
 ```
 
-## Internally, all bonus maps are summed:
+### Internally, all bonus maps are summed:
 
 - Agility: `1 (base) + 1 = 2`  
 - Finesse: `0 (base) + 1 = 1`  

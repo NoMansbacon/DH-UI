@@ -27,7 +27,7 @@ See the Templates & Events page for more information on using templates.
 
 ```yaml
 ```features
-styleClass: 
+styleClass: dh-features--character-sheet
 layout: grid
 ancestry:
   - label: "Emberborn"
@@ -51,7 +51,7 @@ community:
 
 ```yaml
 ```features
-styleClass:
+styleClass: dh-features--multiclass
 layout: grid
 ancestry:
   - from: "Emberborn"
