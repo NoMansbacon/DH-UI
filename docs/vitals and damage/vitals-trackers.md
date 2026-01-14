@@ -24,7 +24,7 @@ How the trackers work
 Each of the four trackers draws a row of boxes:
 
 •  Click a box to fill or unfill it.  
-•  Filled boxes are saved using a state key (like din_health, din_stress::<note-path>).  
+•  Filled boxes are saved using a state key (like `din_health`, `din_stress::<note-path>`).  
 •  When you reopen the note, the filled counts are restored from the state store.  
 
 These same keys are what rest and damage use to apply healing and damage.

@@ -1,23 +1,23 @@
 # Templates & Events
 
-Anywhere you can provide a string in block YAML, you can usually use templates like {{ frontmatter.hp }}.  
+Anywhere you can provide a string in block YAML, you can usually use templates like <span v-pre>`{{ frontmatter.hp }}`</span>.  
 Templates are evaluated against a shared template context and are supported in blocks such as badges, features, vitals, trackers, consumables, experiences, damage, and more.
 
 If a template expression fails, it resolves to an empty string instead of throwing. When a number is expected and the result isn’t numeric, it is treated as 0.
 
 ## Template paths
 
-These are the main paths you can use inside {{ ... }}:
+These are the main paths you can use inside <span v-pre>`{{ ... }}`</span>:
 
 •  frontmatter.* – raw note frontmatter.
 ◦  Examples:
-▪  {{ frontmatter.level }}
-▪  {{ frontmatter.hp_max }}
+▪  <span v-pre>`{{ frontmatter.level }}`</span>
+▪  <span v-pre>`{{ frontmatter.hp_max }}`</span>
 •  abilities.* – totals derived from the nearest ```traits block in the same section.
 ◦  The plugin parses that block and computes final scores, then exposes them in a case‑insensitive map.
 ◦  Examples:
-▪  {{ abilities.agility }}
-▪  {{ abilities.knowledge }}
+▪  <span v-pre>`{{ abilities.agility }}`</span>
+▪  <span v-pre>`{{ abilities.knowledge }}`</span>
 •  skills.* – numeric skills/moves from skills in frontmatter.
 ◦  Supports either:
 ▪  A map:  
@@ -25,8 +25,8 @@ These are the main paths you can use inside {{ ... }}:
 •  Or a list:  
       skills: [ { name: "attack", value: 2 }, { name: "sneak", value: 3 } ]
 •  Examples:
-◦  {{ skills.attack }}
-◦  {{ skills.sneak }}
+◦  <span v-pre>`{{ skills.attack }}`</span>
+◦  <span v-pre>`{{ skills.sneak }}`</span>
 •  character.* – derived summary from frontmatter.
 ◦  Fields include:
 ▪  character.name – typically from name or title.
@@ -34,8 +34,8 @@ These are the main paths you can use inside {{ ... }}:
 ▪  character.tier – from tier or level.
 ▪  character.hp, character.stress, character.armor, character.hope – from corresponding frontmatter (hp/health/din_health, etc.).
 ◦  Examples:
-▪  {{ character.level }}
-▪  {{ character.hp }}
+▪  <span v-pre>`{{ character.level }}`</span>
+▪  <span v-pre>`{{ character.hp }}`</span>
 
 You can also use bare numbers and these paths as arguments to helper functions (see next section).
 
@@ -43,11 +43,11 @@ You can also use bare numbers and these paths as arguments to helper functions (
 
 The template engine provides a few simple helpers for math and formatting. They work like:
 
-•  {{ add 2 frontmatter.level }}  
-•  {{ subtract frontmatter.hp 2 }}  
-•  {{ multiply 2 frontmatter.level }}  
-•  {{ divide frontmatter.hp 2 }}  
-•  {{ floor divide frontmatter.hp 2 }}
+•  <span v-pre>`{{ add 2 frontmatter.level }}`</span>  
+•  <span v-pre>`{{ subtract frontmatter.hp 2 }}`</span>  
+•  <span v-pre>`{{ multiply 2 frontmatter.level }}`</span>  
+•  <span v-pre>`{{ divide frontmatter.hp 2 }}`</span>  
+•  <span v-pre>`{{ floor divide frontmatter.hp 2 }}`</span>
 
 Supported helpers:
 
@@ -58,7 +58,7 @@ Supported helpers:
 •  floor x – Math.floor(x).  
 •  ceil x – Math.ceil(x).  
 •  round x – Math.round(x).  
-•  modifier x – pass‑through numeric value (mainly for readability, e.g. {{ modifier abilities.agility }}).
+•  modifier x – pass‑through numeric value (mainly for readability, e.g. <span v-pre>`{{ modifier abilities.agility }}`</span>).
 
 Arguments can be:
 

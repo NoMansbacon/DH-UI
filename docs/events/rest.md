@@ -25,10 +25,10 @@ For each one, it reads the data-dh-key attribute (the state key) and uses that w
 
 If it can’t find a tracker of a given type, it falls back to:
 
-•  HP: din_health  
-•  Stress: din_stress::<note-path>  
-•  Armor: din_armor::<note-path>  
-•  Hope: din_hope::<note-path>
+•  HP: `din_health`  
+•  Stress: `din_stress::<note-path>`  
+•  Armor: `din_armor::<note-path>`  
+•  Hope: `din_hope::<note-path>`
 
 You can override these keys in YAML if you need unusual setups.
 
