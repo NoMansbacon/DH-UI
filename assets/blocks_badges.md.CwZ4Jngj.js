@@ -1,0 +1,33 @@
+import{_ as s,c as n,o as e,ag as p}from"./chunks/framework.BpVvFBTM.js";const m=JSON.parse('{"title":"Badges","description":"","frontmatter":{},"headers":[],"relativePath":"blocks/badges.md","filePath":"blocks/badges.md"}'),l={name:"blocks/badges.md"};function t(i,a,o,r,c,d){return e(),n("div",null,[...a[0]||(a[0]=[p(`<h1 id="badges" tabindex="-1">Badges <a class="header-anchor" href="#badges" aria-label="Permalink to &quot;Badges&quot;">​</a></h1><p>The badges component can be used to display any generic Key/Value data in a more condensed view. Optionally, you can also omit they Key/Value and display only one.</p><h2 id="dynamic-content" tabindex="-1">Dynamic Content <a class="header-anchor" href="#dynamic-content" aria-label="Permalink to &quot;Dynamic Content&quot;">​</a></h2><p>Badges support dynamic content using template variables with <span><code>{{ }}</code></span> style templates. This allows creating badges with data from the frontmatter or even calculations based off abilities or skills. This is great for things like</p><ul><li>Level</li><li>Armor Score</li><li>Evasion</li></ul><p>Using dynamic content helps keep your character sheet updated as you level up.</p><p>See the <a href="./../events/templates-events.html">Templates &amp; Events</a> page for more information on using templates.</p><h2 id="example" tabindex="-1">Example <a class="header-anchor" href="#example" aria-label="Permalink to &quot;Example&quot;">​</a></h2><div class="language-badges vp-adaptive-theme"><button title="Copy Code" class="copy"></button><span class="lang">badges</span><pre class="shiki shiki-themes github-light github-dark vp-code" tabindex="0"><code><span class="line"><span>items:</span></span>
+<span class="line"><span>  - label: Character</span></span>
+<span class="line"><span>    value: &quot;{{ frontmatter.name }}&quot;</span></span>
+<span class="line"><span>  - label: Level</span></span>
+<span class="line"><span>    value: 1</span></span>
+<span class="line"><span>  - label: Evasion</span></span>
+<span class="line"><span>    value: &quot;{{ frontmatter.evasion }}&quot;</span></span>
+<span class="line"><span>  - label: Armor</span></span>
+<span class="line"><span>    value: &quot;{{ frontmatter.armor }}&quot;</span></span>
+<span class="line"><span>  - label: Ancestry</span></span>
+<span class="line"><span>    value: &quot;{{ frontmatter.ancestry }}&quot;</span></span>
+<span class="line"><span>  - label: Class</span></span>
+<span class="line"><span>    value: &quot;{{ frontmatter.class }}&quot;</span></span>
+<span class="line"><span>  - label: Subclass</span></span>
+<span class="line"><span>    value: &quot;{{ frontmatter.subclass }}&quot;</span></span>
+<span class="line"><span>  - label: Spellcast Trait</span></span>
+<span class="line"><span>    value: &quot;{{ frontmatter.spellcast_trait }}&quot;</span></span>
+<span class="line"><span>  - label: Heritage</span></span>
+<span class="line"><span>    value: &quot;Slyborne&quot;</span></span></code></pre></div><div class="language- vp-adaptive-theme"><button title="Copy Code" class="copy"></button><span class="lang"></span><pre class="shiki shiki-themes github-light github-dark vp-code" tabindex="0"><code><span class="line"><span></span></span>
+<span class="line"><span>### configuration</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>| Property   | Type     | Default      | Description                                                      |</span></span>
+<span class="line"><span>| ---------- | -------- | ------------ | ---------------------------------------------------------------- |</span></span>
+<span class="line"><span>| items    | Array    | Required | List of badge items to display                                   |</span></span>
+<span class="line"><span>| styleClass    | String   | none       | Optional CSS class name applied to the outer badges container   |</span></span>
+<span class="line"><span>| reverse  | Boolean  | false      | When true, render value before label instead of label → value |</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>### Item</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>| Property | Type                    | Description                      |</span></span>
+<span class="line"><span>| -------- | ----------------------- | -------------------------------- |</span></span>
+<span class="line"><span>| label  | String                  | Label text (optional)           |</span></span>
+<span class="line"><span>| value  | String / Number / Bool | Value to display (optional)     |</span></span></code></pre></div>`,10)])])}const b=s(l,[["render",t]]);export{m as __pageData,b as default};

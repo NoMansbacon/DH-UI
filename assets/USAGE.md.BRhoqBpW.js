@@ -60,6 +60,8 @@ import{_ as a,c as n,o as p,ag as e}from"./chunks/framework.BpVvFBTM.js";const u
 <span class="line"><span></span></span>
 <span class="line"><span>\`\`\`markdown</span></span>
 <span class="line"><span>\`\`\`vitals</span></span>
+<span class="line"><span>styleClass: dh-vitals--sheet</span></span>
+<span class="line"><span></span></span>
 <span class="line"><span>hp: &quot;{{ frontmatter.hp }}&quot;</span></span>
 <span class="line"><span>stress: &quot;{{ frontmatter.stress }}&quot;</span></span>
 <span class="line"><span>armor: &quot;{{ frontmatter.armor }}&quot;</span></span>
@@ -73,15 +75,19 @@ import{_ as a,c as n,o as p,ag as e}from"./chunks/framework.BpVvFBTM.js";const u
 <span class="line"><span></span></span>
 <span class="line"><span>\`\`\`markdown</span></span>
 <span class="line"><span>\`\`\`hp</span></span>
+<span class="line"><span>styleClass: dh-tracker--hp</span></span>
 <span class="line"><span>label: HP</span></span>
 <span class="line"><span>state_key: din_health</span></span>
-<span class="line"><span>uses: &quot;{{ frontmatter.hp }}&quot;</span></span></code></pre></div><div class="language-stress vp-adaptive-theme"><button title="Copy Code" class="copy"></button><span class="lang">stress</span><pre class="shiki shiki-themes github-light github-dark vp-code" tabindex="0"><code><span class="line"><span>label: Stress</span></span>
+<span class="line"><span>uses: &quot;{{ frontmatter.hp }}&quot;</span></span></code></pre></div><div class="language-stress vp-adaptive-theme"><button title="Copy Code" class="copy"></button><span class="lang">stress</span><pre class="shiki shiki-themes github-light github-dark vp-code" tabindex="0"><code><span class="line"><span>styleClass: dh-tracker--stress</span></span>
+<span class="line"><span>label: Stress</span></span>
 <span class="line"><span>state_key: din_stress::{{ file.path }}</span></span>
 <span class="line"><span>uses: &quot;{{ frontmatter.stress }}&quot;</span></span></code></pre></div><div class="language- vp-adaptive-theme"><button title="Copy Code" class="copy"></button><span class="lang"></span><pre class="shiki shiki-themes github-light github-dark vp-code" tabindex="0"><code><span class="line"><span></span></span>
 <span class="line"><span>### Rest controls + Level Up</span></span>
 <span class="line"><span></span></span>
 <span class="line"><span>\`\`\`markdown</span></span>
 <span class="line"><span>\`\`\`rest</span></span>
+<span class="line"><span>styleClass: dh-rest--sheet</span></span>
+<span class="line"><span></span></span>
 <span class="line"><span>rest_label: &quot;Rest&quot;</span></span>
 <span class="line"><span>levelup_label: &quot;Level Up&quot;</span></span>
 <span class="line"><span>full_heal_label: &quot;Full Heal&quot;</span></span>
@@ -100,6 +106,7 @@ import{_ as a,c as n,o as p,ag as e}from"./chunks/framework.BpVvFBTM.js";const u
 <span class="line"><span></span></span>
 <span class="line"><span>\`\`\`markdown</span></span>
 <span class="line"><span>\`\`\`damage</span></span>
+<span class="line"><span>styleClass: dh-damage--inline</span></span>
 <span class="line"><span>title: &quot;Damage&quot;</span></span>
 <span class="line"><span></span></span>
 <span class="line"><span>hp_key: din_health</span></span>
@@ -114,6 +121,7 @@ import{_ as a,c as n,o as p,ag as e}from"./chunks/framework.BpVvFBTM.js";const u
 <span class="line"><span></span></span>
 <span class="line"><span>\`\`\`markdown</span></span>
 <span class="line"><span>\`\`\`consumables</span></span>
+<span class="line"><span>styleClass: dh-consumables--sheet</span></span>
 <span class="line"><span>items:</span></span>
 <span class="line"><span>  - label: &quot;Health Potion&quot;</span></span>
 <span class="line"><span>    state_key: hero_hp_pots</span></span>
@@ -125,6 +133,7 @@ import{_ as a,c as n,o as p,ag as e}from"./chunks/framework.BpVvFBTM.js";const u
 <span class="line"><span></span></span>
 <span class="line"><span>\`\`\`markdown</span></span>
 <span class="line"><span>\`\`\`badges</span></span>
+<span class="line"><span>styleClass: dh-badges--sheet</span></span>
 <span class="line"><span>items:</span></span>
 <span class="line"><span>  - label: &quot;Level&quot;</span></span>
 <span class="line"><span>    value: &quot;{{ frontmatter.level }}&quot;</span></span>
@@ -136,6 +145,7 @@ import{_ as a,c as n,o as p,ag as e}from"./chunks/framework.BpVvFBTM.js";const u
 <span class="line"><span></span></span>
 <span class="line"><span>\`\`\`markdown</span></span>
 <span class="line"><span>\`\`\`features</span></span>
+<span class="line"><span>styleClass: dh-features--sheet</span></span>
 <span class="line"><span>ancestry:</span></span>
 <span class="line"><span>  - label: &quot;Emberborn&quot;</span></span>
 <span class="line"><span>    value: &quot;Fire‑aligned ancestry from the Ashen Realms.&quot;</span></span>
@@ -152,6 +162,7 @@ import{_ as a,c as n,o as p,ag as e}from"./chunks/framework.BpVvFBTM.js";const u
 <span class="line"><span></span></span>
 <span class="line"><span>\`\`\`markdown</span></span>
 <span class="line"><span>\`\`\`features</span></span>
+<span class="line"><span>styleClass: dh-features--grid</span></span>
 <span class="line"><span>layout: grid</span></span>
 <span class="line"><span>ancestry:</span></span>
 <span class="line"><span>  - label: &quot;Emberborn&quot;</span></span>
@@ -263,21 +274,21 @@ import{_ as a,c as n,o as p,ag as e}from"./chunks/framework.BpVvFBTM.js";const u
 <span class="line"><span></span></span>
 <span class="line"><span>## Template engine quick reference</span></span>
 <span class="line"><span></span></span>
-<span class="line"><span>Anywhere you can write a string in block YAML, you can usually use template expressions like \`{{ frontmatter.hp }}\`.</span></span>
+<span class="line"><span>Anywhere you can write a string in block YAML, you can usually use template expressions like &lt;span v-pre&gt;\`{{ frontmatter.hp }}\`&lt;/span&gt;.</span></span>
 <span class="line"><span></span></span>
 <span class="line"><span>Supported paths include:</span></span>
 <span class="line"><span></span></span>
-<span class="line"><span>- \`frontmatter.*\` – note frontmatter, e.g. \`{{ frontmatter.level }}\`.</span></span>
-<span class="line"><span>- \`abilities.*\` – totals from the nearest \`\`\`traits block, e.g. \`{{ abilities.Agility }}\`.</span></span>
+<span class="line"><span>- \`frontmatter.*\` – note frontmatter, e.g. &lt;span v-pre&gt;\`{{ frontmatter.level }}\`&lt;/span&gt;.</span></span>
+<span class="line"><span>- \`abilities.*\` – totals from the nearest \`\`\`traits block, e.g. &lt;span v-pre&gt;\`{{ abilities.Agility }}\`&lt;/span&gt;.</span></span>
 <span class="line"><span>- \`skills.*\` – from a \`skills\` map in frontmatter.</span></span>
-<span class="line"><span>- \`character.*\` – a derived summary, e.g. \`{{ character.level }}\`, \`{{ character.hp }}\`.</span></span>
+<span class="line"><span>- \`character.*\` – a derived summary, e.g. &lt;span v-pre&gt;\`{{ character.level }}\`&lt;/span&gt;, &lt;span v-pre&gt;\`{{ character.hp }}\`&lt;/span&gt;.</span></span>
 <span class="line"><span></span></span>
 <span class="line"><span>Basic helpers:</span></span>
 <span class="line"><span></span></span>
-<span class="line"><span>- \`{{ add 2 frontmatter.level }}\` – numeric addition.</span></span>
-<span class="line"><span>- \`{{ subtract frontmatter.hp 2 }}\` – subtraction.</span></span>
-<span class="line"><span>- \`{{ multiply 2 frontmatter.level }}\` – multiplication.</span></span>
-<span class="line"><span>- \`{{ floor divide frontmatter.hp 2 }}\` – integer division.</span></span>
+<span class="line"><span>- &lt;span v-pre&gt;\`{{ add 2 frontmatter.level }}\`&lt;/span&gt; – numeric addition.</span></span>
+<span class="line"><span>- &lt;span v-pre&gt;\`{{ subtract frontmatter.hp 2 }}\`&lt;/span&gt; – subtraction.</span></span>
+<span class="line"><span>- &lt;span v-pre&gt;\`{{ multiply 2 frontmatter.level }}\`&lt;/span&gt; – multiplication.</span></span>
+<span class="line"><span>- &lt;span v-pre&gt;\`{{ floor divide frontmatter.hp 2 }}\`&lt;/span&gt; – integer division.</span></span>
 <span class="line"><span></span></span>
 <span class="line"><span>If a template expression fails, it resolves to an empty string instead of throwing.</span></span>
 <span class="line"><span></span></span>
@@ -287,4 +298,4 @@ import{_ as a,c as n,o as p,ag as e}from"./chunks/framework.BpVvFBTM.js";const u
 <span class="line"><span></span></span>
 <span class="line"><span>- The plugin does **not** enforce Daggerheart rules (including multiclass rules, card limits, or build legality).</span></span>
 <span class="line"><span>- It focuses on **rendering UI** and **persisting state** for things like trackers, cards, and level‑up choices.</span></span>
-<span class="line"><span>- Your frontmatter, YAML, and in‑world decisions remain the source of truth for what is actually allowed at the table.</span></span></code></pre></div>`,36)])])}const k=a(l,[["render",i]]);export{u as __pageData,k as default};
+<span class="line"><span>- Your frontmatter, YAML, and in‑world decisions remain the source of truth for what is actually allowed at the table.</span></span></code></pre></div>`,36)])])}const g=a(l,[["render",i]]);export{u as __pageData,g as default};
