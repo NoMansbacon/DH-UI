@@ -11,7 +11,7 @@ You can use it for:
 
 ## Dynamic Content
 
-Feature values support dynamic content using template variables with <span v-pre>{{ }}</span> style templates. This lets you pull in values from frontmatter or calculated values, for example:
+Feature values support dynamic content using template variables with <span v-pre>`{{ }}`</span> style templates. This lets you pull in values from frontmatter or calculated values, for example:
 
 •  Show a damage bonus that depends on level.  
 •  Reference a trait or ancestry name stored in frontmatter.  

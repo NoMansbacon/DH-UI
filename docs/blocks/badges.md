@@ -39,7 +39,6 @@ items:
   - label: Heritage
     value: "Slyborne"
 ```
-```
 
 ### configuration
 

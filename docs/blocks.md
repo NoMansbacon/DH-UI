@@ -20,11 +20,11 @@ For full details on each block, use the sidebar links or jump directly:
 
 You use these blocks in Markdown like:
 
-```markdown
+````markdown
 ```traits
 # YAML options here
 ```
-```
+````
 
 Each block page includes copy‑pasteable examples and a list of supported options.
 

@@ -43,7 +43,6 @@ items:
     state_key: "din_channel_divinity"
     uses: "{{ add 1 frontmatter.tier }}"
 ```
-```
 
 - **Click** a box to toggle it on/off.  
 - The current filled count is saved using `state_key`, so it stays in sync across note reloads.
@@ -57,7 +56,6 @@ styleClass:
 label: "Health Potion"
 state_key: "din_hp_pot_single"
 uses: 3
-```
 ```
 
 ## Example – Map style `items`
@@ -74,8 +72,8 @@ items:
 
   sp:
     label: "Spell Slots"
-state_key: "din_spell_slots"
-uses: "{{ frontmatter.spell_slots }}"
+    state_key: "din_spell_slots"
+    uses: "{{ frontmatter.spell_slots }}"
 ```
 
 Functionally this is the same as the list version; the keys (`hp`, `sp`) are just for organization in YAML.

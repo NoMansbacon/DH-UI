@@ -24,7 +24,7 @@ For a high‑level overview and installation instructions, see the root `README.
 
 Minimal working example in a character note:
 
-```markdown
+````markdown
 ---
 name: Thalia
 level: 1
@@ -51,7 +51,7 @@ show_levelup: true
 show_full_heal: true
 show_reset_all: true
 ```
-```
+````
 
 ---
 
@@ -111,15 +111,15 @@ This section gives short examples for the most common blocks. See the README for
 
 ### Traits / Abilities
 
-```markdown
+````markdown
 ```traits
 # usually no YAML needed – reads from frontmatter + your traits config
 ```
-```
+````
 
 ### Vitals grid
 
-```markdown
+````markdown
 ```vitals
 styleClass: dh-vitals--sheet
 
@@ -133,11 +133,11 @@ stress_key: din_stress::{{ file.path }}
 armor_key: din_armor::{{ file.path }}
 hope_key: din_hope::{{ file.path }}
 ```
-```
+````
 
 ### Individual trackers
 
-```markdown
+````markdown
 ```hp
 styleClass: dh-tracker--hp
 label: HP
@@ -151,11 +151,11 @@ label: Stress
 state_key: din_stress::{{ file.path }}
 uses: "{{ frontmatter.stress }}"
 ```
-```
+````
 
 ### Rest controls + Level Up
 
-```markdown
+````markdown
 ```rest
 styleClass: dh-rest--sheet
 
@@ -170,7 +170,7 @@ show_levelup: true
 show_full_heal: true
 show_reset_all: true
 ```
-```
+````
 
 - **Rest**: opens the rest-actions modal.
 - **Level Up**: opens the level‑up chooser modal tied to this note.
@@ -178,7 +178,7 @@ show_reset_all: true
 
 ### Damage
 
-```markdown
+````markdown
 ```damage
 styleClass: dh-damage--inline
 title: "Damage"
@@ -192,11 +192,11 @@ base_major: 3
 base_severe: 6
 level: "{{ frontmatter.level }}"
 ```
-```
+````
 
 ### Consumables
 
-```markdown
+````markdown
 ```consumables
 styleClass: dh-consumables--sheet
 items:
@@ -207,11 +207,11 @@ items:
     state_key: hero_rage
     uses: "{{ frontmatter.rage_uses }}"
 ```
-```
+````
 
 ### Badges
 
-```markdown
+````markdown
 ```badges
 styleClass: dh-badges--sheet
 items:
@@ -222,11 +222,11 @@ items:
   - label: "Class"
     value: "{{ frontmatter.class }}"
 ```
-```
+````
 
 ### Features (ancestry / class / subclass / community)
 
-```markdown
+````markdown
 ```features
 styleClass: dh-features--sheet
 ancestry:
@@ -242,11 +242,11 @@ community:
   - label: "Free City Guard"
     value: "Sworn to protect the city of Vyr."
 ```
-```
+````
 
 To use a grid layout instead of a simple list:
 
-```markdown
+````markdown
 ```features
 styleClass: dh-features--grid
 layout: grid
@@ -255,7 +255,7 @@ ancestry:
     value: "Fire‑aligned ancestry from the Ashen Realms."
 # ...
 ```
-```
+````
 
 ---
 

@@ -24,3 +24,7 @@ dh_state.json
 
 # Exclude macOS Finder (System Explorer) View States
 .DS_Store
+
+# VitePress build output (docs site)
+docs/.vitepress/dist/
+docs/.vitepress/cache/

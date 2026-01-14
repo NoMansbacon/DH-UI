@@ -67,5 +67,5 @@ If you want a dedicated Level Up area, you can also use the `levelup` code block
 
 ### Example – Inline Level Up button
 
-```level```levelup
+```levelup
 ```

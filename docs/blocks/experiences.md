@@ -34,7 +34,6 @@ items:
     note: "You have sworn to hunt down planar breaches in the name of the Order."
     bonus: +2
 ```
-```
 
 ## When rendered:
 
@@ -69,7 +68,6 @@ items:
     name: "Glimpse of the Void"
     note: "You once looked beyond the veil. The memory is terrifying but useful."
     bonus: +2
-```
 ```
 
 Functionally this is the same as the list version; the keys (`river`, `void`) are just for organizing your YAML.
