@@ -18,6 +18,7 @@ See the [Templates & Events](../events/templates-events.md) page for more inform
 
 ## Example
 
+```yaml
 ```badges
 items:
   - label: Character
@@ -38,6 +39,7 @@ items:
     value: "{{ frontmatter.spellcast_trait }}"
   - label: Heritage
     value: "Slyborne"
+```
 ```
 
 ### configuration
