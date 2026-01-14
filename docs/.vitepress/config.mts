@@ -24,29 +24,31 @@ export default defineConfig({
         items: [
           { text: "Code Blocks Overview", link: "/blocks" },
           { text: "Traits & Abilities", link: "/blocks/traits-abilities" },
-          { text: "Vitals & Trackers", link: "/blocks/vitals-trackers" },
-          { text: "Rest & Level Up", link: "/blocks/rest-levelup" },
-          { text: "Damage", link: "/blocks/damage" },
+          { text: "Vitals & Trackers", link: "/vitals%20and%20damage/vitals-trackers" },
+          { text: "Rest & Level Up", link: "/events/rest" },
+          { text: "Damage", link: "/vitals%20and%20damage/damage" },
         ],
       },
       {
         text: "Resources & Inventory",
         items: [
           { text: "Consumables", link: "/blocks/consumables" },
-          { text: "Domain & Equipment Pickers", link: "/blocks/pickers" },
+          { text: "Domain Picker", link: "/Pickers/domain-picker" },
+          { text: "Equipment Picker", link: "/Pickers/equipment-picker" },
         ],
       },
       {
         text: "Display & Story",
         items: [
-          { text: "Badges & Features", link: "/blocks/badges-features" },
+          { text: "Badges", link: "/blocks/badges" },
+          { text: "Features", link: "/blocks/features" },
           { text: "Experiences", link: "/blocks/experiences" },
         ],
       },
       {
         text: "Concepts",
         items: [
-          { text: "Templates & Events", link: "/blocks/templates-events" },
+          { text: "Templates & Events", link: "/events/templates-events" },
         ],
       },
     ],
