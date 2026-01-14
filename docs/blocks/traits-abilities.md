@@ -97,9 +97,9 @@ The nearest ```traits block in a section is used by the template engine to power
 
 - After parsing your `traits` YAML, the plugin computes final totals (`base + bonuses`) for each ability.
 - Those totals are exposed in templates as `abilities.<name>`, for example:
-  - `{{ abilities.agility }}`
-  - `{{ abilities.strength }}`
-  - `{{ abilities.knowledge }}`
+-  - <span v-pre>`{{ abilities.agility }}`</span>
+-  - <span v-pre>`{{ abilities.strength }}`</span>
+-  - <span v-pre>`{{ abilities.knowledge }}`</span>
 
 Names are matched **case‑insensitively**, so `abilities.Agility` and `abilities.agility` both work.
 
@@ -112,7 +112,6 @@ items:
   - label: "Presence"
     value: "{{ abilities.presence }}"
 ```
-```
 
 or combined with helpers:
 
@@ -120,7 +119,6 @@ or combined with helpers:
 items:
   - label: "Defense"
     value: "{{ add abilities.agility abilities.instinct }}"
-```
 ```
 
 ## Configuration summary – `traits` block

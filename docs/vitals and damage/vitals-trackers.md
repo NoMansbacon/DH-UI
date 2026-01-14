@@ -61,7 +61,7 @@ Each tracker’s hp, stress, armor, and hope field can be:
 
 Under the hood:
 
-•  If the value is like frontmatter.hp_max or {{ frontmatter.hp_max }}, it reads that field directly and parses it as a number.  
+•  If the value is like `frontmatter.hp_max` or <span v-pre>`{{ frontmatter.hp_max }}`</span>, it reads that field directly and parses it as a number.  
 •  Otherwise it runs the template through the shared template engine and parses the result as a number.  
 •  Non‑numeric or missing values fall back to 0 (except hope, which defaults to 6 if it would otherwise be 0).
 
