@@ -48,7 +48,9 @@ export default defineConfig({
       {
         text: "Concepts",
         items: [
-          { text: "Templates & Events", link: "/events/templates-events" },
+          { text: "Dynamic Content", link: "/concepts/dynamic-content" },
+          { text: "State Storage", link: "/concepts/state-storage" },
+          { text: "Events", link: "/events/templates-events" },
         ],
       },
     ],
