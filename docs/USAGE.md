@@ -83,10 +83,10 @@ This lets each character sheet have its own trackers and rest controls without i
 
 Anywhere you can provide a string in YAML, you can usually use templates like <span v-pre>`{{ frontmatter.hp }}`</span> or helpers like <span v-pre>`{{ add 2 frontmatter.level }}`</span>.
 
-See **Templates & Events** for the full list of paths (`frontmatter.*`, `abilities.*`, `skills.*`, `character.*`) and helpers (`add`, `subtract`, `multiply`, `divide`, `floor`, `ceil`, `round`, `modifier`).
+See **Dynamic Content** for the full list of paths (`frontmatter.*`, `traits.*`, `skills.*`, `character.*`) and helpers (`add`, `subtract`, `multiply`, `divide`, `floor`, `ceil`, `round`, `modifier`).
 
 ## Next steps
 
 - Read the **[Code Block Reference](/blocks)** for links to every block.
 - Dive into specific block pages under **Character Sheet**, **Resources & Inventory**, and **Display & Story** in the sidebar.
-- Check **[Templates & Events](/events/templates-events)** for advanced dynamic content and event integration.
+- Check **[Dynamic Content](/concepts/dynamic-content)** and **[Events](/concepts/events)** for advanced template usage and how internal events tie blocks together.

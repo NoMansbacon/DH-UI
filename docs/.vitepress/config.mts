@@ -46,6 +46,12 @@ export default defineConfig({
         ],
       },
       {
+        text: "Examples",
+        items: [
+          { text: "Wizard (School of Knowledge)", link: "/examples/wizard" },
+        ],
+      },
+      {
         text: "Concepts",
         items: [
           { text: "Dynamic Content", link: "/concepts/dynamic-content" },
