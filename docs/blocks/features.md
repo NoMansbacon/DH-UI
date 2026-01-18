@@ -153,6 +153,34 @@ The block will:
 - Group **Ancestry**, **Class**, and **Community** entries by `from` (source name), with headings like “Class – Warrior”.  
 - Group **Subclass** entries by `from` and then by `tier` (`Foundation`, `Specialization`, `Mastery`, or `Other`).  
 
+### Using multiple `features` blocks for layout
+
+You can place more than one `features` block in the same note. Each block can include any combination of the supported sections (`ancestry`, `class`, `subclass`, `community`), which lets you split features across different parts of your layout.
+
+For example, you might keep ancestry and community on the left, and class / subclass on the right:
+
+````yaml
+```features
+styleClass: dh-features--left
+layout: grid
+ancestry:
+  # Elf / Ribbet ancestry cards from the SRD
+community:
+  # Community cards from the SRD
+```
+
+```features
+styleClass: dh-features--right
+layout: grid
+class:
+  # Sorcerer and Druid class features
+subclass:
+  # Primal Origin and Warden of the Elements subclass cards
+```
+````
+
+Each `features` block is rendered independently; grouping by `from` and `tier` still works within that block.
+
 ### Configuration
 
 Top‑level `features` block options:

@@ -85,6 +85,15 @@ Anywhere you can provide a string in YAML, you can usually use templates like <s
 
 See **Dynamic Content** for the full list of paths (`frontmatter.*`, `traits.*`, `skills.*`, `character.*`) and helpers (`add`, `subtract`, `multiply`, `divide`, `floor`, `ceil`, `round`, `modifier`).
 
+### Multiple blocks and layout
+
+Most DH-UI blocks are independent: you can use the same block type more than once in a note to control layout.
+
+- For example, you can have one `features` block that only shows ancestry and community features, and a second `features` block that only shows class and subclass features, placing them in different columns.
+- Similarly, you can use several smaller `badges`, `consumables`, or `experiences` blocks instead of one large block when it makes your character sheet easier to read.
+
+State-based blocks (like `vitals`, `consumables`, and pickers) stay in sync as long as you reuse the same state keys (`hp_key`, `state_key`, `vault` / `loadout` lists, etc.).
+
 ## Next steps
 
 - Read the **[Code Block Reference](/blocks)** for links to every block.
