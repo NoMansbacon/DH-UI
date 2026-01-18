@@ -5,9 +5,8 @@ The consumables component is used to track limited‑use resources as clickable 
 You can use it for:
 
 •  Potions and elixirs  
-•  Charges on magic items  
-•  Rage / focus / inspiration pools  
-•  Session‑based or day‑based limited abilities  
+•  Charges on magic items    
+•  Session‑based or day‑based limited abilities 
 
 Each consumable row:
 
@@ -26,23 +25,22 @@ The uses field is processed with the same template engine as other blocks (badge
 
 See the [Templates & Events](../events/templates-events.md) page for more information on using templates.
 
-## Example – Multiple consumables
+## Example – Consumables
 
+````markdown
 ```consumables
-styleClass: 
+styleClass:
 items:
-  - label: "Health Potions"
-    state_key: "din_hp_pots"
-    uses: 3
+  - label: "Health Potion"
+    state_key: "din_health_potion"
+    uses: 2  
 
-  - label: "Rage"
-    state_key: "din_rage"
-    uses: "{{ frontmatter.rage_uses }}"
+  - label: "Stamina Potion"
+    state_key: "din_stamina_potion"
+    uses: 1 
 
-  - label: "Channel Divinity"
-    state_key: "din_channel_divinity"
-    uses: "{{ add 1 frontmatter.tier }}"
 ```
+````
 
 - **Click** a box to toggle it on/off.  
 - The current filled count is saved using `state_key`, so it stays in sync across note reloads.

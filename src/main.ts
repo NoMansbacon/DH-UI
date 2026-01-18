@@ -39,8 +39,8 @@ export default class DaggerheartPlugin extends Plugin {
     this.addSettingTab(new DaggerheartSettingTab(this.app as App, this));
     console.log('[DH-UI] loaded');
 
-    // Ability / Traits (React)
-    const renderAbilities = (src: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
+    // Traits block renderer (also registered under legacy "ability" for back-compat)
+    const renderTraits = (src: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
       try {
         const view = new AbilityScoreView(this.app as App);
         el.empty();
@@ -55,16 +55,16 @@ export default class DaggerheartPlugin extends Plugin {
     // Register code fences; if another plugin already claimed these generic names,
     // fall back to namespaced aliases to avoid crashing the whole plugin.
     try {
-      this.registerMarkdownCodeBlockProcessor('ability', renderAbilities);
+      this.registerMarkdownCodeBlockProcessor('ability', renderTraits);
     } catch (e) {
-      console.warn('[DH-UI] "ability" code block already registered by another plugin; using alias "dh-ability" instead.', e);
-      try { this.registerMarkdownCodeBlockProcessor('dh-ability', renderAbilities); } catch {}
+      console.warn('[DH-UI] "ability" code block already registered by another plugin; using alias "dh-ability" (legacy).', e);
+      try { this.registerMarkdownCodeBlockProcessor('dh-ability', renderTraits); } catch {}
     }
     try {
-      this.registerMarkdownCodeBlockProcessor('traits', renderAbilities);
+      this.registerMarkdownCodeBlockProcessor('traits', renderTraits);
     } catch (e) {
       console.warn('[DH-UI] "traits" code block already registered by another plugin; using alias "dh-traits" instead.', e);
-      try { this.registerMarkdownCodeBlockProcessor('dh-traits', renderAbilities); } catch {}
+      try { this.registerMarkdownCodeBlockProcessor('dh-traits', renderTraits); } catch {}
     }
 
     // Other processors

@@ -37,6 +37,8 @@ export interface CharacterContext {
 
 export interface TemplateContext {
   frontmatter: Frontmatter;
+  // Daggerheart core traits; exposed to templates as both `traits.*` (preferred)
+  // and `abilities.*` (backwards-compatible alias for older notes).
   abilities: AbilityScores;
   skills: SkillsContext;
   character: CharacterContext;
@@ -122,6 +124,8 @@ export function createTemplateContext(el: HTMLElement, app: App, mdctx: Markdown
 function evalExpr(expr: string, ctx: TemplateContext): string|number {
   const mFM = expr.match(/^frontmatter\.([a-zA-Z0-9_\-]+)$/);
   if (mFM) return toStr(ctx.frontmatter?.[mFM[1]]);
+  const mTR = expr.match(/^traits\.([a-zA-Z0-9_\-]+)$/);
+  if (mTR) return toNum((ctx.abilities as any)?.[mTR[1]]);
   const mAB = expr.match(/^abilities\.([a-zA-Z0-9_\-]+)$/);
   if (mAB) return toNum((ctx.abilities as any)?.[mAB[1]]);
   const mSK = expr.match(/^skills\.([a-zA-Z0-9_\-]+)$/);
@@ -149,6 +153,7 @@ function resolveToken(tok: string, ctx: TemplateContext): any {
   tok = tok.trim();
   if (/^[+-]?\d+(\.\d+)?$/.test(tok)) return Number(tok);
   const mFM = tok.match(/^frontmatter\.([a-zA-Z0-9_\-]+)$/); if (mFM) return ctx.frontmatter?.[mFM[1]];
+  const mTR = tok.match(/^traits\.([a-zA-Z0-9_\-]+)$/); if (mTR) return (ctx.abilities as any)?.[mTR[1]];
   const mAB = tok.match(/^abilities\.([a-zA-Z0-9_\-]+)$/); if (mAB) return (ctx.abilities as any)?.[mAB[1]];
   const mSK = tok.match(/^skills\.([a-zA-Z0-9_\-]+)$/); if (mSK) return (ctx.skills as any)?.[mSK[1]];
   const mCH = tok.match(/^character\.([a-zA-Z0-9_\-]+)$/); if (mCH) return (ctx.character as any)?.[mCH[1]];

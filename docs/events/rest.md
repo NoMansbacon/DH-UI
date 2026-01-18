@@ -25,7 +25,7 @@ For each one, it reads the data-dh-key attribute (the state key) and uses that w
 
 If it can’t find a tracker of a given type, it falls back to:
 
-•  HP: `din_health`  
+•  HP: `din_health::&lt;note-path&gt;`  
 •  Stress: `din_stress::&lt;note-path&gt;`  
 •  Armor: `din_armor::&lt;note-path&gt;`  
 •  Hope: `din_hope::&lt;note-path&gt;`
@@ -88,7 +88,7 @@ Relevant `rest` options for Short/Long rest:
 | `long_label`  | String  | `"Long Rest"`                | Label for the Long Rest button.                               |
 | `show_short`  | Boolean | `true`                       | Whether to show Short Rest.                                   |
 | `show_long`   | Boolean | `true`                       | Whether to show Long Rest.                                    |
-| `hp_key`      | String  | auto / `din_health`          | HP tracker key.                                               |
+|| `hp_key`      | String  | auto / note‑scoped default   | HP tracker key.                                               |
 | `stress_key`  | String  | auto / note‑scoped default   | Stress tracker key.                                           |
 | `armor_key`   | String  | auto / note‑scoped default   | Armor tracker key.                                            |
 | `hope_key`    | String  | auto / note‑scoped default   | Hope tracker key.                                             |

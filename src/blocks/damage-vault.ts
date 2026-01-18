@@ -26,7 +26,7 @@ import { asNum, clamp } from "../utils/number";
 
 const roots = new WeakMap<HTMLElement, Root>();
 
-const HP_KEY = "din_health";
+const HP_KEY = "din_health"; // legacy shared key; prefer note-scoped via hp_key in YAML
 const ARMOR_KEY = "din_armor";
 
 function getPreviewScope(el: HTMLElement): HTMLElement {

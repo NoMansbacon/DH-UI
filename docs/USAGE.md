@@ -31,7 +31,14 @@ hope: 6
 ---
 
 ```traits
-# usually no YAML needed – reads from frontmatter + your traits config
+abilities:
+  Agility: 0
+  Strength: 0
+  Finesse: 0
+  Instinct: 0
+  Presence: 0
+  Knowledge: 0
+bonuses:
 ```
 
 ```vitals

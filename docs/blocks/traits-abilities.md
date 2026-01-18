@@ -1,6 +1,6 @@
-# Traits & Abilities
+# Traits
 
-The traits block shows your six core abilities as cards with totals and a proficiency toggle for each:
+The `traits` block shows your six core Daggerheart traits as cards with totals and a proficiency toggle for each:
 
 •  Agility  
 •  Strength  
@@ -11,10 +11,10 @@ The traits block shows your six core abilities as cards with totals and a profic
 
 It:
 
-•  Combines base ability scores with trait bonuses from YAML.  
-•  Renders one card per ability with a short label (AGI, STR, etc.) and the final modifier.  
-•  Lets you toggle proficiency on/off per ability; the toggle state is saved via localStorage.  
-•  Feeds the abilities.* template context (used in badges/features/etc.).
+•  Combines base trait values with bonuses from YAML.  
+•  Renders one card per trait with a short label (AGI, STR, etc.) and the final modifier.  
+•  Lets you toggle proficiency on/off per trait; the toggle state is saved via localStorage.  
+•  Feeds the trait totals into the template context as both `traits.*` and `abilities.*` (for backwards‑compatibility), so other blocks like badges and features can reference them.
 
 The block is registered under:
 
@@ -23,13 +23,13 @@ The block is registered under:
 
 ## YAML structure
 
-The traits block expects a small YAML document with:
+The `traits` block expects a small YAML document that describes your Daggerheart **traits**:
 
-•  abilities – base scores.  
-•  bonuses – trait bonuses (preferred key).  
-•  trait – legacy alias for trait bonuses (still supported).
+•  `abilities` – base trait values (one entry per trait, e.g. `Agility: 1`).  
+•  `bonuses` – additional trait bonuses (preferred key).  
+•  `trait` – legacy alias for `bonuses` (still supported for older notes).
 
-All three accept maps keyed by ability name, and bonuses can also be arrays of maps that get summed.
+All three accept maps keyed by trait name, and `bonuses`/`trait` can also be arrays of maps that get summed.
 
 ## Example – Base abilities + one bonuses map
 ```traits
@@ -43,7 +43,7 @@ abilities:
 
 bonuses:
   Agility: 1       # from a trait
-Presence: 2      # from ancestry or class
+  Presence: 2      # from ancestry or class
 ```
 
 ### Rendered cards will show:
@@ -69,7 +69,7 @@ bonuses:
   - Agility: 1         # from ancestry
     Finesse: 1
   - Presence: 1        # from class
-Presence: 1        # from background
+    Presence: 1        # from background
 ```
 
 ### Internally, all bonus maps are summed:
@@ -82,35 +82,36 @@ You can also still use the older `trait:` key instead of `bonuses:`, but new not
 
 ## Proficiency toggles
 
-Each ability card has a small **toggle pill**:
+Each trait card has a small **toggle pill**:
 
-- Clicking the toggle marks that ability as “on” (proficient) or “off”.  
-- The state is stored in `localStorage` under a per‑ability key like:  
-  `dh:traitToggle:<filePath>:<AbilityName>`  
+- Clicking the toggle marks that trait as “on” (proficient) or “off”.  
+- The state is stored in `localStorage` under a per‑trait key like:  
+  `dh:traitToggle:<filePath>:<TraitName>`  
 - When the note is reloaded, the block reads those keys and restores the toggles.
 
-Advanced integrations can fire the `dh:ability:refresh` event if they change toggles programmatically; the traits view listens for that and re‑reads `localStorage`.
+Advanced integrations can fire the `dh:ability:refresh` event if they change toggles programmatically; the view listens for that and re‑reads `localStorage`.
 
-## Templates integration (`abilities.*`)
+## Templates integration (`traits.*`)
 
-The nearest ```traits block in a section is used by the template engine to power `abilities.*`:
+The nearest ```traits block in a section is used by the template engine to expose your Daggerheart trait totals.
 
-- After parsing your `traits` YAML, the plugin computes final totals (`base + bonuses`) for each ability.
-- Those totals are exposed in templates as `abilities.<name>`, for example:
--  - <span v-pre>`{{ abilities.agility }}`</span>
--  - <span v-pre>`{{ abilities.strength }}`</span>
--  - <span v-pre>`{{ abilities.knowledge }}`</span>
+- After parsing your `traits` YAML, the plugin computes final totals (`base + bonuses`) for each trait.
+- Those totals are exposed in templates as `traits.<name>`.
+- Examples:
+  - <span v-pre>`{{ traits.agility }}`</span>  
+  - <span v-pre>`{{ traits.strength }}`</span>  
+  - <span v-pre>`{{ traits.knowledge }}`</span>
 
-Names are matched **case‑insensitively**, so `abilities.Agility` and `abilities.agility` both work.
+Names are matched **case‑insensitively**, so `traits.Agility` and `traits.agility` both work.
 
 You can then use these in other blocks, e.g.:
 
 ```badges
 items:
   - label: "Agility"
-    value: "{{ abilities.agility }}"
+    value: "{{ traits.agility }}"
   - label: "Presence"
-    value: "{{ abilities.presence }}"
+    value: "{{ traits.presence }}"
 ```
 
 or combined with helpers:
@@ -118,15 +119,15 @@ or combined with helpers:
 ```badges
 items:
   - label: "Defense"
-    value: "{{ add abilities.agility abilities.instinct }}"
+    value: "{{ add traits.agility traits.instinct }}"
 ```
 
 ## Configuration summary – `traits` block
 
 Top‑level options:
 
-| Property    | Type                         | Description                                                                 |
-| ----------- | ---------------------------- | --------------------------------------------------------------------------- |
-| `abilities` | Map `AbilityName -> Number`  | Base scores for the six abilities. Missing ones default to 0.              |
-| `bonuses`   | Map or Array of Maps         | Trait/feature bonuses; all maps are summed by ability.                     |
-| `trait`     | Map or Array of Maps         | Legacy alias for `bonuses` (still supported but not recommended for new notes). |
+|| Property    | Type                         | Description                                                                 |
+|| ----------- | ---------------------------- | --------------------------------------------------------------------------- |
+|| `abilities` | Map `TraitName -> Number`    | Base values for the six Daggerheart traits. Missing ones default to 0.     |
+|| `bonuses`   | Map or Array of Maps         | Trait bonuses; all maps are summed by trait.                               |
+|| `trait`     | Map or Array of Maps         | Legacy alias for `bonuses` (still supported but not recommended for new notes). |

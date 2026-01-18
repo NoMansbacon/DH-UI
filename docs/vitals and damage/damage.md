@@ -46,9 +46,9 @@ major_threshold and severe_threshold support template values with <span v-pre>{{
 styleClass: 
 
 # Optional: override which HP and Armor trackers this block affects.
-# If omitted, HP uses the default "din_health" key, and Armor
-# is note-scoped by default.
-hp_key: "din_health"
+# If omitted, HP uses the same key as your vitals block (typically a note-scoped
+# key like "din_health::&lt;note-path&gt;"), and Armor is note-scoped by default.
+hp_key: "din_health::character-sheet"
 armor_key: "din_armor::character-sheet"
 
 # Direct numeric thresholds (before level is added).
@@ -78,8 +78,8 @@ The plugin will:
 The block updates trackers by writing to the same state keys that HP and Armor trackers use:
 
 - **`hp_key`**  
-  - Default: a shared HP key (e.g. `"din_health"`) compatible with the `vitals` / `hp` blocks.  
-  - Set this explicitly if you want separate HP pools or a custom naming scheme.  
+  - Default: whatever HP key your trackers are using (usually a note‑scoped key like `"din_health::&lt;note-path&gt;"` from the `vitals` block).  
+  - Set this explicitly if you want separate naming or shared HP pools across notes.  
 
 - **`armor_key`**  
   - Default: a note‑scoped Armor key like `"din_armor::&lt;note-path&gt;"`.  
@@ -98,7 +98,7 @@ Top‑level `damage` block options:
 | Property            | Type              | Default                 | Description                                                                                         |
 | ------------------- | ----------------- | ----------------------- | --------------------------------------------------------------------------------------------------- |
 | `styleClass`        | String            | _none_                  | Optional CSS class applied to the damage block container (preferred styling hook).                 |
-| `hp_key`            | String            | `"din_health"`          | State key for the HP tracker this damage block should update.                                      |
+|| `hp_key`            | String            | _none_ (use tracker key) | State key for the HP tracker this damage block should update (defaults to the HP tracker’s key). |
 | `armor_key`         | String            | `din_armor::(note)`     | State key for the Armor tracker this damage block should update (defaults to note‑scoped).         |
 | `major_threshold`   | Number / String   | _from FM / base_*_      | Major damage threshold; can be a number or a template.                                             |
 | `severe_threshold`  | Number / String   | _from FM / base_*_      | Severe damage threshold; can be a number or a template.                                            |

@@ -53,7 +53,7 @@ full_heal_label: "Full Heal HP"
 
 # Full Heal itself just scans the note for HP trackers.
 # hp_key is optional; normally auto-detected.
-hp_key: "din_health"
+hp_key: "din_health::Character/Dree"
 ```
 
 ## Reset All
@@ -105,7 +105,7 @@ show_full_heal: true
 show_reset_all: true
 
 # Optional: rest integration with specific trackers
-hp_key: "din_health"
+hp_key: "din_health::Character/Dree"
 stress_key: "din_stress::Character/Dree"
 armor_key: "din_armor::Character/Dree"
 hope_key: "din_hope::Character/Dree"

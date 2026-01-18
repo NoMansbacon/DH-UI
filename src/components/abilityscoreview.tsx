@@ -8,10 +8,10 @@ import { AbilityView } from "./traits";
 import { buildCards } from "../core/abilities";
 
 /**
- * Renders the Daggerheart traits/abilities:
- * - Fixed six stats (Agility, Strength, Finesse, Instinct, Presence, Knowledge)
- * - Only shows TOTAL (base + trait)
- * - Per-card gold toggle (persisted via localStorage)
+ * Renders the Daggerheart trait cards:
+ * - The six core traits (Agility, Strength, Finesse, Instinct, Presence, Knowledge)
+ * - Shows TOTAL (base + trait bonuses)
+ * - Per-card toggle (persisted via localStorage)
  */
 export class AbilityScoreView {
   private app: App;

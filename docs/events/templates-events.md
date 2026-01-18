@@ -1,4 +1,8 @@
-# Templates & Events
+# Dynamic Content (Templates & Events)
+
+::: v-pre
+Dynamic content lets you create templates that automatically calculate and display values based on your Daggerheart character data using `{{ }}` syntax.
+:::
 
 Anywhere you can provide a string in block YAML, you can usually use templates like <span v-pre>`{{ frontmatter.hp }}`</span>.  
 Templates are evaluated against a shared template context and are supported in blocks such as badges, features, vitals, trackers, consumables, experiences, damage, and more.
@@ -13,11 +17,11 @@ These are the main paths you can use inside <span v-pre>`{{ ... }}`</span>:
 ◦  Examples:
 ▪  <span v-pre>`{{ frontmatter.level }}`</span>
 ▪  <span v-pre>`{{ frontmatter.hp_max }}`</span>
-•  abilities.* – totals derived from the nearest ```traits block in the same section.
-◦  The plugin parses that block and computes final scores, then exposes them in a case‑insensitive map.
+•  traits.* – final Daggerheart trait scores (Agility, Strength, Finesse, Instinct, Presence, Knowledge) derived from the nearest ```traits` block in the same section.
+◦  The plugin parses that block and computes final trait scores, then exposes them in a case‑insensitive map.
 ◦  Examples:
-▪  <span v-pre>`{{ abilities.agility }}`</span>
-▪  <span v-pre>`{{ abilities.knowledge }}`</span>
+▪  <span v-pre>`{{ traits.agility }}`</span>
+▪  <span v-pre>`{{ traits.knowledge }}`</span>
 •  skills.* – numeric skills/moves from skills in frontmatter.
 ◦  Supports either:
 ▪  A map:  
@@ -58,12 +62,12 @@ Supported helpers:
 •  floor x – Math.floor(x).  
 •  ceil x – Math.ceil(x).  
 •  round x – Math.round(x).  
-•  modifier x – pass‑through numeric value (mainly for readability, e.g. <span v-pre>`{{ modifier abilities.agility }}`</span>).
+•  modifier x – pass‑through numeric value (mainly for readability, e.g. <span v-pre>`{{ modifier traits.agility }}`</span>).
 
 Arguments can be:
 
 •  Plain numbers: 2, 3.5, -1.  
-•  Template paths: frontmatter.level, abilities.agility, skills.attack, character.hp.
+•  Template paths: frontmatter.level, traits.agility, skills.attack, character.hp.
 
 If a token cannot be parsed as a number, it is treated as 0 for numeric helpers.
 

@@ -45,7 +45,6 @@ levelup_label: "Level Up"
 show_full_heal: false
 show_reset_all: false
 ```
-```
 
 This adds a **“Level Up”** button alongside your Short / Long Rest buttons.
 

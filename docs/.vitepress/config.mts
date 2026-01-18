@@ -23,7 +23,7 @@ export default defineConfig({
         text: "Character Sheet",
         items: [
           { text: "Code Blocks Overview", link: "/blocks" },
-          { text: "Traits & Abilities", link: "/blocks/traits-abilities" },
+{ text: "Traits", link: "/blocks/traits-abilities" },
           { text: "Vitals & Trackers", link: "/vitals%20and%20damage/vitals-trackers" },
           { text: "Rest & Level Up", link: "/events/rest" },
           { text: "Damage", link: "/vitals%20and%20damage/damage" },

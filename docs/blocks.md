@@ -4,7 +4,7 @@ This section of the docs describes every fenced code block provided by DH-UI.
 
 For full details on each block, use the sidebar links or jump directly:
 
-- [Traits & Abilities](/blocks/traits-abilities)
+- [Traits](/blocks/traits-abilities)
 - [Vitals & Trackers](/vitals%20and%20damage/vitals-trackers)
 - [Damage](/vitals%20and%20damage/damage)
 - [Rest – Short & Long](/events/rest)
@@ -35,7 +35,7 @@ Each block page includes copy‑pasteable examples and a list of supported optio
 This page is just an index. For detailed options and examples, use the links above or jump straight to the most common areas:
 
 - **Core character sheet**
-  - [Traits & Abilities](/blocks/traits-abilities)
+  - [Traits](/blocks/traits-abilities)
   - [Vitals & Trackers](/vitals%20and%20damage/vitals-trackers)
   - [Damage](/vitals%20and%20damage/damage)
 

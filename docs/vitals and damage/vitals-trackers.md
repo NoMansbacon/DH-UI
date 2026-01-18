@@ -33,7 +33,7 @@ Default keys and overrides
 
 By default:
 
-•  hp_key: "din_health" (shared across notes so damage/rest can always find your HP).  
+•  hp_key: "din_health::&lt;note-path&gt;" (scoped per note).  
 •  stress_key: "din_stress::&lt;note-path&gt;" (scoped per note).  
 •  armor_key: "din_armor::&lt;note-path&gt;" (scoped per note).  
 •  hope_key: "din_hope::&lt;note-path&gt;" (scoped per note).
@@ -83,7 +83,7 @@ armor: "{{ frontmatter.armor_slots }}"
 hope: 6  # if omitted or 0, defaults to 6
 
 # Optional: override state keys (normally you can omit these)
-hp_key: "din_health"
+hp_key: "din_health::Character/Dree"
 stress_key: "din_stress::Character/Dree"
 armor_key: "din_armor::Character/Dree"
 hope_key: "din_hope::Character/Dree"
@@ -170,7 +170,7 @@ Top‑level options:
 | `stress`       | Number / String   | `0`                            | Number of Stress boxes; templates allowed.                                 |
 | `armor`        | Number / String   | `0`                            | Number of Armor boxes; templates allowed.                                  |
 | `hope`         | Number / String   | `6` if missing/0               | Number of Hope diamonds; templates allowed (defaults to 6 if falsy).       |
-| `hp_key`       | String            | `"din_health"`                 | State key for HP tracker.                                                  |
+|| `hp_key`       | String            | `"din_health::&lt;note-path&gt;"`   | State key for HP tracker.                                                  |
 || `stress_key`   | String            | `"din_stress::&lt;note-path&gt;"`    | State key for Stress tracker.                                              |
 || `armor_key`    | String            | `"din_armor::&lt;note-path&gt;"`     | State key for Armor tracker.                                               |
 || `hope_key`     | String            | `"din_hope::&lt;note-path&gt;"`      | State key for Hope tracker.                                                |

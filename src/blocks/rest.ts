@@ -75,7 +75,7 @@ export function registerRest(plugin: DaggerheartPlugin) {
         const k = (n?.getAttribute('data-dh-key') || '').trim();
         return k || fallback;
       };
-      const hpKey     = String(conf.hp_key     ?? detectKey('dh-track-hp',     'din_health'));
+      const hpKey     = String(conf.hp_key     ?? detectKey('dh-track-hp',     `din_health::${ctx.sourcePath}`));
       const stressKey = String(conf.stress_key ?? detectKey('dh-track-stress', `din_stress::${ctx.sourcePath}`));
       const armorKey  = String(conf.armor_key  ?? detectKey('dh-track-armor',  `din_armor::${ctx.sourcePath}`));
       const hopeKey   = String(conf.hope_key   ?? detectKey('dh-track-hope',   `din_hope::${ctx.sourcePath}`));

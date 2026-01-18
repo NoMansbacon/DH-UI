@@ -7,7 +7,7 @@ You can use it for:
 •  Ancestry traits  
 •  Class features  
 •  Subclass tiers (Foundation / Specialization / Mastery)  
-•  Community / background abilities  
+•  Community / background features  
 
 ## Dynamic Content
 
@@ -25,7 +25,7 @@ See the Templates & Events page for more information on using templates.
 
 <!-- Example image intentionally omitted to avoid broken link in docs build -->
 
-## Example – Single‑class
+```features
 styleClass: dh-features--character-sheet
 layout: grid
 ancestry:

@@ -18,7 +18,7 @@ See the [Templates & Events](../events/templates-events.md) page for more inform
 
 ## Example
 
-```yaml
+````markdown
 ```badges
 items:
   - label: Character
@@ -40,7 +40,7 @@ items:
   - label: Heritage
     value: "Slyborne"
 ```
-```
+````
 
 ### configuration
 

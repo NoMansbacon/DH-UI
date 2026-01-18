@@ -95,10 +95,9 @@ export function registerVitals(plugin: DaggerheartPlugin) {
       el.addClass('dh-vitals-block');
       if (klass) el.addClass(klass);
 
-      // HP uses a stable default key so the rest tools continue
-      // to work out of the box with older notes. For per-note HP, set hp_key
-      // explicitly. Other trackers default to note-scoped keys.
-      const hpKey     = String(y.hp_key     ?? 'din_health');
+      // All trackers default to note-scoped keys based on the current file path.
+      // To share a pool across notes, set hp_key/stress_key/armor_key/hope_key explicitly.
+      const hpKey     = String(y.hp_key     ?? `din_health::${ctx.sourcePath}`);
       const stressKey = String(y.stress_key ?? `din_stress::${ctx.sourcePath}`);
       const armorKey  = String(y.armor_key  ?? `din_armor::${ctx.sourcePath}`);
       const hopeKey   = String(y.hope_key   ?? `din_hope::${ctx.sourcePath}`);
