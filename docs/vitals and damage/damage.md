@@ -42,6 +42,8 @@ major_threshold and severe_threshold support template values with <span v-pre>{{
 
 ## Example – Simple damage panel
 
+![Damage example](../images/example_damage.webp)
+
 ```damage
 styleClass: 
 

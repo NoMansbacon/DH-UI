@@ -19,7 +19,7 @@ Feature values support dynamic content using template variables with <span v-pre
 
 Templates are processed the same way as in other blocks (badges, vitals, damage, etc.).
 
-See the Templates & Events page for more information on using templates.
+See the [Events (API)](/events/templates-events) page for more information on using templates.
 
 ## Example – Single‑class
 

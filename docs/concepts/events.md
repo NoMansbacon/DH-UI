@@ -2,7 +2,7 @@
 
 DH-UI uses events to coordinate changes between blocks that show resources (like HP, Stress, Armor, Hope) and tools that modify them (like rest and damage).
 
-Most users only need to understand the **concepts** on this page. The low-level DOM event API for custom integrations is documented separately on the Events (API) page.
+Most users only need to understand the **concepts** on this page. The low-level DOM event API for custom integrations is documented separately on the [Events (API)](/events/templates-events) page.
 
 ## File scope
 

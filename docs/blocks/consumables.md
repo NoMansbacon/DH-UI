@@ -23,7 +23,7 @@ Each consumable row:
 
 The uses field is processed with the same template engine as other blocks (badges, vitals, damage, features, etc.).
 
-See the [Templates & Events](../events/templates-events.md) page for more information on using templates.
+See the [Events (API)](/events/templates-events) page for more information on using templates.
 
 ## Example – Consumables
 
