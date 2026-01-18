@@ -17,7 +17,7 @@ These are the main paths you can use inside <span v-pre>`{{ ... }}`</span>:
 ◦  Examples:
 ▪  <span v-pre>`{{ frontmatter.level }}`</span>
 ▪  <span v-pre>`{{ frontmatter.hp_max }}`</span>
-•  traits.* – final Daggerheart trait scores (Agility, Strength, Finesse, Instinct, Presence, Knowledge) derived from the nearest ```traits` block in the same section.
+•  traits.* – final Daggerheart trait scores (Agility, Strength, Finesse, Instinct, Presence, Knowledge) derived from the nearest `traits` block in the same section.
 ◦  The plugin parses that block and computes final trait scores, then exposes them in a case‑insensitive map.
 ◦  Examples:
 ▪  <span v-pre>`{{ traits.agility }}`</span>
