@@ -1,1 +1,0 @@
-import{_ as e,c as a,o as t,ag as i}from"./chunks/framework.BpVvFBTM.js";const k=JSON.parse('{"title":"Quick Start","description":"","frontmatter":{},"headers":[],"relativePath":"USAGE.md","filePath":"USAGE.md"}'),n={name:"USAGE.md"};function l(o,s,r,p,h,c){return t(),a("div",null,[...s[0]||(s[0]=[i("",23)])])}const u=e(n,[["render",l]]);export{k as __pageData,u as default};
