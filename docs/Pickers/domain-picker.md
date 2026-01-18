@@ -89,6 +89,8 @@ use_character_filters: true
 ```
 ## UI overview
 
+![Domain Picker UI example](../images/example_domainpicker.webp)
+
 ### Main toolbar
 
 At the top of the block:

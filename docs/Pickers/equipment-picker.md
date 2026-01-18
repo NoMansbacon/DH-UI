@@ -94,6 +94,8 @@ The equipment picker will discover notes like these and show their fields in the
 
 ## UI overview
 
+![Equipment Picker UI example](../images/example_equipmentpicker.webp)
+
 ### Main toolbar
 
 - **Equipped / Inventory** buttons – toggle which list you’re looking at.  

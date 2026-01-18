@@ -6,6 +6,8 @@ The badges component can be used to display any generic Key/Value data in a more
 
 ## Dynamic Content
 
+![Badges block rendering example](../images/example_badgest.webp)
+
 Badges support dynamic content using template variables with <span v-pre>`{{ }}`</span> style templates. This allows creating badges with data from the frontmatter or even calculations based off abilities or skills. This is great for things like
 
 - Level

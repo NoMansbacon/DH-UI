@@ -52,6 +52,9 @@ When both Short and Long are shown, a combined Rest button appears that opens th
 ◦  Enter – activate Rest (or Short Rest).
 
 # Example – Standard Short/Long Rest controls
+
+![Rest buttons example](../images/example_rest_buttons.webp)
+
 ```rest
 styleClass: 
 

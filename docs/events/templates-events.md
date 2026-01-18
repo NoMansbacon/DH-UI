@@ -1,41 +1,119 @@
-# Events
+# Events (API)
 
-DH-UI fires custom DOM events so different blocks and integrations can react to changes.
+This page documents the **low‑level API** for DH‑UI’s internal events and its template engine.
 
-Most users will not need these directly. For everyday usage, see **Dynamic Content** and **State Storage** under the Concepts section.
+Most users will only need the higher‑level explanations on:
 
-## Tracker & state change events
+- [Dynamic Content](/concepts/dynamic-content) – how templates work in block YAML.
+- [Events](/concepts/events) – how rest, damage, and trackers are wired together conceptually.
 
-The plugin emits events when tracker or key/value state changes:
+If you’re building custom integrations or JS snippets, this page shows how to hook into the same mechanisms DH‑UI uses internally.
 
-Core events:
+---
 
-•  dh:tracker:changed – emitted when a tracker row (HP/Stress/Armor/Hope/uses/etc.) changes.
-◦  Detail: { key, filled }
-▪  key: the tracker’s state key (e.g. din_health).
-▪  filled: current number of filled boxes.
-•  dh:kv:changed – emitted when a key in the KV/state store changes.
-◦  Detail: { key, val }
-▪  key: the KV key that changed.
-▪  val: the new value.
-•  dh:rest:short – emitted when a Short Rest is applied.
-•  dh:rest:long – emitted when a Long Rest is applied.
-◦  Detail for both rest events:  
-    { filePath, hpKey, stressKey, armorKey, hopeKey }
+## Template engine overview
 
-These are primarily for advanced users writing custom JS snippets or other plugins.
+Anywhere a block accepts a **string** in YAML (for example in `vitals`, `badges`, `damage`, `features`, `consumables`, etc.), you can use templates of the form:
 
-If you’re extending DH‑UI in code, prefer using the helpers from src/utils/events.ts:
+```text
+{{ path.to.value }}
+{{ helper 2 frontmatter.level }}
+```
 
-•  Emitters:
-◦  emitTrackerChanged({ key, filled })
-◦  emitKvChanged({ key, val })
-◦  emitRestShort({ filePath, hpKey, stressKey, armorKey, hopeKey })
-◦  emitRestLong({ filePath, hpKey, stressKey, armorKey, hopeKey })
-•  Listeners (return an unsubscribe function):
-◦  onTrackerChanged(handler)
-◦  onKvChanged(handler)
-◦  onRestShort(handler)
-◦  onRestLong(handler)
+### Common value paths
 
-Using these helpers keeps event names and payload shapes consistent across the plugin.
+These are the main value sources the template engine exposes:
+
+- `frontmatter.*` – fields from the note’s frontmatter (`frontmatter.level`, `frontmatter.ancestry`, etc.).
+- `traits.*` – ability scores and bonuses defined in the `traits` block (`traits.Ability.Agility`, etc.).
+- `skills.*` – any skill data your setup exposes.
+- `character.*` – reserved for higher‑level character data; typically derived from frontmatter or traits.
+
+### Helper functions
+
+You can perform simple math and derived calculations directly in templates using helpers:
+
+- <span v-pre>`{{ add A B }}`</span> – `A + B`.
+- <span v-pre>`{{ subtract A B }}`</span> – `A - B`.
+- <span v-pre>`{{ multiply A B }}`</span> – `A * B`.
+- <span v-pre>`{{ divide A B }}`</span> – integer division.
+- <span v-pre>`{{ floor value }}`</span>, <span v-pre>`{{ ceil value }}`</span>, <span v-pre>`{{ round value }}`</span> – rounding helpers.
+- <span v-pre>`{{ modifier value }}`</span> – converts a score into a Daggerheart‑style modifier.
+
+All helpers ultimately resolve to numbers or strings that can be rendered in your block.
+
+For a full reference, examples, and edge‑case behavior, see [Dynamic Content](/concepts/dynamic-content).
+
+---
+
+## DOM events
+
+DH‑UI emits DOM events so multiple blocks within the **same note preview** can stay in sync. You can listen for these events to react to changes or trigger additional logic.
+
+### Tracker and key‑value events
+
+When a tracked resource changes (HP, Stress, Armor, Hope, or any other key), DH‑UI fires:
+
+- `dh:tracker:changed` – a tracker row changed (for example, a vitals pip was clicked).
+- `dh:kv:changed` – a key in the internal key‑value store changed.
+
+Handlers receive a `CustomEvent` whose `detail` typically includes:
+
+- `key` – the storage key (for example `tracker:din_health::Character/Dree`).
+- `value` – the new value after the change.
+
+#### Example – listen for tracker changes
+
+```js
+document.addEventListener("dh:tracker:changed", (event) => {
+  const { key, value } = event.detail ?? {};
+  console.log("Tracker updated", key, value);
+});
+```
+
+> Note: In Obsidian, run this from a JS snippet, a developer console, or a custom plugin that loads alongside DH‑UI.
+
+### Rest events
+
+When you use the `rest` block, DH‑UI fires events so other components know which kind of rest occurred:
+
+- `dh:rest:short`
+- `dh:rest:long`
+- `dh:rest:full` (Full Heal)
+- `dh:rest:reset-all` (Reset All)
+
+Each event’s `detail` may include information about which keys were updated.
+
+#### Example – react to a Long Rest
+
+```js
+document.addEventListener("dh:rest:long", (event) => {
+  console.log("Long Rest applied", event.detail);
+});
+```
+
+### Emitting your own events
+
+You normally **do not need** to emit these events yourself; the built‑in blocks handle it.
+
+If you are extending DH‑UI with custom UI, you can dispatch compatible events so that DH‑UI’s trackers stay in sync:
+
+```js
+const event = new CustomEvent("dh:kv:changed", {
+  detail: {
+    key: "tracker:din_custom_resource::Character/Dree",
+    value: 3,
+  },
+});
+document.dispatchEvent(event);
+```
+
+Use unique, stable keys (see [State Storage](/concepts/state-storage)) so your custom events play nicely with the built‑in state store.
+
+---
+
+## When to use this page
+
+- Use **[Dynamic Content](/concepts/dynamic-content)** to learn how to write templates inside YAML.
+- Use **[Events](/concepts/events)** to understand how rest, damage, and trackers interact at a rules level.
+- Use **this page** only when you need to write custom JS that listens to or emits DH‑UI’s DOM events.

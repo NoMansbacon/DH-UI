@@ -23,7 +23,7 @@ See the Templates & Events page for more information on using templates.
 
 ## Example – Single‑class
 
-<!-- Example image intentionally omitted to avoid broken link in docs build -->
+![Features block rendering example](../images/example_features.webp)
 
 ```features
 styleClass: dh-features--character-sheet

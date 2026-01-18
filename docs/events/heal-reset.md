@@ -27,6 +27,8 @@ If no matching trackers are found in the note, the button shows a notice like â€
 
 ## Full Heal
 
+![Rest options example](../images/example_rest_options.webp)
+
 The Full Heal button:
 
 â€¢  Finds all HP trackers in the current note (any .dh-tracker that contains .dh-track-hp).  

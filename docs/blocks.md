@@ -16,7 +16,7 @@ For full details on each block, use the sidebar links or jump directly:
 - [Experiences](/blocks/experiences)
 - [Domain Picker](/Pickers/domain-picker)
 - [Equipment Picker](/Pickers/equipment-picker)
-- [Events](/events/templates-events)
+- [Events](/concepts/events)
 
 You use these blocks in Markdown like:
 

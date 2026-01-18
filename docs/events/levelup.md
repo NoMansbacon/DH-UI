@@ -30,6 +30,8 @@ You can add a Level Up button into your rest controls row. When clicked, it:
 
 ## Example – Rest bar with Level Up
 
+![Level Up options example](../images/example_levelup_options.webp)
+
 ```rest
 styleClass: 
 

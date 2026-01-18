@@ -67,6 +67,8 @@ Under the hood:
 
 ## Example – Standard vitals grid
 
+![Vitals trackers example](../images/example_vitals.webp)
+
 ```vitals
 styleClass: 
 

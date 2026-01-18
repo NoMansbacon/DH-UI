@@ -19,6 +19,8 @@ Each experience row shows:
 
 ## Example – Experiences list
 
+![Experiences block rendering example](../images/example_experiences.webp)
+
 ```experiences
 styleClass: 
 items:

@@ -23,6 +23,8 @@ The block is registered under:
 
 ## YAML structure
 
+![Traits block rendered in a character sheet](../images/example_traits.webp)
+
 The `traits` block expects a small YAML document that describes your Daggerheart **traits**:
 
 •  `abilities` – base trait values (one entry per trait, e.g. `Agility: 1`).  
