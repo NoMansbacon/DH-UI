@@ -1,0 +1,10 @@
+{
+  "id": "daggerheart-tooltips",
+  "name": "Daggerheart Tooltips",
+  "version": "0.1.0",
+  "minAppVersion": "1.5.0",
+  "description": "Hover tooltips and traits cards.",
+  "author": "NoMansBacon",
+  "isDesktopOnly": false,
+  "main": "main.js"
+}
