@@ -25,10 +25,12 @@ For each one, it reads the data-dh-key attribute (the state key) and uses that w
 
 If it can’t find a tracker of a given type, it falls back to simple note‑scoped defaults:
 
-•  HP: `din_health::<current-note-path>`  
-•  Stress: `din_stress::<current-note-path>`  
-•  Armor: `din_armor::<current-note-path>`  
-•  Hope: `din_hope::<current-note-path>`
+•  HP: `din_health::NOTE_PATH`  
+•  Stress: `din_stress::NOTE_PATH`  
+•  Armor: `din_armor::NOTE_PATH`  
+•  Hope: `din_hope::NOTE_PATH`
+
+Here `NOTE_PATH` represents the current Obsidian note path (for example, `Characters/Elira`).
 
 You can override these keys in YAML if you need unusual setups.
 

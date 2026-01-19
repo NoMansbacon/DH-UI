@@ -50,7 +50,7 @@ styleClass:
 
 # Optional: override which HP and Armor trackers this block affects.
 # If omitted, HP uses the same key as your vitals block (typically a note-scoped
-# key like "din_health::<current-note-path>"), and Armor is note-scoped by default.
+# key like "din_health::NOTE_PATH"), and Armor is note-scoped by default.
 hp_key: "din_health::character-sheet"
 armor_key: "din_armor::character-sheet"
 
@@ -82,11 +82,11 @@ The plugin will:
 The block updates trackers by writing to the same state keys that HP and Armor trackers use:
 
 - **`hp_key`**  
-  - Default: whatever HP key your trackers are using (usually a note‑scoped key like `"din_health::<current-note-path>"` from the `vitals` block).  
+  - Default: whatever HP key your trackers are using (usually a note‑scoped key like `"din_health::NOTE_PATH"` from the `vitals` block).  
   - Set this explicitly if you want separate naming or shared HP pools across notes.  
 
 - **`armor_key`**  
-  - Default: a note‑scoped Armor key like `"din_armor::<current-note-path>"`.  
+  - Default: a note‑scoped Armor key like `"din_armor::NOTE_PATH"`.  
   - Set this if you want a shared Armor pool across multiple notes or characters.  
 
 When you click **Apply**, the damage calculator:

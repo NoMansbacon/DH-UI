@@ -59,11 +59,13 @@ The `vitals` block and related single-track blocks use note-scoped defaults base
 
 ```yaml
 # Implicit defaults if you omit keys
-hp_key:    "din_health::<current-note-path>"
-stress_key:"din_stress::<current-note-path>"
-armor_key: "din_armor::<current-note-path>"
-hope_key:  "din_hope::<current-note-path>"
+hp_key:    "din_health::NOTE_PATH"
+stress_key:"din_stress::NOTE_PATH"
+armor_key: "din_armor::NOTE_PATH"
+hope_key:  "din_hope::NOTE_PATH"
 ```
+
+Where `NOTE_PATH` is your Obsidian note path (for example, `Characters/Elira`).
 
 This means:
 
