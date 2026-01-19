@@ -1,11 +1,13 @@
-# Rest – Full Heal & Reset All
+# Full Heal & Reset All
 
-In addition to Short/Long Rest, the rest block can render two powerful utility buttons:
+The `rest` block includes two optional utility buttons that work directly on your trackers:
 
-•  Full Heal – clear all HP damage in the current note.  
-•  Reset All – clear HP, Stress, Armor, and Hope trackers in the current note.
+•  **Full Heal** – clear all HP damage in the current note.  
+•  **Reset All** – clear HP, Stress, Armor, and Hope trackers in the current note.
 
-These are great for:
+This page focuses only on those two actions. For Short/Long Rest behavior and how the rest modal works, see the main [Rest – Short & Long](/events/rest) page.
+
+These utilities are useful for:
 
 > For an overview of related blocks (rest, vitals, damage, etc.), see the [Code Block Reference](/blocks).
 
@@ -86,37 +88,6 @@ show_full_heal: false
 # Enable only the global reset
 show_reset_all: true
 reset_all_label: "Reset All Tracks"
-```
-````
-
-## Example – Rest bar with all utilities
-
-You can mix these with Short/Long Rest and Level Up as needed:
-
-````yaml
-```rest
-styleClass: dh-rest--full
-
-rest_label: "Rest"
-short_label: "Short"
-long_label: "Long"
-levelup_label: "Level Up"
-full_heal_label: "Full Heal HP"
-reset_all_label: "Wipe All"
-
-show_short: true
-show_long: true
-show_levelup: true
-show_full_heal: true
-show_reset_all: true
-
-# Optional: rest integration with specific trackers
-hp_key: "din_health::Character/Dree"
-stress_key: "din_stress::Character/Dree"
-armor_key: "din_armor::Character/Dree"
-hope_key: "din_hope::Character/Dree"
-
-max_picks: 2
 ```
 ````
 
