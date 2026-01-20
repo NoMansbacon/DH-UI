@@ -17,6 +17,9 @@ export class DaggerheartSettingTab extends PluginSettingTab {
 
     containerEl.createEl("h2", { text: "Daggerheart UI Settings" });
 
+    // State & storage
+    containerEl.createEl("h3", { text: "State & Storage" });
+
     new Setting(containerEl)
       .setName("State file path")
       .setDesc(
@@ -38,6 +41,9 @@ export class DaggerheartSettingTab extends PluginSettingTab {
           });
       });
 
+    // Domain cards
+    containerEl.createEl("h3", { text: "Domain Cards" });
+
     new Setting(containerEl)
       .setName("Domain cards folder")
       .setDesc(
@@ -54,6 +60,42 @@ export class DaggerheartSettingTab extends PluginSettingTab {
       });
 
     new Setting(containerEl)
+      .setName("Domain cards tag")
+      .setDesc("Optional Obsidian tag used to find Domain cards (e.g. #domain-card). Leave blank to use default tags/fields.")
+      .addText((text) => {
+        text
+          .setPlaceholder("#domain-card")
+          .setValue(this.plugin.settings.domainCardsTag ? `#${this.plugin.settings.domainCardsTag}` : "")
+          .onChange(async (value) => {
+            const trimmed = value.trim().replace(/^#+/, "");
+            this.plugin.settings.domainCardsTag = trimmed;
+            await this.plugin.saveSettings();
+          });
+      });
+
+    new Setting(containerEl)
+      .setName("Domain card art height (px)")
+      .setDesc("Height of domain card art in the Add Domain Cards modal. Leave blank for 160.")
+      .addText((text) => {
+        text
+          .setPlaceholder("160")
+          .setValue(String(this.plugin.settings.domainCardArtHeight || 160))
+          .onChange(async (value) => {
+            const trimmed = value.trim();
+            if (!trimmed) {
+              this.plugin.settings.domainCardArtHeight = 160;
+            } else {
+              const n = Number(trimmed);
+              this.plugin.settings.domainCardArtHeight = Number.isFinite(n) && n > 0 ? Math.floor(n) : 160;
+            }
+            await this.plugin.saveSettings();
+          });
+      });
+
+    // Equipment
+    containerEl.createEl("h3", { text: "Equipment" });
+
+    new Setting(containerEl)
       .setName("Equipment folder")
       .setDesc("Vault folder where equipment (weapons/armor) notes are stored. Leave empty to search entire vault.")
       .addText((text) => {
@@ -65,6 +107,23 @@ export class DaggerheartSettingTab extends PluginSettingTab {
             await this.plugin.saveSettings();
           });
       });
+
+    new Setting(containerEl)
+      .setName("Equipment tag")
+      .setDesc("Optional Obsidian tag used to find equipment notes (e.g. #equipment). Leave blank to use automatic detection.")
+      .addText((text) => {
+        text
+          .setPlaceholder("#equipment")
+          .setValue(this.plugin.settings.equipmentTag ? `#${this.plugin.settings.equipmentTag}` : "")
+          .onChange(async (value) => {
+            const trimmed = value.trim().replace(/^#+/, "");
+            this.plugin.settings.equipmentTag = trimmed;
+            await this.plugin.saveSettings();
+          });
+      });
+
+    // Equipment
+    containerEl.createEl("h3", { text: "Picker Behavior" });
 
     new Setting(containerEl)
       .setName("Max domain cards in loadout")
@@ -114,6 +173,28 @@ export class DaggerheartSettingTab extends PluginSettingTab {
             await this.plugin.saveSettings();
           });
       });
+
+    new Setting(containerEl)
+      .setName("Equipment card art height (px)")
+      .setDesc("Height of equipment card art in the Add Equipment modal. Leave blank for 160.")
+      .addText((text) => {
+        text
+          .setPlaceholder("160")
+          .setValue(String(this.plugin.settings.equipmentCardArtHeight || 160))
+          .onChange(async (value) => {
+            const trimmed = value.trim();
+            if (!trimmed) {
+              this.plugin.settings.equipmentCardArtHeight = 160;
+            } else {
+              const n = Number(trimmed);
+              this.plugin.settings.equipmentCardArtHeight = Number.isFinite(n) && n > 0 ? Math.floor(n) : 160;
+            }
+            await this.plugin.saveSettings();
+          });
+      });
+
+    // Level Up integration
+    containerEl.createEl("h3", { text: "Level Up" });
 
     new Setting(containerEl)
       .setName("Auto-open Domain Picker after Level Up")

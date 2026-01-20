@@ -14,6 +14,13 @@ type EquipmentPickerBlockYaml = {
   enforce_tier?: boolean;
   // Optional per-block view override for the Add Equipment modal: 'card' | 'table'
   view?: "card" | "table";
+  // Optional tag(s) to select equipment notes by Obsidian tag
+  tag?: string | string[];
+  tags?: string | string[];
+  // Preferred CSS class hook for styling the outer equipmentpicker block
+  styleClass?: string;
+  // Legacy CSS class alias (still honored for backwards compatibility)
+  class?: string;
 };
 
 export function registerEquipmentPickerBlock(plugin: DaggerheartPlugin) {
@@ -44,6 +51,11 @@ export async function renderEquipmentPicker(
   } catch {
     blockCfg = {};
   }
+
+  // Apply optional styleClass / class to the outer container
+  const klass = String((blockCfg as any).styleClass ?? (blockCfg as any).class ?? '').trim().split(/\s+/).filter(Boolean)[0];
+  el.addClass('dh-equipmentpicker-block');
+  if (klass) el.addClass(klass);
 
   const dataviewPlugin = (plugin.app as any).plugins?.plugins?.dataview;
   if (!dataviewPlugin) {
@@ -128,6 +140,35 @@ export async function renderEquipmentPicker(
       const prefix = folder.endsWith("/") ? folder : folder + "/";
       return prefix.toLowerCase();
     };
+    const normalizeTag = (raw: string) => String(raw).replace(/^#/, "").toLowerCase();
+
+    // Block-level tags or plugin default tag
+    const tagValue = (blockCfg.tags ?? blockCfg.tag) as any;
+    let tags: string[] = [];
+    if (Array.isArray(tagValue)) {
+      tags = tagValue.map((v) => normalizeTag(String(v))).filter(Boolean);
+    } else if (typeof tagValue === "string" && tagValue.trim()) {
+      tags = [normalizeTag(tagValue)];
+    }
+    if (!tags.length && plugin.settings.equipmentTag) {
+      tags = [normalizeTag(plugin.settings.equipmentTag)];
+    }
+
+    const hasAnyTag = (p: any): boolean => {
+      if (!tags.length) return true;
+      const fmTags = getField(p, ["tags", "Tags"], null);
+      const collected: string[] = [];
+      if (Array.isArray(p?.file?.tags)) collected.push(...p.file.tags.map(String));
+      if (Array.isArray(p?.tags)) collected.push(...p.tags.map(String));
+      if (Array.isArray(fmTags)) collected.push(...fmTags.map(String));
+      else if (typeof fmTags === "string") collected.push(...fmTags.split(/[\s,]+/));
+      const cleaned = collected
+        .map((s) => s.replace(/^#/, ""))
+        .map((s) => s.replace(/^\/+/, ""))
+        .map((s) => s.toLowerCase())
+        .filter(Boolean);
+      return tags.some((t) => cleaned.some((v) => v === t || v.endsWith("/" + t)));
+    };
 
     if (folders.length > 0) {
       const prefixes = folders.map(normalizePrefix);
@@ -136,7 +177,8 @@ export async function renderEquipmentPicker(
         .where((p: any) => {
           const path = String(p?.file?.path || "").toLowerCase();
           if (!path) return false;
-          return prefixes.some((pre) => path.startsWith(pre)) && isEquipment(p);
+          if (!prefixes.some((pre) => path.startsWith(pre))) return false;
+          return isEquipment(p) && hasAnyTag(p);
         });
     }
 
@@ -146,8 +188,18 @@ export async function renderEquipmentPicker(
       const prefixLC = normalizePrefix(raw);
       return dv
         .pages()
-        .where((p: any) => typeof p?.file?.path === 'string' && p.file.path.toLowerCase().startsWith(prefixLC) && isEquipment(p));
+        .where((p: any) => typeof p?.file?.path === 'string'
+          && p.file.path.toLowerCase().startsWith(prefixLC)
+          && isEquipment(p)
+          && hasAnyTag(p));
     }
+
+    // If explicit tags (block or setting) are configured, search whole vault by those tags plus equipment heuristics
+    if (tags.length > 0) {
+      return dv.pages().where((p: any) => isEquipment(p) && hasAnyTag(p));
+    }
+
+    // Fallback: vault-wide equipment detection via fields/tags
     return dv.pages().where((p: any) => isEquipment(p));
   };
   const allEq = discoverEquipment().array();
@@ -339,31 +391,44 @@ export async function renderEquipmentPicker(
     ensureCardStyles();
 
     const filters = modal.createDiv({ cls: "dvjs-filters" });
-
-    // Category filter
-    let selCat: string | null = null;
-    const catWrap = filters.createDiv({ cls: "filter" });
-    catWrap.createEl("label", { text: "Category" });
-    const catSel = catWrap.createEl("select", { cls: "dropdown" });
-    const categories = getCategoryOptions();
-    catSel.appendChild(new Option("Any", ""));
-    categories.forEach((c) => catSel.appendChild(new Option(c, c)));
-    catSel.addEventListener("change", () => { selCat = catSel.value || null; renderCards(); });
-
-    // Tier filter
-    let selTier: number | null = null;
-    const tierWrap = filters.createDiv({ cls: "filter" });
-    tierWrap.createEl("label", { text: "Tier" });
-    const tierSel = tierWrap.createEl("select", { cls: "dropdown" });
-    tierSel.appendChild(new Option("Any", ""));
-    for (let i = 1; i <= 4; i++) tierSel.appendChild(new Option(String(i), String(i)));
-    tierSel.addEventListener("change", () => {
-      selTier = tierSel.value ? Number(tierSel.value) : null;
-      renderCards();
-    });
-
-    // Search filter
-    let q = "";
+ 
+     // Category filter
+     let selCat: string | null = null;
+     const catWrap = filters.createDiv({ cls: "filter" });
+     catWrap.createEl("label", { text: "Category" });
+     const catSel = catWrap.createEl("select", { cls: "dropdown" });
+     const categories = getCategoryOptions();
+     catSel.appendChild(new Option("Any", ""));
+     categories.forEach((c) => catSel.appendChild(new Option(c, c)));
+     catSel.addEventListener("change", () => { selCat = catSel.value || null; renderCards(); });
+ 
+     // Type filter (Primary / Secondary)
+     let selTypeKind: string | null = null;
+     const typeWrap = filters.createDiv({ cls: "filter" });
+     typeWrap.createEl("label", { text: "Type" });
+     const typeSel = typeWrap.createEl("select", { cls: "dropdown" });
+     typeSel.appendChild(new Option("Any", ""));
+     typeSel.appendChild(new Option("Primary", "primary"));
+     typeSel.appendChild(new Option("Secondary", "secondary"));
+     typeSel.addEventListener("change", () => {
+       selTypeKind = typeSel.value || null;
+       renderCards();
+     });
+ 
+     // Tier filter
+     let selTier: number | null = null;
+     const tierWrap = filters.createDiv({ cls: "filter" });
+     tierWrap.createEl("label", { text: "Tier" });
+     const tierSel = tierWrap.createEl("select", { cls: "dropdown" });
+     tierSel.appendChild(new Option("Any", ""));
+     for (let i = 1; i <= 4; i++) tierSel.appendChild(new Option(String(i), String(i)));
+     tierSel.addEventListener("change", () => {
+       selTier = tierSel.value ? Number(tierSel.value) : null;
+       renderCards();
+     });
+ 
+     // Search filter
+     let q = "";
     const searchWrap = filters.createDiv({ cls: "filter" });
     searchWrap.createEl("label", { text: "Search" });
     const search = searchWrap.createEl("input", { type: "text" });
@@ -380,20 +445,22 @@ export async function renderEquipmentPicker(
       const charTierNow = enforceTier ? toNumber(getField(curNow, ["tier", "Tier"], charTier)) : 0;
 
       const candidates = base
-        .filter((c: any) => {
-          const cat = detectCategory(c) || normalizeCategory(getField(c, ["category", "Category"], ""));
-          const name = String(c.file?.name || "");
-          const props = toList(getField(c, ["properties", "Properties", "tags", "Tags"], []));
-          const cTierNum = toNumber(getField(c, ["tier", "Tier"], 0));
-
-          const catOK = selCat ? cat === selCat : true;
-          const qOK = q
-            ? name.toLowerCase().includes(q) || props.some((p: string) => p.toLowerCase().includes(q))
-            : true;
-          const tierOK = charTierNow > 0 ? cTierNum <= charTierNow : true;
-          const tierFilterOK = selTier != null ? cTierNum === selTier : true;
-          return catOK && qOK && tierOK && tierFilterOK;
-        })
+         .filter((c: any) => {
+           const cat = detectCategory(c) || normalizeCategory(getField(c, ["category", "Category"], ""));
+           const name = String(c.file?.name || "");
+           const props = toList(getField(c, ["properties", "Properties", "tags", "Tags"], []));
+           const cTierNum = toNumber(getField(c, ["tier", "Tier"], 0));
+           const cTypeKind = String(getField(c, ["type", "Type"], "")).toLowerCase();
+ 
+           const catOK = selCat ? cat === selCat : true;
+           const typeOK = selTypeKind ? cTypeKind === selTypeKind : true;
+           const qOK = q
+             ? name.toLowerCase().includes(q) || props.some((p: string) => p.toLowerCase().includes(q))
+             : true;
+           const tierOK = charTierNow > 0 ? cTierNum <= charTierNow : true;
+           const tierFilterOK = selTier != null ? cTierNum === selTier : true;
+           return catOK && typeOK && qOK && tierOK && tierFilterOK;
+         })
         .sort((a: any, b: any) => (a.file?.name || "").localeCompare(b.file?.name || ""));
 
       if (candidates.length === 0) {
@@ -500,7 +567,10 @@ export async function renderEquipmentPicker(
         const artSrc = resolveArtSrc(plugin, c, cArt);
         if (artSrc) {
           const img = card.createEl('img', { attr: { src: artSrc, alt: cName } });
-          img.style.width = '100%'; img.style.height = '160px'; img.style.objectFit = 'cover';
+          const artHeight = plugin.settings.equipmentCardArtHeight || 160;
+          img.style.width = '100%';
+          img.style.height = `${artHeight}px`;
+          img.style.objectFit = 'cover';
         }
         const body = card.createDiv({ cls: 'card-body' });
         const title = body.createEl('div', { cls: 'title' });

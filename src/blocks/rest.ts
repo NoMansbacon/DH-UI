@@ -53,6 +53,9 @@ type RestYaml = {
   // Defaults to 2 (official rules allow two moves total per rest).
   max_picks?: number;
 
+  // Preferred CSS class hook for styling the rest control row
+  styleClass?: string;
+  // Legacy CSS class alias (still honored for backwards compatibility)
   class?: string;
 };
 
@@ -64,7 +67,7 @@ export function registerRest(plugin: DaggerheartPlugin) {
   registerLiveCodeBlock(plugin, "rest", async (el: HTMLElement, src: string, ctx: MarkdownPostProcessorContext) => {
 
       const conf = parseYaml(src);
-      const klass = String(conf.class ?? '').trim().split(/\s+/).filter(Boolean)[0];
+      const klass = String((conf as any).styleClass ?? conf.class ?? '').trim().split(/\s+/).filter(Boolean)[0];
       el.addClass('dh-rest-block');
       if (klass) el.addClass(klass);
       // Prefer provided keys, but auto-detect from visible trackers if not supplied

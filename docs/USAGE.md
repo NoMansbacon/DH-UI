@@ -22,7 +22,7 @@ Create a new note and start with minimal Daggerheart frontmatter plus a few core
 
 ````markdown
 ---
-name: Thalia
+name: Marlowe
 level: 1
 hp: 6
 stress: 4
@@ -65,7 +65,7 @@ Switch to **Reading / Preview** mode in Obsidian to see the interactive UI.
 
 Many blocks (vitals, hp/stress/armor/hope trackers, consumables, damage, etc.) store their state using a stable key.
 
-By default, vitals and trackers use keys that include the full path of the current note (for example `din_health::Characters/Elira`), so each note’s pools are independent.
+By default, vitals and trackers use keys that include the full path of the current note (for example `din_health::Characters/Marlowe`), so each note’s pools are independent.
 You can override these keys (for example setting `hp_key: "din_health"` or `state_key: "din_rage"`) when you want multiple blocks or notes to share the same resource.
 
 Use stable, unique keys per resource. Reusing the same key in two blocks makes them share the same pool.

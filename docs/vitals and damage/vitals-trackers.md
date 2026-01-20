@@ -24,7 +24,7 @@ How the trackers work
 Each of the four trackers draws a row of boxes:
 
 •  Click a box to fill or unfill it.  
-•  Filled boxes are saved using a state key (like `din_health`, `din_stress::Characters/Elira`).  
+•  Filled boxes are saved using a state key (like `din_health`, `din_stress::Characters/Marlowe`).  
 •  When you reopen the note, the filled counts are restored from the state store.  
 
 These same keys are what rest and damage use to apply healing and damage.
@@ -38,7 +38,7 @@ By default (per‑note defaults based on the current file path):
 •  armor_key: "din_armor::NOTE_PATH"  
 •  hope_key: "din_hope::NOTE_PATH"  
 
-Where `NOTE_PATH` is your Obsidian note path (for example, `Characters/Elira`).
+Where `NOTE_PATH` is your Obsidian note path (for example, `Characters/Marlowe`).
 
 You can override any of these in the vitals YAML if you want to share a pool across notes or separate multiple characters in one file.
 
@@ -54,7 +54,7 @@ Each tracker’s hp, stress, armor, and hope field can be:
 •  A simple frontmatter reference:
 ```yaml
   hp: frontmatter.hp_max
-  stress: "{{ frontmatter.stress_max }}"
+  stress: "{{ frontmatter.stress }}"
 ```
 •  Any template string that resolves to a number:  
 ```yaml
@@ -63,7 +63,7 @@ Each tracker’s hp, stress, armor, and hope field can be:
 
 Under the hood:
 
-•  If the value is like `frontmatter.hp_max` or <span v-pre>`{{ frontmatter.hp_max }}`</span>, it reads that field directly and parses it as a number.  
+•  If the value is like `frontmatter.hp` or <span v-pre>`{{ frontmatter.hp }}`</span>, it reads that field directly and parses it as a number.  
 •  Otherwise it runs the template through the shared template engine and parses the result as a number.  
 •  Non‑numeric or missing values fall back to 0 (except hope, which defaults to 6 if it would otherwise be 0).
 
@@ -84,7 +84,7 @@ hope_label: "Hope"
 # Maximum boxes (numbers or templates)
 hp: 10
 stress: 6
-armor: "{{ frontmatter.armor_slots }}"
+armor: "{{ frontmatter.armor }}"
 hope: 6  # if omitted or 0, defaults to 6
 
 # Optional: override state keys (normally you can omit these)
@@ -119,31 +119,31 @@ hope_feature:
 
 ```yaml
 ---
-hp_max: 12
-stress_max: 6
-armor_slots: 3
-hope_max: 6
+hp: 12
+stress: 6
+armor: 3
+hope: 6
 ---
 
 ```vitals
 styleClass:
 
 hp_label: "HP"
-hp: frontmatter.hp_max
+hp: frontmatter.hp
 
 stress_label: "Stress"
-stress: "{{ frontmatter.stress_max }}"
+stress: "{{ frontmatter.stress }}"
 
 armor_label: "Armor"
-armor: "frontmatter.armor_slots"
+armor: "frontmatter.armor"
 
 hope_label: "Hope"
-hope: "{{ frontmatter.hope_max }}"
+hope: "{{ frontmatter.hope }}"
 ```
 
 ## The block will:
 
-- Read `hp_max`, `stress_max`, `armor_slots`, and `hope_max` from the note’s frontmatter.  
+- Read `hp`, `stress`, `armor`, and `hope` from the note’s frontmatter.  
 - Build the correct number of boxes for each tracker.  
 - Use its default `*_key` values unless you override them.
 
@@ -156,7 +156,7 @@ Because the `vitals` block uses stable keys:
 
 For most character sheets:
 
-1. Put your frontmatter at the top (with `hp_max`, `stress`, `armor`, etc.).  
+1. Put your frontmatter at the top (with `hp`, `stress`, `armor`, etc.).  
 2. Add a `vitals` block.  
 3. Add a `rest` block under it (for Short/Long rest & resets).  
 4. Add a `damage` block wherever you want a compact damage input.
@@ -210,14 +210,14 @@ Behavior notes:
 - `hope` trackers default to 6 boxes when `uses`/`hope` are omitted or resolve to 0.
 - Like `vitals`, filled boxes are stored under `tracker:<state_key>` and participate in `dh:tracker:changed` events.
 
-### Example – Standalone HP tracker
+### Example – Standalone tracker
 
 ````yaml
 ```hp
+styleClass: 
 label: "HP"
 state_key: "din_health::Character/Dree"
 uses: "{{ frontmatter.hp_max }}"
-styleClass: 
 ```
 ````
 
@@ -225,10 +225,10 @@ styleClass:
 
 ````yaml
 ```hope
+styleClass: 
 label: "Hope"
 state_key: "din_hope::Character/Dree"
 # uses omitted → defaults to 6 diamonds
-styleClass: 
 ```
 ````
 

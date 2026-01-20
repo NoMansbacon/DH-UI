@@ -6,7 +6,6 @@ import { processTemplate, createTemplateContext } from "../utils/template";
 import React from "react";
 import { Root } from "react-dom/client";
 import { ConsumablesView, type ConsumableRow } from "../components/consumables-view";
-import { registerLiveCodeBlock } from "../utils/liveBlock";
 import { getOrCreateRoot } from "../utils/reactRoot";
 const roots = new WeakMap<HTMLElement, Root>();
 
@@ -118,12 +117,17 @@ function writeState(key: string, filled: number) {
 }
 
 export function registerConsumablesBlock(plugin: DaggerheartPlugin) {
-  registerLiveCodeBlock(plugin, "consumables", (el: HTMLElement, src: string, ctx: MarkdownPostProcessorContext) => {
-
+  plugin.registerMarkdownCodeBlockProcessor("consumables", (src: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
     const app = plugin.app;
+
+    // Parse top-level YAML to pick up styleClass / class, but use src again for items parsing
     const raw = (parseYamlSafe<any>(src)) ?? {};
-    const klass = String((raw as any)?.styleClass ?? raw?.class ?? '').trim().split(/\s+/).filter(Boolean)[0];
+    const klass = String((raw as any)?.styleClass ?? raw?.class ?? "")
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)[0];
     if (klass) el.addClass(klass);
+
     const items = parseRootToItems(src);
     if (!items.length) {
       el.createEl("pre", { text: "No 'items:' in ```consumables block." });
@@ -135,26 +139,28 @@ export function registerConsumablesBlock(plugin: DaggerheartPlugin) {
       return items.map((it) => {
         const label = (it?.label ?? "").toString() || "Consumable";
         const stateKey = (it?.state_key ?? "").toString().trim();
-        let usesNum = 0; const rawUses = it?.uses ?? 0;
+        let usesNum = 0;
+        const rawUses = it?.uses ?? 0;
         if (typeof rawUses === "string") {
           const resolved = processTemplate(rawUses, tctx).trim();
-          const n = Number(resolved); usesNum = Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0;
-        } else { const n = Number(rawUses); usesNum = Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0; }
+          const n = Number(resolved);
+          usesNum = Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0;
+        } else {
+          const n = Number(rawUses);
+          usesNum = Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0;
+        }
         const filled = stateKey ? readState(stateKey, usesNum) : 0;
         return { label, stateKey, uses: usesNum, filled };
       });
     };
 
-    const render = () => {
-      const rows = computeRows();
-      const root = getOrCreateRoot(roots, el);
-      root.render(
-        React.createElement(ConsumablesView, {
-          rows,
-          onChange: (stateKey: string, filled: number) => stateKey && writeState(stateKey, filled),
-        })
-      );
-    };
-    render();
+    const rows = computeRows();
+    const root = getOrCreateRoot(roots, el);
+    root.render(
+      React.createElement(ConsumablesView, {
+        rows,
+        onChange: (stateKey: string, filled: number) => stateKey && writeState(stateKey, filled),
+      })
+    );
   });
 }

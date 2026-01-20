@@ -30,7 +30,7 @@ If it can’t find a tracker of a given type, it falls back to simple note‑sco
 •  Armor: `din_armor::NOTE_PATH`  
 •  Hope: `din_hope::NOTE_PATH`
 
-Here `NOTE_PATH` represents the current Obsidian note path (for example, `Characters/Elira`).
+Here `NOTE_PATH` represents the current Obsidian note path (for example, `Characters/Marlowe`).
 
 You can override these keys in YAML if you need unusual setups.
 

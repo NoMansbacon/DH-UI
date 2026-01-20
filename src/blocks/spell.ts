@@ -102,6 +102,11 @@ function renderCard(
   root.empty();
   root.addClass("dh-spell-card");
   if (kind === "action") root.addClass("dh-action-card");
+  // Optional styleClass / class for custom styling
+  const klass = String((raw as any).styleClass ?? (raw as any).class ?? '').trim();
+  if (klass) {
+    for (const c of klass.split(/\s+/).filter(Boolean)) root.addClass(c);
+  }
   // Inline fallback styles
   root.setAttr(
     "style",
@@ -311,6 +316,14 @@ function renderActiveList(
   src: string,
   ctx: MarkdownPostProcessorContext
 ) {
+  // Optional styleClass / class for the active-hand table wrapper
+  const raw = (parseYamlSafe<any>(src)) ?? {};
+  const klass = String((raw as any).styleClass ?? (raw as any).class ?? '').trim();
+  el.addClass('dh-active-hand-block');
+  if (klass) {
+    for (const c of klass.split(/\s+/).filter(Boolean)) el.addClass(c);
+  }
+
   const allItems = parseActiveItems(plugin, el, src, ctx);
   el.empty();
   const wrap = el.createDiv({ cls: 'dh-active-hand' });

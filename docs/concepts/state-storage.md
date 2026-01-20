@@ -65,7 +65,7 @@ armor_key: "din_armor::NOTE_PATH"
 hope_key:  "din_hope::NOTE_PATH"
 ```
 
-Where `NOTE_PATH` is your Obsidian note path (for example, `Characters/Elira`).
+Where `NOTE_PATH` is your Obsidian note path (for example, `Characters/Marlowe`).
 
 This means:
 

@@ -1,0 +1,151 @@
+Date : 2026-01-19 20:39:37
+Directory : d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI
+Total : 91 files,  16616 codes, 1272 comments, 2028 blanks, all 19916 lines
+
+Languages
++--------------------+------------+------------+------------+------------+------------+
+| language           | files      | code       | comment    | blank      | total      |
++--------------------+------------+------------+------------+------------+------------+
+| JSON               |          3 |      5,388 |          0 |          3 |      5,391 |
+| TypeScript         |         32 |      4,745 |        541 |        670 |      5,956 |
+| PostCSS            |         18 |      3,676 |        682 |        451 |      4,809 |
+| Markdown           |         22 |      2,132 |          1 |        796 |      2,929 |
+| TypeScript JSX     |         11 |        513 |         42 |         78 |        633 |
+| JavaScript         |          2 |         73 |          6 |         17 |         96 |
+| YAML               |          2 |         68 |          0 |         12 |         80 |
+| JSON with Comments |          1 |         21 |          0 |          1 |         22 |
++--------------------+------------+------------+------------+------------+------------+
+
+Directories
++---------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                          | files      | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                             |         91 |     16,616 |      1,272 |      2,028 |     19,916 |
+| . (Files)                                                                                                     |          9 |      7,559 |        353 |        329 |      8,241 |
+| .github                                                                                                       |          1 |         28 |          0 |          8 |         36 |
+| .github\workflows                                                                                             |          1 |         28 |          0 |          8 |         36 |
+| docs                                                                                                          |         21 |      1,939 |          1 |        706 |      2,646 |
+| docs (Files)                                                                                                  |          3 |        151 |          0 |         52 |        203 |
+| docs\.vitepress                                                                                               |          1 |         68 |          0 |          2 |         70 |
+| docs\Pickers                                                                                                  |          2 |        255 |          0 |        106 |        361 |
+| docs\blocks                                                                                                   |          5 |        485 |          1 |        158 |        644 |
+| docs\concepts                                                                                                 |          3 |        227 |          0 |        107 |        334 |
+| docs\events                                                                                                   |          4 |        277 |          0 |        129 |        406 |
+| docs\examples                                                                                                 |          1 |        217 |          0 |         56 |        273 |
+| docs\vitals and damage                                                                                        |          2 |        259 |          0 |         96 |        355 |
+| scripts                                                                                                       |          1 |         62 |          3 |         13 |         78 |
+| src                                                                                                           |         59 |      7,028 |        915 |        972 |      8,915 |
+| src (Files)                                                                                                   |          2 |        100 |         39 |         20 |        159 |
+| src\blocks                                                                                                    |         13 |      3,155 |        327 |        421 |      3,903 |
+| src\components                                                                                                |         11 |        513 |         42 |         78 |        633 |
+| src\components (Files)                                                                                        |         10 |        464 |         42 |         68 |        574 |
+| src\components\state                                                                                          |          1 |         49 |          0 |         10 |         59 |
+| src\core                                                                                                      |          2 |        192 |         54 |         41 |        287 |
+| src\lib                                                                                                       |          3 |         76 |          0 |          7 |         83 |
+| src\lib\services                                                                                              |          3 |         76 |          0 |          7 |         83 |
+| src\lib\services (Files)                                                                                      |          1 |         29 |          0 |          4 |         33 |
+| src\lib\services\kv                                                                                           |          2 |         47 |          0 |          3 |         50 |
+| src\styles                                                                                                    |         17 |      1,838 |        332 |        226 |      2,396 |
+| src\styles (Files)                                                                                            |          1 |        132 |        174 |         17 |        323 |
+| src\styles\components                                                                                         |         16 |      1,706 |        158 |        209 |      2,073 |
+| src\ui                                                                                                        |          3 |        821 |         45 |        116 |        982 |
+| src\utils                                                                                                     |          8 |        333 |         76 |         63 |        472 |
++---------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++---------------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| filename                                                                                                      | language           | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\.github\workflows\docs.yml                      | YAML               |         28 |          0 |          8 |         36 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\AGENTS.md                                       | Markdown           |        194 |          0 |         58 |        252 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\README.md                                       | Markdown           |         67 |          0 |         34 |        101 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\docs\.vitepress\config.mts                      | TypeScript         |         68 |          0 |          2 |         70 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\docs\Pickers\domain-picker.md                   | Markdown           |        137 |          0 |         59 |        196 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\docs\Pickers\equipment-picker.md                | Markdown           |        118 |          0 |         47 |        165 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\docs\USAGE.md                                   | Markdown           |         75 |          0 |         33 |        108 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\docs\blocks.md                                  | Markdown           |         46 |          0 |         15 |         61 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\docs\blocks\badges.md                           | Markdown           |         45 |          1 |         17 |         63 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\docs\blocks\consumables.md                      | Markdown           |         79 |          0 |         33 |        112 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\docs\blocks\experiences.md                      | Markdown           |         80 |          0 |         30 |        110 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\docs\blocks\features.md                         | Markdown           |        174 |          0 |         39 |        213 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\docs\blocks\traits-abilities.md                 | Markdown           |        107 |          0 |         39 |        146 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\docs\concepts\dynamic-content.md                | Markdown           |        103 |          0 |         37 |        140 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\docs\concepts\events.md                         | Markdown           |         46 |          0 |         28 |         74 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\docs\concepts\state-storage.md                  | Markdown           |         78 |          0 |         42 |        120 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\docs\events\heal-reset.md                       | Markdown           |         73 |          0 |         32 |        105 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\docs\events\levelup.md                          | Markdown           |         52 |          0 |         26 |         78 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\docs\events\rest.md                             | Markdown           |         75 |          0 |         29 |        104 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\docs\events\templates-events.md                 | Markdown           |         77 |          0 |         42 |        119 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\docs\examples\sorcerer.md                       | Markdown           |        217 |          0 |         56 |        273 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\docs\index.md                                   | Markdown           |         30 |          0 |          4 |         34 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\docs\vitals and damage\damage.md                | Markdown           |         79 |          0 |         34 |        113 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\docs\vitals and damage\vitals-trackers.md       | Markdown           |        180 |          0 |         62 |        242 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\manifest.json                                   | JSON               |         10 |          0 |          1 |         11 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\mkdocs.yml                                      | YAML               |         40 |          0 |          4 |         44 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\package-lock.json                               | JSON               |      5,339 |          0 |          1 |      5,340 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\package.json                                    | JSON               |         39 |          0 |          1 |         40 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\scripts\build-css.mjs                           | JavaScript         |         62 |          3 |         13 |         78 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\blocks\badges.ts                            | TypeScript         |         64 |         12 |          8 |         84 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\blocks\consumables-block.ts                 | TypeScript         |        118 |         27 |         16 |        161 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\blocks\damage-vault.ts                      | TypeScript         |        104 |         18 |         24 |        146 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\blocks\domain-picker.ts                     | TypeScript         |        830 |         65 |        123 |      1,018 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\blocks\equipment-picker.ts                  | TypeScript         |        669 |         42 |         87 |        798 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\blocks\experiences.ts                       | TypeScript         |        103 |         19 |         19 |        141 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\blocks\features.ts                          | TypeScript         |        223 |         37 |         34 |        294 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\blocks\level-up.ts                          | TypeScript         |         44 |          1 |          8 |         53 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\blocks\rest.ts                              | TypeScript         |        159 |         26 |         17 |        202 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\blocks\spell.ts                             | TypeScript         |        530 |         25 |         54 |        609 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\blocks\trackers-block.ts                    | TypeScript         |        132 |         25 |         11 |        168 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\blocks\traits.ts                            | TypeScript         |          1 |          8 |          2 |         11 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\blocks\vitals.ts                            | TypeScript         |        178 |         22 |         18 |        218 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\components\ErrorBoundary.tsx                | TypeScript JSX     |         36 |          0 |          3 |         39 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\components\abilityscoreview.tsx             | TypeScript JSX     |         19 |          8 |          6 |         33 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\components\badges-view.tsx                  | TypeScript JSX     |         24 |          6 |          4 |         34 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\components\consumables-view.tsx             | TypeScript JSX     |         37 |          0 |          7 |         44 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\components\controls-row.tsx                 | TypeScript JSX     |         80 |          4 |         14 |         98 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\components\damage-inline.tsx                | TypeScript JSX     |        114 |         12 |         12 |        138 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\components\rest-button.tsx                  | TypeScript JSX     |          8 |          0 |          3 |         11 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\components\rest-row.tsx                     | TypeScript JSX     |         24 |          0 |          3 |         27 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\components\state\kv-context.tsx             | TypeScript JSX     |         49 |          0 |         10 |         59 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\components\trackers-view.tsx                | TypeScript JSX     |         73 |         10 |         10 |         93 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\components\traits.tsx                       | TypeScript JSX     |         49 |          2 |          6 |         57 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\core\abilities.ts                           | TypeScript         |        106 |         33 |         20 |        159 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\core\damage-calculator.ts                   | TypeScript         |         86 |         21 |         21 |        128 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\lib\services\kv\kv.ts                       | TypeScript         |         25 |          0 |          1 |         26 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\lib\services\kv\local-file-store.ts         | TypeScript         |         22 |          0 |          2 |         24 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\lib\services\stateStore.ts                  | TypeScript         |         29 |          0 |          4 |         33 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\main.ts                                     | TypeScript         |         72 |         20 |         17 |        109 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\settings.ts                                 | TypeScript         |         28 |         19 |          3 |         50 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\styles\common.css                           | PostCSS            |        132 |        174 |         17 |        323 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\styles\components\active-hand.css           | PostCSS            |         85 |          9 |          9 |        103 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\styles\components\badges.css                | PostCSS            |         27 |          0 |          1 |         28 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\styles\components\codeblock-frame.css       | PostCSS            |        174 |         10 |         15 |        199 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\styles\components\consumables.css           | PostCSS            |         71 |         13 |         11 |         95 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\styles\components\damage.css                | PostCSS            |        123 |         11 |         15 |        149 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\styles\components\domain-picker-filters.css | PostCSS            |         13 |          5 |          5 |         23 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\styles\components\domain-picker.css         | PostCSS            |        249 |          8 |         34 |        291 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\styles\components\experiences.css           | PostCSS            |         59 |          3 |         11 |         73 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\styles\components\features.css              | PostCSS            |        151 |         20 |         16 |        187 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\styles\components\levelup.css               | PostCSS            |        235 |         21 |         10 |        266 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\styles\components\rest-row.css              | PostCSS            |         32 |          2 |          4 |         38 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\styles\components\short-rest.css            | PostCSS            |        217 |         17 |         22 |        256 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\styles\components\spell.css                 | PostCSS            |         29 |          6 |          8 |         43 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\styles\components\trackers.css              | PostCSS            |         72 |         11 |         15 |         98 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\styles\components\traits.css                | PostCSS            |         89 |         12 |         16 |        117 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\styles\components\vitals.css                | PostCSS            |         80 |         10 |         17 |        107 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\ui\levelup-modal.ts                         | TypeScript         |        361 |         25 |         43 |        429 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\ui\rest-modals.ts                           | TypeScript         |        265 |         11 |         50 |        326 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\ui\settings-tab.ts                          | TypeScript         |        195 |          9 |         23 |        227 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\utils\callout.ts                            | TypeScript         |         15 |          4 |          6 |         25 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\utils\codeblock-extractor.ts                | TypeScript         |         17 |          6 |          4 |         27 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\utils\events.ts                             | TypeScript         |         63 |          9 |         14 |         86 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\utils\liveBlock.ts                          | TypeScript         |         75 |         18 |         14 |        107 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\utils\number.ts                             | TypeScript         |          8 |          2 |          3 |         13 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\utils\reactRoot.ts                          | TypeScript         |         19 |          9 |          4 |         32 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\utils\template.ts                           | TypeScript         |        128 |         21 |         15 |        164 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\src\utils\yaml.ts                               | TypeScript         |          8 |          7 |          3 |         18 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\styles.css                                      | PostCSS            |      1,838 |        350 |        225 |      2,413 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\tsconfig.json                                   | JSON with Comments |         21 |          0 |          1 |         22 |
+| d:\Projects\TTRPG\Vault\DH UI ToolTip\.obsidian\plugins\DH-UI\version-bump.mjs                                | JavaScript         |         11 |          3 |          4 |         18 |
+| Total                                                                                                         |                    |     16,616 |      1,272 |      2,028 |     19,916 |
++---------------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+

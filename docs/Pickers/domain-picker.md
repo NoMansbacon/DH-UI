@@ -36,29 +36,29 @@ From each card it looks at:
 
 •  domains / domain / Domains – which domain(s) this card belongs to.  
 •  level / Level – card level.  
-•  type / Type – flavor/category (e.g. “Strife”, “Boon”).  
-•  stress / Stress – short stress note if relevant.  
+•  type / Type – spell or ability.  
+•  stress / Stress – stress cost if listed.  
 •  feature / Feature – short description text.  
 •  art / Art – optional art path/filename for card view images.  
 
 These fields are shown in the Vault/Loadout tables and the Add‑cards modal.
 
-### Example – Domain card note (Blade domain)
+### Example – Domain card note (Arcana domain)
 
 A single Domain card can be stored as a note like this:
 
 ```yaml
 ---
-title: "Glancing Blow"
-domains: [Blade]
-level: 7
-type: "Ability"
-stress: "When an attack goes wide, you still mark a lesser wound."
-feature: "A near miss becomes a smaller strike, turning failure into a glancing blow."
+title: "Unleash Chaos"
+domains: arcana
+level: 1
+type: "spell"
+stress: 1
+feature: "After you or a willing ally make any roll, you can spend 5 Hope to change the numerical result of that roll to a result of your choice instead. The result must be plausible within the range of the dice."
 ---
 ```
 
-The picker will read this note as a Blade Domain card named **Glancing Blow** at level 7, with its type, stress note, feature text, and any tracking available for filters and displays.
+The picker will read this note as a arcana Domain card named **Unleash Chaos** at level 1, with its type, stress cost, feature text, and any tracking available for filters and displays.
 
 The block will:
 
@@ -70,21 +70,20 @@ The block will:
 
 You can point the picker at specific folders, and change the Add‑cards modal to table view:
 
+````yaml
 ```domainpicker
 # Only look for Domain cards under these folders:
 folders:
-  - Daggerheart/Domains/Blade
-  - Daggerheart/Domains/Arcana
-
-# Modal view for picking cards: 'card' or 'table'
+  - DH_Compendium/abilities/Arcana
+  - DH_Compendium/abilities/Midnight
+# Modal view for picking cards: 'card' or 'table (no art)'
 view: table
-
 # Per-block override for max equipped Domain cards
 max_loadout: 5
-
 # Use the character's level and domains frontmatter for default filters
 use_character_filters: true
 ```
+````
 ## UI overview
 
 ![Domain Picker UI example](../images/example_domainpicker.webp)
@@ -130,8 +129,8 @@ The Add‑cards modal is where you search and add cards to Vault or Loadout.
 - **Search** – text search across name, feature, type, domains.  
 - **Reset** – clears all filters and search text.  
 - **View mode**:  
-  - `card` (default) – grid of domain cards with art, meta line, and Add buttons.  
-  - `table` – compact table similar to the Vault/Loadout view.
+  - `card` – grid of domain cards with art, meta line, and Add buttons.  
+  - `table` (default) – compact table similar to the Vault/Loadout view.
 
 In both views you can add cards directly:
 

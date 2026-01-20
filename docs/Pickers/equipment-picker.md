@@ -27,8 +27,8 @@ On the character note (the one containing the `equipmentpicker` block), the pick
 
 Each equipment item is just a note in your vault. The picker finds them by:
 
-- Block‑level `folder` / `folders` values, or  
-- The plugin‑wide **Equipment folder** setting, or  
+- Block‑level `folder` / `folders` values, and/or  
+- An Obsidian tag you specify (`tag` / `tags`) or the plugin‑wide **Equipment tag** setting, or  
 - As a fallback, any note detected as equipment via tags/fields.
 
 An equipment note is considered a candidate when:
@@ -39,8 +39,8 @@ An equipment note is considered a candidate when:
 
 From each item it reads fields such as:
 
-- `category` / `Category` – high‑level category (often "Weapon" or "Armor").  
-- `type` / `Type` – sub‑type or style.  
+- `tags` / `Tags` – high‑level category (often "Weapon" or "Armor").  
+- `type` / `Type` – primary or secondary.  
 - `damage` / `Damage` – damage string.  
 - `thresholds` / `Thresholds` – armor/threshold info.  
 - `base_score` / `base` / `Base` – base score.  
@@ -54,12 +54,30 @@ These are shown in the Inventory/Equipped tables and in the Add Equipment modal.
 ````yaml
 ```equipmentpicker
 # optional per-block overrides
-# folders:
-#   - "Cards/Equipment"
-# enforce_tier: true   # default: use character tier to hide too-high-tier items
-# view: table          # or "card" for card-style tiles
+folders:
+  - "DH_Compendium/equipment"
+enforce_tier: true   # default: use character tier to hide too-high-tier items
+view: table          # or "card" for card-style tiles
 ```
 ````
+
+### Example – Tag-based discovery
+
+You can also use tags instead of (or in addition to) folders:
+
+````yaml
+```equipmentpicker
+# Only consider notes tagged as equipment (leading # is optional)
+tag: "weapon"
+
+# Or multiple tags:
+# tags:
+#   - "#weapon"
+#   - "#armor"
+```
+````
+
+If you set **Equipment tag** in the plugin settings (for example `#equipment`), you can omit `tag`/`tags` in the block and the picker will use that tag automatically.
 
 ### Example – Weapon and armor notes
 
@@ -68,27 +86,25 @@ Each equipment item can be a simple note that matches the SRD’s weapon and arm
 ```yaml
 ---
 title: "Shortsword"
-category: "Weapon"
-type: "Melee"
-damage: "d8+1"
+tags: "Weapon"
+type: "secondary"
+damage: "d8 phy"
 tier: 1
-trait: "Light, Finesse"
-range: "Close"
-burden: "Light"
-feature: "A trusted blade for close combat."
+trait: "agility"
+range: "melee"
+burden: "one-handed"
+feature: "+2 to primary weapon damage to targets within Melee range"
 ---
 ```
 
 ```yaml
 ---
-title: "Round Shield"
-category: "Armor"
-type: "Shield"
-thresholds: "Minor 2 / Major 4 / Severe 6"
-base_score: 2
+title: "Chainmail Armor"
+tags: "Armor"
+thresholds: "7/15"
+base_score: 4
 tier: 1
-burden: "Moderate"
-feature: "A sturdy shield that helps turn aside blows."
+feature: "-1 to Evasion"
 ---
 ```
 
@@ -133,17 +149,18 @@ From here you can add items directly to:
 
 Top‑level `equipmentpicker` block options:
 
-| Property        | Type                  | Default          | Description                                                                      |
-| --------------- | --------------------- | ---------------- | -------------------------------------------------------------------------------- |
-| `folder`        | String / String array | _none_           | Limit search to a folder or list of folders. Uses forward slashes.              |
-| `folders`       | String / String array | _none_           | Alias for `folder`; if both are present, `folders` wins.                         |
-| `enforce_tier`  | Boolean               | plugin setting   | When true, hide items with `tier` above the character’s tier.                   |
-| `view`          | `"card"` \| `"table"`  | `"card"`        | View type for the Add Equipment modal.                                          |
+|| Property        | Type                  | Default          | Description                                                                      |
+|| --------------- | --------------------- | ---------------- | -------------------------------------------------------------------------------- |
+|| `folder`        | String / String array | _none_           | Limit search to a folder or list of folders. Uses forward slashes.              |
+|| `folders`       | String / String array | _none_           | Alias for `folder`; if both are present, `folders` wins.                         |
+|| `tag` / `tags`  | String / String array | plugin setting / auto | Obsidian tag(s) to restrict candidate equipment notes (e.g. `#equipment`). |
+|| `enforce_tier`  | Boolean               | plugin setting   | When true, hide items with `tier` above the character’s tier.                   |
+|| `view`          | `"card"` \| `"table"`  | `"card"`        | View type for the Add Equipment modal.                                          |
 
 Behavior notes:
 
-- If `folder`/`folders` is set, only equipment under those folders is considered.  
-- If no folders are configured, the plugin falls back to the global Equipment folder, then to a vault‑wide search.  
+- If `folder`/`folders` is set, only equipment under those folders is considered, optionally further filtered by `tag`/`tags` when provided.  
+- If no folders are configured, the plugin falls back to the global Equipment folder, then to a tag‑filtered or vault‑wide search depending on whether an Equipment tag is configured.  
 - When `enforce_tier` is enabled, items with `tier` higher than the character’s `tier` are hidden in the Add Equipment modal.  
 - The picker keeps `inventory` and `equipped` mutually exclusive for each item (moving to one removes it from the other).
 

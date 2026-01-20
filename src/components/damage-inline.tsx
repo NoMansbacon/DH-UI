@@ -26,12 +26,12 @@ export function DamageInlineView({
   const [reduce, setReduce] = useState<string>("0");
   const [busy, setBusy] = useState<boolean>(false);
 
-  // Display thresholds with level added when level is provided.
+  // Display thresholds; in the current damage block, these are final values (already including level).
   const displayMajor = Number.isFinite(majorThreshold as any)
-    ? (majorThreshold as number) + (Number.isFinite(level as any) ? (level as number) : 0)
+    ? (majorThreshold as number)
     : undefined;
   const displaySevere = Number.isFinite(severeThreshold as any)
-    ? (severeThreshold as number) + (Number.isFinite(level as any) ? (level as number) : 0)
+    ? (severeThreshold as number)
     : undefined;
 
   // Derive a simple visual "current tier" from the entered values.
@@ -75,6 +75,12 @@ export function DamageInlineView({
           <div className="meta">Mark 3 HP</div>
         </div>
       </div>
+
+      {Number.isFinite(level as any) && (level as number) !== 0 && (
+        <div className="dh-dmg-meta-note">
+          Thresholds include +{level} from level.
+        </div>
+      )}
 
       <div className="dh-dmg-row">
         <div className="dh-dmg-group">

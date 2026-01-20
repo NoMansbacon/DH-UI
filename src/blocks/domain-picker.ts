@@ -14,6 +14,13 @@ type DomainPickerBlockYaml = {
   view?: "card" | "table";
   use_character_filters?: boolean;
   max_loadout?: number;
+  // Optional tag(s) to select Domain cards by Obsidian tag
+  tag?: string | string[];
+  tags?: string | string[];
+  // Preferred CSS class hook for styling the outer domainpicker block
+  styleClass?: string;
+  // Legacy CSS class alias (still honored for backwards compatibility)
+  class?: string;
 };
 
 export function registerDomainPickerBlock(plugin: DaggerheartPlugin) {
@@ -45,6 +52,11 @@ export async function renderDomainPicker(
   } catch {
     blockCfg = {};
   }
+
+  // Apply optional styleClass / class to the outer container
+  const klass = String((blockCfg as any).styleClass ?? (blockCfg as any).class ?? '').trim().split(/\s+/).filter(Boolean)[0];
+  el.addClass('dh-domainpicker-block');
+  if (klass) el.addClass(klass);
 
   let levelOverride: number | null = null;
   let requiredAdds: number | null = null;
@@ -92,13 +104,32 @@ export async function renderDomainPicker(
       const prefix = folder.endsWith("/") ? folder : folder + "/";
       return prefix.toLowerCase();
     };
+    const normalizeTag = (raw: string) => String(raw).replace(/^#/, "").toLowerCase();
+
+    // Block-level tags or plugin default tag
+    const tagValue = (blockCfg.tags ?? blockCfg.tag) as any;
+    let tags: string[] = [];
+    if (Array.isArray(tagValue)) {
+      tags = tagValue.map((v) => normalizeTag(String(v))).filter(Boolean);
+    } else if (typeof tagValue === "string" && tagValue.trim()) {
+      tags = [normalizeTag(tagValue)];
+    }
+    if (!tags.length && plugin.settings.domainCardsTag) {
+      tags = [normalizeTag(plugin.settings.domainCardsTag)];
+    }
+
+    const hasAnyTag = (p: any): boolean => {
+      if (!tags.length) return true;
+      return tags.some((t) => hasTag(p, t));
+    };
 
     if (folders.length > 0) {
       const prefixes = folders.map(normalizePrefix);
       return dv.pages().where((p: any) => {
         const path = String(p?.file?.path || "").toLowerCase();
         if (!path) return false;
-        return prefixes.some((pre) => path.startsWith(pre));
+        if (!prefixes.some((pre) => path.startsWith(pre))) return false;
+        return hasAnyTag(p);
       });
     }
 
@@ -111,10 +142,17 @@ export async function renderDomainPicker(
         .where(
           (p: any) =>
             typeof p?.file?.path === "string" &&
-            p.file.path.toLowerCase().startsWith(prefixLC)
+            p.file.path.toLowerCase().startsWith(prefixLC) &&
+            hasAnyTag(p)
         );
     }
-    // Search whole vault by tag/field when no folder specified anywhere
+
+    // If explicit tags (block or setting) are configured, search whole vault by those tags
+    if (tags.length > 0) {
+      return dv.pages().where((p: any) => hasAnyTag(p));
+    }
+
+    // Search whole vault by generic tag/field when no folder or explicit tag specified
     return dv.pages().where((p: any) => hasTag(p, "domain") || hasTag(p, "domains") || getField(p, ["domain", "Domain"], null) != null);
   };
 
@@ -670,10 +708,13 @@ export async function renderDomainPicker(
         const cArt = getField(c, ["art", "Art"], "");
 
         const card = grid.createDiv({ cls: 'dvjs-card' });
-        const artSrc = cArt ? resolveArtSrc(c, cArt) : null;
+        const artSrc = resolveArtSrc(c, cArt);
         if (artSrc) {
           const img = card.createEl('img', { attr: { src: artSrc, alt: cName } });
-          img.style.width = '100%'; img.style.height = '160px'; img.style.objectFit = 'cover';
+          const artHeight = plugin.settings.domainCardArtHeight || 160;
+          img.style.width = '100%';
+          img.style.height = `${artHeight}px`;
+          img.style.objectFit = 'cover';
         }
         const body = card.createDiv({ cls: 'card-body' });
         const title = body.createEl('div', { cls: 'title' });

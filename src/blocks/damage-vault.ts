@@ -48,6 +48,9 @@ type DamageYaml = {
   base_major?: number | string;
   base_severe?: number | string;
   level?: number | string;
+  // Preferred CSS class hook for styling the damage block container
+  styleClass?: string;
+  // Legacy CSS class alias (still honored for backwards compatibility)
   class?: string;
 };
 
@@ -62,7 +65,7 @@ export function registerDamage(plugin: DaggerheartPlugin) {
       if (!file) { el.createEl("pre", { text: "Damage: could not resolve file." }); return; }
 
       const conf = parseYaml(src);
-      const klass = String(conf.class ?? '').trim().split(/\s+/).filter(Boolean)[0];
+      const klass = String((conf as any).styleClass ?? conf.class ?? '').trim().split(/\s+/).filter(Boolean)[0];
       el.addClass('dh-damage-block');
       if (klass) el.addClass(klass);
       const hpKeyLocal = String(conf.hp_key ?? HP_KEY);
@@ -94,13 +97,16 @@ export function registerDamage(plugin: DaggerheartPlugin) {
         const baseMajor = asNum(conf.base_major ?? 0, 0);
         const baseSevere = asNum(conf.base_severe ?? 0, 0);
 
-        const sourceMajor = Number.isFinite(fmMajor) ? fmMajor : baseMajor;
-        const sourceSevere = Number.isFinite(fmSevere) ? fmSevere : baseSevere;
+        const sourceMajorRaw = Number.isFinite(fmMajor) ? fmMajor : baseMajor;
+        const sourceSevereRaw = Number.isFinite(fmSevere) ? fmSevere : baseSevere;
 
-        const finalMajor = asNum(sourceMajor, 0) + level;
-        const finalSevere = asNum(sourceSevere, 0) + level;
+        const sourceMajor = asNum(sourceMajorRaw, 0);
+        const sourceSevere = asNum(sourceSevereRaw, 0);
 
-        return { finalMajor, finalSevere };
+        const finalMajor = sourceMajor + level;
+        const finalSevere = sourceSevere + level;
+
+        return { level, sourceMajor, sourceSevere, finalMajor, finalSevere };
       };
 
       const render = () => {
@@ -109,6 +115,7 @@ export function registerDamage(plugin: DaggerheartPlugin) {
         root.render(React.createElement(DamageInlineView, { 
           majorThreshold: r.finalMajor,
           severeThreshold: r.finalSevere,
+          level: r.level,
           onApply: async (rawAmtInput: number, tierReduceInput: number) => {
             const { finalMajor, finalSevere } = resolveThresholds();
             const rawAmt = asNum(rawAmtInput, 0);

@@ -72,6 +72,12 @@
   font-size: 20px;
   color: #d4af37;
 }
+
+.dh-dmg-meta-note {
+  font-size: 10px;
+  color: var(--text-faint);
+  margin-top: 2px;
+}
 /* Add thin lines above and below the connector value to frame it */
 .dh-dmg-steps .conn::before,
 .dh-dmg-steps .conn::after {
