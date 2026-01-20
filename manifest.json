@@ -1,9 +1,9 @@
 {
   "id": "daggerheart-tooltips",
-  "name": "DH-UI Character Sheets",
+  "name": "DaggerHeart-UI",
   "version": "0.1.0",
   "minAppVersion": "1.5.0",
-  "description": "Hover tooltips and traits cards.",
+  "description": "UI tools for DaggerHeart",
   "author": "NoMansBacon",
   "isDesktopOnly": false,
   "main": "main.js"
