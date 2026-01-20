@@ -18,11 +18,11 @@ Access raw fields from the current note's YAML frontmatter.
 
 ```yaml
 ---
-name: Thalia
-level: 3
-tier: 2
-hp_max: 10
-stress_max: 6
+name: Marlowe Fairwind
+level: 1
+tier: 1
+hp: 6
+stress: 6
 ---
 ```
 
@@ -30,7 +30,7 @@ You can reference them as:
 
 ```yaml
 value: "{{ frontmatter.level }}"      # → 3
-value: "{{ frontmatter.hp_max }}"    # → 10
+value: "{{ frontmatter.hp }}"    # → 10
 value: "{{ frontmatter.name }}"      # → "Thalia"
 ```
 
@@ -84,8 +84,8 @@ You can use simple helpers for arithmetic:
 value: "{{ add 2 frontmatter.level }}"          # 2 + level
 value: "{{ subtract frontmatter.hp 2 }}"       # hp - 2
 value: "{{ multiply 2 traits.agility }}"       # 2 × agility
-value: "{{ divide frontmatter.hp_max 2 }}"     # hp_max / 2 (integer division)
-value: "{{ floor frontmatter.hp_max }}"        # floor(hp_max)
+value: "{{ divide frontmatter.hp 2 }}"     # hp / 2 (integer division)
+value: "{{ floor frontmatter.hp }}"        # floor(hp)
 ```
 
 Supported helpers:
@@ -124,16 +124,16 @@ items:
 
 ````yaml
 ---
-hp_max: 12
-stress_max: 6
-armor_slots: 3
-hope_max: 6
+hp: 6
+stress: 6
+armor: 3
+hope: 6
 ---
 
 ```vitals
-hp: frontmatter.hp_max
-stress: "{{ frontmatter.stress_max }}"
-armor: "{{ frontmatter.armor_slots }}"
-hope: "{{ frontmatter.hope_max }}"
+hp: frontmatter.hp
+stress: "{{ frontmatter.stress }}"
+armor: "{{ frontmatter.armor }}"
+hope: "{{ frontmatter.hope }}"
 ```
 ````

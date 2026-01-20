@@ -74,10 +74,10 @@ show_full_heal: false
 show_reset_all: false
 
 # Optional: override which trackers to use (normally auto-detected)
-hp_key: "din_health"
-stress_key: "din_stress::Character/Dree"
-armor_key: "din_armor::Character/Dree"
-hope_key: "din_hope::Character/Dree"
+hp_key: "din_health::Character/Marlowe"
+stress_key: "din_stress::Character/Marlowe"
+armor_key: "din_armor::Character/Marlowe"
+hope_key: "din_hope::Character/Marlowe"
 
 # How many rest moves can be chosen in the rest modal
 max_picks: 2

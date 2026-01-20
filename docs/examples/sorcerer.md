@@ -6,10 +6,12 @@ ancestry: Elf
 heritage: Loreborne
 level: 1
 tier: 1
-hp_max: 6
-stress_max: 6
-armor_slots: 3
-hope_max: 6
+hp: 6
+stress: 6
+armor: 3
+hope: 6
+major_threshold: "6"
+severe_threshold: "13"
 domains:
   - arcana
   - midnight
@@ -76,10 +78,10 @@ stress_label: "Stress"
 armor_label: "Armor"
 hope_label: "Hope"
 
-hp: "{{ frontmatter.hp_max }}"
-stress: "{{ frontmatter.stress_max }}"
-armor: "{{ frontmatter.armor_slots }}"
-hope: "{{ frontmatter.hope_max }}"
+hp: "{{ frontmatter.hp }}"
+stress: "{{ frontmatter.stress }}"
+armor: "{{ frontmatter.armor }}"
+hope: "{{ frontmatter.hope }}"
 
 hp_key: "din_health::Characters/Marlowe"
 stress_key: "din_stress::Characters/Marlowe"
@@ -100,8 +102,9 @@ This block renders HP, Stress, Armor, and Hope trackers that other blocks (rest,
 styleClass:
 title: "Damage"
 
-hp_key: din_health
-armor_key: din_armor::{{ file.path }}
+# Use the same keys as the vitals block so damage updates Marlowe's trackers
+hp_key: "din_health::Characters/Marlowe"
+armor_key: "din_armor::Characters/Marlowe"
 
 # thresholds – these override base_major/base_severe when present
 major_threshold: "{{ frontmatter.major_threshold }}"
@@ -110,11 +113,6 @@ severe_threshold: "{{ frontmatter.severe_threshold }}"
 # fallback base thresholds if frontmatter is missing
 base_major: 3
 base_severe: 6
-
-# add level on top of thresholds
-level: "{{ frontmatter.level }}"
-
-class: test-damage
 ```
 
 This block lets you enter a damage amount (and Armor used) and then applies the resulting tiered damage directly to your existing HP and Armor trackers, using the same state keys as your vitals block.
@@ -252,9 +250,10 @@ You can add a `consumables` block if you want to track anything and the number o
 ````yaml
 ```consumables
 styleClass:
-label: "Minor Health Potion (1d4)"
-state_key: "din_minor_health_single"
-uses: 3
+items:
+  - label: "Minor Health Potion (1d4)"
+    state_key: "din_minor_health_single"
+    uses: 3
 ```
 ````
 

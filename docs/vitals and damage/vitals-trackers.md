@@ -53,7 +53,7 @@ Each tracker’s hp, stress, armor, and hope field can be:
 ```
 •  A simple frontmatter reference:
 ```yaml
-  hp: frontmatter.hp_max
+  hp: frontmatter.hp
   stress: "{{ frontmatter.stress }}"
 ```
 •  Any template string that resolves to a number:  
@@ -88,32 +88,17 @@ armor: "{{ frontmatter.armor }}"
 hope: 6  # if omitted or 0, defaults to 6
 
 # Optional: override state keys (normally you can omit these)
-hp_key: "din_health::Character/Dree"
-stress_key: "din_stress::Character/Dree"
-armor_key: "din_armor::Character/Dree"
-hope_key: "din_hope::Character/Dree"
+hp_key: "din_health::Character/Marlowe"
+stress_key: "din_stress::Character/Marlowe"
+armor_key: "din_armor::Character/Marlowe"
+hope_key: "din_hope::Character/Marlowe"
 
 # Optional: extra info under the Hope track
 hope_feature:
-  - label: "Hope Refresh"
-    value: "Recover all Hope when you complete a major quest."
-  - label: "Despair"
-    value: "If you ever run out of Hope, mark a Scar."
+  - label: "Volatile Magic:"
+    value: "Spend 3 Hope to reroll any number of your damage dice on an attack that deals magic damage."
 ```
 ````
-
-## This renders:
-
-- A 2×2 grid of trackers (HP, Stress, Armor, Hope).  
-- Each tracker shows the configured label and number of boxes.  
-- A small “Hope Feature” section under the Hope row with labeled notes.
-
-> `hope_feature` also accepts a single object or a plain string:  
-> 
-> ```yaml
-> hope_feature:
->   - "When you share a heartfelt story, everyone regains 1 Hope."
-> ```
 
 ## Example – Using frontmatter values
 
@@ -165,23 +150,23 @@ For most character sheets:
 
 Top‑level options:
 
-|| Property       | Type              | Default                        | Description                                                                 |
-|| -------------- | ----------------- | ------------------------------ | --------------------------------------------------------------------------- |
-|| `styleClass`   | String            | _none_                         | CSS class applied to the whole vitals grid.                                |
-|| `hp_label`     | String            | `"HP"`                         | Label for the HP tracker.                                                  |
-|| `stress_label` | String            | `"Stress"`                     | Label for the Stress tracker.                                              |
-|| `armor_label`  | String            | `"Armor"`                      | Label for the Armor tracker.                                               |
-||| `hope_label`   | String            | `"Hope"`                       | Label for the Hope tracker.                                               |
-||| `hp`           | Number / String   | `0`                            | Number of HP boxes; supports templates and `frontmatter.*` shorthand.      |
-||| `stress`       | Number / String   | `0`                            | Number of Stress boxes; templates allowed.                                 |
-||| `armor`        | Number / String   | `0`                            | Number of Armor boxes; templates allowed.                                  |
-||| `hope`         | Number / String   | `6` if missing/0               | Number of Hope diamonds; templates allowed (defaults to 6 if falsy).       |
-|||| `hp_key`       | String            | `"din_health::NOTE_PATH"`              | State key for HP tracker (defaults to the current note path).              |
-|||| `stress_key`   | String            | `"din_stress::NOTE_PATH"`              | State key for Stress tracker.                                              |
-|||| `armor_key`    | String            | `"din_armor::NOTE_PATH"`               | State key for Armor tracker.                                               |
-|||| `hope_key`     | String            | `"din_hope::NOTE_PATH"`                | State key for Hope tracker.                                                |
-||| `hope_feature` | String / Object / Array | _none_                 | Optional text or list of `{label, value}` rows under the Hope tracker.     |
-|| `footer`       | (alias)           | _none_                         | Alias for `hope_feature` (for backwards compatibility).                     |
+| Property       | Type                     | Default                     | Description                                                                 |
+| -------------- | ------------------------ | --------------------------- | --------------------------------------------------------------------------- |
+| `styleClass`   | String                   | _none_                      | CSS class applied to the whole vitals grid.                                |
+| `hp_label`     | String                   | `"HP"`                      | Label for the HP tracker.                                                  |
+| `stress_label` | String                   | `"Stress"`                  | Label for the Stress tracker.                                              |
+| `armor_label`  | String                   | `"Armor"`                   | Label for the Armor tracker.                                               |
+| `hope_label`   | String                   | `"Hope"`                    | Label for the Hope tracker.                                               |
+| `hp`           | Number / String          | `0`                         | Number of HP boxes; supports templates and `frontmatter.*` shorthand.      |
+| `stress`       | Number / String          | `0`                         | Number of Stress boxes; templates allowed.                                 |
+| `armor`        | Number / String          | `0`                         | Number of Armor boxes; templates allowed.                                  |
+| `hope`         | Number / String          | `6` if missing/0            | Number of Hope diamonds; templates allowed (defaults to 6 if falsy).       |
+| `hp_key`       | String                   | `"din_health::NOTE_PATH"`   | State key for HP tracker (defaults to the current note path).              |
+| `stress_key`   | String                   | `"din_stress::NOTE_PATH"`   | State key for Stress tracker.                                              |
+| `armor_key`    | String                   | `"din_armor::NOTE_PATH"`    | State key for Armor tracker.                                               |
+| `hope_key`     | String                   | `"din_hope::NOTE_PATH"`     | State key for Hope tracker.                                                |
+| `hope_feature` | String / Object / Array  | _none_                      | Optional text or list of `{label, value}` rows under the Hope tracker.     |
+| `footer`       | (alias)                  | _none_                      | Alias for `hope_feature` (for backwards compatibility).                    |
 
 ## Single trackers (`hp`, `stress`, `armor`, `hope`)
 
@@ -216,8 +201,8 @@ Behavior notes:
 ```hp
 styleClass: 
 label: "HP"
-state_key: "din_health::Character/Dree"
-uses: "{{ frontmatter.hp_max }}"
+state_key: "din_health::Character/Marlowe"
+uses: "{{ frontmatter.hp }}"
 ```
 ````
 
@@ -227,7 +212,7 @@ uses: "{{ frontmatter.hp_max }}"
 ```hope
 styleClass: 
 label: "Hope"
-state_key: "din_hope::Character/Dree"
+state_key: "din_hope::Character/Marlowe"
 # uses omitted → defaults to 6 diamonds
 ```
 ````

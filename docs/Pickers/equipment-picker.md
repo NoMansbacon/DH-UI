@@ -149,13 +149,13 @@ From here you can add items directly to:
 
 Top‑level `equipmentpicker` block options:
 
-|| Property        | Type                  | Default          | Description                                                                      |
-|| --------------- | --------------------- | ---------------- | -------------------------------------------------------------------------------- |
-|| `folder`        | String / String array | _none_           | Limit search to a folder or list of folders. Uses forward slashes.              |
-|| `folders`       | String / String array | _none_           | Alias for `folder`; if both are present, `folders` wins.                         |
-|| `tag` / `tags`  | String / String array | plugin setting / auto | Obsidian tag(s) to restrict candidate equipment notes (e.g. `#equipment`). |
-|| `enforce_tier`  | Boolean               | plugin setting   | When true, hide items with `tier` above the character’s tier.                   |
-|| `view`          | `"card"` \| `"table"`  | `"card"`        | View type for the Add Equipment modal.                                          |
+| Property       | Type                  | Default                 | Description                                                                      |
+| ------------- | --------------------- | ----------------------- | -------------------------------------------------------------------------------- |
+| `folder`      | String / String array | _none_                  | Limit search to a folder or list of folders. Uses forward slashes.              |
+| `folders`     | String / String array | _none_                  | Alias for `folder`; if both are present, `folders` wins.                         |
+| `tag` / `tags`| String / String array | plugin setting / auto   | Obsidian tag(s) to restrict candidate equipment notes (e.g. `#equipment`).      |
+| `enforce_tier`| Boolean               | plugin setting          | When true, hide items with `tier` above the character’s tier.                   |
+| `view`        | `"card"` \| `"table"`  | `"table"`              | View type for the Add Equipment modal (table by default).                       |
 
 Behavior notes:
 

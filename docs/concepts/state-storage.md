@@ -28,10 +28,10 @@ Examples:
 state_key: "din_hp_pots"
 
 # Vitals (defaults)
-hp_key: "din_health::Character/Dree"
-stress_key: "din_stress::Character/Dree"
-armor_key: "din_armor::Character/Dree"
-hope_key: "din_hope::Character/Dree"
+hp_key: "din_health::Character/Marlowe"
+stress_key: "din_stress::Character/Marlowe"
+armor_key: "din_armor::Character/Marlowe"
+hope_key: "din_hope::Character/Marlowe"
 ```
 
 When you click on a tracker or spend a consumable, DH-UI writes the new filled value to its state key so it can be restored later.
@@ -51,7 +51,7 @@ Good patterns:
 Examples:
 
 - ❌ `domain_tokens`
-- ✅ `din_domain_tokens::Character/Dree`
+- ✅ `din_domain_tokens::Character/Marlowe`
 
 ## Defaults for trackers
 
@@ -107,7 +107,7 @@ Any `vitals`, `hp`, `rest`, or `damage` blocks that use `hp_key: "din_health::Pa
 
 Internally, the plugin stores these values in its own state file (configured in settings) using a JSON-like key/value structure. Keys look like:
 
-- `tracker:din_health::Characters/Dree`  
+- `tracker:din_health::Characters/Marlowe`  
 - `tracker:din_hp_pots`  
 
 You normally never need to edit this file by hand; just choose good state keys and let the plugin manage the rest.

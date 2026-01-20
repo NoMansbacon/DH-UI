@@ -99,15 +99,15 @@ When you click **Apply**, the damage calculator:
 
 Top‑level `damage` block options:
 
-| Property            | Type              | Default                 | Description                                                                                         |
-| ------------------- | ----------------- | ----------------------- | --------------------------------------------------------------------------------------------------- |
-| `styleClass`        | String            | _none_                  | Optional CSS class applied to the damage block container (preferred styling hook).                 |
-|| `hp_key`            | String            | _none_ (use tracker key) | State key for the HP tracker this damage block should update (defaults to the HP tracker’s key). |
-| `armor_key`         | String            | `din_armor::(note)`     | State key for the Armor tracker this damage block should update (defaults to note‑scoped).         |
-| `major_threshold`   | Number / String   | _from FM / base_*_      | Major damage threshold; can be a number or a template.                                             |
-| `severe_threshold`  | Number / String   | _from FM / base_*_      | Severe damage threshold; can be a number or a template.                                            |
-| `base_major`        | Number / String   | `0`                     | Base major threshold used when `major_threshold` / frontmatter values are not set.                 |
-| `base_severe`       | Number / String   | `0`                     | Base severe threshold used when `severe_threshold` / frontmatter values are not set.               |
-| `level`             | Number            | from FM `level` / `tier` or `0` | Level added to major and severe thresholds for final values.                                       |
+| Property           | Type            | Default                           | Description                                                                                         |
+| ------------------ | --------------- | --------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `styleClass`       | String          | _none_                            | Optional CSS class applied to the damage block container (preferred styling hook).                 |
+| `hp_key`           | String          | _none_ (use tracker key)         | State key for the HP tracker this damage block should update (defaults to the HP tracker’s key).   |
+| `armor_key`        | String          | `din_armor::(note)`               | State key for the Armor tracker this damage block should update (defaults to note‑scoped).         |
+| `major_threshold`  | Number / String | _from FM / base_*_                | Major damage threshold; can be a number or a template.                                             |
+| `severe_threshold` | Number / String | _from FM / base_*_                | Severe damage threshold; can be a number or a template.                                            |
+| `base_major`       | Number / String | `0`                               | Base major threshold used when `major_threshold` / frontmatter values are not set.                 |
+| `base_severe`      | Number / String | `0`                               | Base severe threshold used when `severe_threshold` / frontmatter values are not set.               |
+| `level`            | Number          | from FM `level` / `tier` or `0`   | Level added to major and severe thresholds for final values.                                       |
 
 This makes the `damage` block a fast, rules‑aware control center for applying damage that stays in sync with your existing HP and Armor trackers.

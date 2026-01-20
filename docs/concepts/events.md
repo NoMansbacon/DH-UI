@@ -51,7 +51,7 @@ To keep things consistent, you normally want:
 
 Behind the scenes, DH-UI:
 
-1. Writes new values into the state store (using keys like `tracker:din_health::Character/Dree`).  
+1. Writes new values into the state store (using keys like `tracker:din_health::Character/Marlowe`).  
 2. Emits internal events so all tracker components bound to that key can update.  
 3. React-based tracker views pick up the change and repaint.
 

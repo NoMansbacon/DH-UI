@@ -57,7 +57,7 @@ full_heal_label: "Full Heal HP"
 
 # Full Heal itself just scans the note for HP trackers.
 # hp_key is optional; normally auto-detected.
-hp_key: "din_health::Character/Dree"
+hp_key: "din_health::Character/Marlowe"
 ```
 ````
 
