@@ -15,7 +15,6 @@
 import type DaggerheartPlugin from "../main";
 import type { MarkdownPostProcessorContext } from "obsidian";
 import { parseYamlSafe } from "../utils/yaml";
-import { registerLiveCodeBlock } from "../utils/liveBlock";
 
 interface ExperienceItemYaml {
   name?: string;
@@ -87,54 +86,59 @@ function toRows(src: string): ExperienceRow[] {
 }
 
 export function registerExperiencesBlock(plugin: DaggerheartPlugin) {
-  registerLiveCodeBlock(plugin, "experiences", (el: HTMLElement, src: string, _ctx: MarkdownPostProcessorContext) => {
-    const raw = (parseYamlSafe<any>(src)) ?? {};
-    const klass = String((raw as any)?.styleClass ?? (raw as any)?.class ?? '').trim().split(/\s+/).filter(Boolean)[0];
-    if (klass) el.addClass(klass);
+  plugin.registerMarkdownCodeBlockProcessor(
+    "experiences",
+    (src: string, el: HTMLElement, _ctx: MarkdownPostProcessorContext) => {
+      const raw = (parseYamlSafe<any>(src)) ?? {};
+      const klass = String((raw as any)?.styleClass ?? (raw as any)?.class ?? "")
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean)[0];
+      if (klass) el.addClass(klass);
 
-    // Block-level default bonus; individual items can override via `bonus:`
-    let defaultBonus = 2;
-    if (raw && (raw as any).bonus !== undefined) {
-      const parsed = parseBonus((raw as any).bonus);
-      if (parsed !== null) defaultBonus = parsed;
-    }
-
-    const rows = toRows(src);
-    if (!rows.length) {
-      el.createEl("pre", {
-        text:
-          "No experiences found in ```experiences block.\n" +
-          "Example:\n" +
-          "items:\n" +
-          "  - name: Saved by the Stranger\n" +
-          "    note: You owe a favor to the mysterious stranger who pulled you from the river.",
-      });
-      return;
-    }
-
-    el.empty();
-    el.addClass("dh-experiences");
-
-    for (const row of rows) {
-      const itemEl = el.createDiv({ cls: "dh-experience-row" });
-      const head = itemEl.createDiv({ cls: "dh-experience-head" });
-      head.createDiv({ cls: "dh-experience-name", text: row.name });
-
-      const effBonus = (typeof row.bonus === "number" && row.bonus !== 0)
-        ? row.bonus
-        : defaultBonus;
-      const bonusLabel = effBonus >= 0 ? `+${effBonus}` : String(effBonus);
-      head.createDiv({ cls: "dh-experience-mod", text: bonusLabel });
-
-      if (row.note) {
-        itemEl.createDiv({ cls: "dh-experience-note", text: row.note });
+      // Block-level default bonus; individual items can override via `bonus:`
+      let defaultBonus = 2;
+      if (raw && (raw as any).bonus !== undefined) {
+        const parsed = parseBonus((raw as any).bonus);
+        if (parsed !== null) defaultBonus = parsed;
       }
-    }
 
-    // Helper text: how to apply experiences in play
-    const helper = el.createDiv({ cls: "dh-experience-helper" });
-    helper.setText(
-      "Using an experience: when you and your GM agree an experience is relevant, spend 1 Hope and add the listed bonus (for example +2) to your roll total. Apply the modifier yourself when you roll."
-    );
-  });
+      const rows = toRows(src);
+      if (!rows.length) {
+        el.createEl("pre", {
+          text:
+            "No experiences found in ```experiences block.\n" +
+            "Example:\n" +
+            "items:\n" +
+            "  - name: Saved by the Stranger\n" +
+            "    note: You owe a favor to the mysterious stranger who pulled you from the river.",
+        });
+        return;
+      }
+
+      el.empty();
+      el.addClass("dh-experiences");
+
+      for (const row of rows) {
+        const itemEl = el.createDiv({ cls: "dh-experience-row" });
+        const head = itemEl.createDiv({ cls: "dh-experience-head" });
+        head.createDiv({ cls: "dh-experience-name", text: row.name });
+
+        const effBonus =
+          typeof row.bonus === "number" && row.bonus !== 0 ? row.bonus : defaultBonus;
+        const bonusLabel = effBonus >= 0 ? `+${effBonus}` : String(effBonus);
+        head.createDiv({ cls: "dh-experience-mod", text: bonusLabel });
+
+        if (row.note) {
+          itemEl.createDiv({ cls: "dh-experience-note", text: row.note });
+        }
+      }
+
+      // Helper text: how to apply experiences in play
+      const helper = el.createDiv({ cls: "dh-experience-helper" });
+      helper.setText(
+        "Using an experience: when you and your GM agree an experience is relevant, spend 1 Hope and add the listed bonus (for example +2) to your roll total. Apply the modifier yourself when you roll."
+      );
+    }
+  );
 }
