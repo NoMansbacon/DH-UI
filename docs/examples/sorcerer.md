@@ -1,3 +1,4 @@
+````yaml
 ---
 name: Marlowe Fairwind
 class: Sorcerer
@@ -6,12 +7,13 @@ ancestry: Elf
 heritage: Loreborne
 level: 1
 tier: 1
+evasion: 10
 hp: 6
 stress: 6
 armor: 3
 hope: 6
-major_threshold: "6"
-severe_threshold: "13"
+major_threshold: 6
+severe_threshold: 13
 domains:
   - arcana
   - midnight
@@ -19,15 +21,16 @@ vault:
 loadout:
   - "[[DH_Compendium/abilities/Arcana/Unleash Chaos.md]]"
   - "[[DH_Compendium/abilities/Midnight/Rain of Blades.md]]"
-evasion: 10
 spellcast_trait: Instinct
 equipped:
   - "[[DH_Compendium/equipment/weapons/Tier 1/Dualstaff.md]]"
   - "[[DH_Compendium/equipment/armor/Tier 1/Leather Armor.md]]"
 ---
+````
 
 # Marlowe Fairwind
 
+````yaml
 ```badges
 styleClass:
 items:
@@ -46,11 +49,15 @@ items:
   - label: Spellcast Trait
     value: "{{ frontmatter.spellcast_trait }}"
 ```
+````
 
 ---
 
 ## Traits
 
+Use a `traits` block to show Marlowe's six traits and any bonuses in a compact grid on the sheet.
+
+````yaml
 ```traits
 styleClass:
 abilities:
@@ -62,8 +69,8 @@ abilities:
   Knowledge: 0
 
 bonuses:
-
 ```
+````
 
 These values are just an example; assign trait points per the SRD and adjust the YAML above to match your build.
 
@@ -71,6 +78,9 @@ These values are just an example; assign trait points per the SRD and adjust the
 
 ## Vitals
 
+Use a `vitals` block to track HP, Stress, Armor, and Hope for Marlowe, wired to shared state keys that other blocks can read and update.
+
+````yaml
 ```vitals
 styleClass:
 hp_label: "HP"
@@ -92,28 +102,31 @@ hope_feature:
   - label: "Volatile Magic:"
     value: "Spend 3 Hope to reroll any number of your damage dice on an attack that deals magic damage."
 ```
+````
 
 This block renders HP, Stress, Armor, and Hope trackers that other blocks (rest, damage, etc.) will interact with using the same keys.
 
 ---
+
 ## Damage
 
+Use a `damage` block to enter incoming damage and automatically apply the resulting tiered damage to Marlowe's HP and Armor using the same keys as the `vitals` block.
+
+````yaml
 ```damage
 styleClass:
 title: "Damage"
 
-# Use the same keys as the vitals block so damage updates Marlowe's trackers
 hp_key: "din_health::Characters/Marlowe"
 armor_key: "din_armor::Characters/Marlowe"
 
-# thresholds – these override base_major/base_severe when present
 major_threshold: "{{ frontmatter.major_threshold }}"
 severe_threshold: "{{ frontmatter.severe_threshold }}"
 
-# fallback base thresholds if frontmatter is missing
 base_major: 3
 base_severe: 6
 ```
+````
 
 This block lets you enter a damage amount (and Armor used) and then applies the resulting tiered damage directly to your existing HP and Armor trackers, using the same state keys as your vitals block.
 
@@ -121,6 +134,9 @@ This block lets you enter a damage amount (and Armor used) and then applies the 
 
 ## Rest & Level Up controls
 
+Use a `rest` block to add buttons for short and long rests, level up, and reset actions that operate on Marlowe's vitals trackers.
+
+````yaml
 ```rest
 styleClass:
 rest_label: "Rest"
@@ -141,6 +157,7 @@ hope_key: "din_hope::Characters/Marlowe"
 
 max_picks: 2
 ```
+````
 
 Place this block under your `vitals` block so it can auto-detect the trackers. The Level Up button will open DH-UI's Level Up modal for this note.
 
@@ -148,6 +165,9 @@ Place this block under your `vitals` block so it can auto-detect the trackers. T
 
 ## Features (heritage, class, subclass)
 
+Use a `features` block to group and display Marlowe's ancestry, community, class, and subclass features in one organized section.
+
+````yaml
 ```features
 styleClass:
 layout: grid
@@ -200,6 +220,7 @@ subclass:
     label: "Arcane Charge"
     value: "You can gather magical energy to enhance your capabilities. When you take magic damage, you become Charged. Alternatively, you can spend 2 Hope to become Charged. When you successfully make an attack that deals magic damage while Charged, you can clear your Charge to either gain a +10 bonus to the damage roll or gain a +3 bonus to the Difficulty of a reaction roll the spell causes the target to make. You stop being Charged at your next long rest."
 ```
+````
 
 This block summarizes the ancestry, community, class, and subclass features that Marlowe has at level 1, matching the SRD Sorcerer (Primal Origin).
 
@@ -207,6 +228,9 @@ This block summarizes the ancestry, community, class, and subclass features that
 
 ## Experiences
 
+Use an `experiences` block to list Marlowe's experiences, each with a short note and bonus, for use when you call on those experiences in play.
+
+````yaml
 ```experiences
 styleClass:
 items:
@@ -218,6 +242,7 @@ items:
     note: "Spirits of stone, root, and river sometimes speak in the edge of your hearing, guiding your steps."
     bonus: +2
 ```
+````
 
 These are homebrew experiences, but they work with the SRD rule that Sorcerer can Utilize an Experience (and Primal Origin Adept feature modifies that move).
 
@@ -225,21 +250,37 @@ These are homebrew experiences, but they work with the SRD rule that Sorcerer ca
 
 ## Domain cards summary
 
+Use a `domainpicker` block to show and manage the domain cards Marlowe has chosen, filtered to the Arcana and Midnight compendium folders.
+
+````yaml
 ```domainpicker
-# Only look for Domain cards under these folders:
+styleClass:
 folders:
   - DH_Compendium/abilities/Arcana
   - DH_Compendium/abilities/Midnight
-# Modal view for picking cards: 'card' or 'table (no art)'
 view: table
-# Per-block override for max equipped Domain cards
 max_loadout: 5
-# Use the character's level and domains frontmatter for default filters
 use_character_filters: true
 ```
+````
 
 This badge block just summarizes the two domain cards Marlowe has chosen at level 1.
 The actual card notes would live elsewhere in your vault and be managed with the Domain Picker.
+
+---
+
+## Equipment
+
+Use an `equipmentpicker` block to manage Marlowe's weapons and armor directly on this sheet. The picker will look in the folders you specify (and any tags you configure in the plugin), respect Marlowe's tier when `enforce_tier` is true, and open in table view by default unless you set `view: card`.
+
+````yaml
+```equipmentpicker
+folders:
+  - "DH_Compendium/equipment"
+enforce_tier: true   
+view: table          
+```
+````
 
 ---
 
@@ -250,23 +291,9 @@ You can add a `consumables` block if you want to track anything and the number o
 ````yaml
 ```consumables
 styleClass:
-items:
-  - label: "Minor Health Potion (1d4)"
-    state_key: "din_minor_health_single"
-    uses: 3
+label: "Minor Health Potion"
+state_key: "din_minor_health_single"
+uses: 3
 ```
 ````
-
----
-
-````yaml
-```equipmentpicker
-# optional per-block overrides
-folders:
-  - "DH_Compendium/equipment"
-enforce_tier: true   # default: use character tier to hide too-high-tier items
-view: table          # or "card" for card-style tiles
-```
-````
-
-These are to demonstrate how DH-UI can also track consumables and let you manage weapons/armor for a character.
+     
