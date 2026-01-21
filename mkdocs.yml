@@ -1,7 +1,7 @@
-site_name: Daggerheart Tooltips (DH-UI)
+site_name: DaggerHeart-UI Character Sheets
 site_description: Obsidian plugin that turns fenced code blocks into rich, live-updating Daggerheart UI.
-site_url: https://NoMansbacon.github.io/DH-UI/
-repo_url: https://github.com/NoMansbacon/DH-UI
+site_url: https://NoMansbacon.github.io/Daggerheart-UI/
+repo_url: https://github.com/NoMansbacon/Daggerheart-UI
 
 theme:
   name: material

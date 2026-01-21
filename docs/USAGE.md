@@ -1,20 +1,20 @@
 # Quick Start
 
 ::: warning Development Status
-DH-UI is still under active development. Names, options, and visuals may change between versions.
+DaggerHeart-UI is still under active development. Names, options, and visuals may change between versions.
 :::
 
 ## Installation
 
 ::: warning BRAT Required
-DH-UI is not published to the Obsidian Community Plugin store yet. Install it using the [BRAT](https://github.com/TfTHacker/obsidian42-brat) plugin.
+DaggerHeart-UI is not published to the Obsidian Community Plugin store yet. Install it using the [BRAT](https://github.com/TfTHacker/obsidian42-brat) plugin.
 :::
 
 1. In Obsidian, install and enable the **BRAT** plugin.
 2. In BRAT settings, add this repository as a beta plugin:
-   `https://github.com/NoMansbacon/DH-UI`
+   `https://github.com/NoMansbacon/Daggerheart-UI`
 3. Let BRAT install/update the plugin.
-4. Enable **Daggerheart Tooltips (DH-UI)** in *Settings → Community plugins*.
+4. Enable **DaggerHeart-UI Character Sheets** in *Settings → Community plugins*.
 
 ## Your first character sheet
 

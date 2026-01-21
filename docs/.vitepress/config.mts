@@ -1,9 +1,9 @@
 import { defineConfig } from "vitepress";
 
 export default defineConfig({
-  title: "Daggerheart Tooltips (DH-UI)",
+  title: "DaggerHeart-UI Character Sheets",
   description: "Build rich Daggerheart character sheets in Obsidian using live UI blocks.",
-  base: "/DH-UI/",
+  base: "/Daggerheart-UI/",
   themeConfig: {
     search: {
       provider: "local",
@@ -63,7 +63,7 @@ export default defineConfig({
       },
     ],
     socialLinks: [
-      { icon: "github", link: "https://github.com/NoMansbacon/DH-UI" },
+      { icon: "github", link: "https://NoMansbacon.github.io/DaggerHeart-UI/" },
     ],
   },
 });
