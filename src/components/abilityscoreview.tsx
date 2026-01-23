@@ -6,6 +6,7 @@ import type { App, MarkdownPostProcessorContext } from "obsidian";
 
 import { AbilityView } from "./traits";
 import { buildCards } from "../core/abilities";
+import { createTemplateContext, applyFrontmatterToTraitsYaml } from "../utils/template"
 
 /**
  * Renders the Daggerheart trait cards:
@@ -23,7 +24,17 @@ export class AbilityScoreView {
 
   public render(src: string, el: HTMLElement, ctx: MarkdownPostProcessorContext, filePathOverride?: string): void {
     const filePath = (filePathOverride ?? ctx.sourcePath) || "unknown";
-    const cards = buildCards(filePath, src);
+
+// Resolve any {{ frontmatter.* }} references in the traits YAML before building cards
+    let effectiveSrc = src;
+    try {
+      const tctx = createTemplateContext(el, this.app as App, ctx);
+      effectiveSrc = applyFrontmatterToTraitsYaml(src, tctx.frontmatter);
+    } catch {
+      effectiveSrc = src;
+    }
+
+    const cards = buildCards(filePath, effectiveSrc);
 
     // Mount React into this codeblock’s container using shared helper
     const root = getOrCreateRoot(this.roots, el);

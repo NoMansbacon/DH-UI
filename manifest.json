@@ -1,7 +1,7 @@
 {
   "id": "daggerheart-tooltips",
   "name": "DaggerHeart-UI",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "minAppVersion": "1.5.0",
   "description": "UI tools for DaggerHeart",
   "author": "NoMansBacon",

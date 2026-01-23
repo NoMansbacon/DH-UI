@@ -44,6 +44,20 @@ export interface TemplateContext {
   character: CharacterContext;
 }
 
+/**
+ * Replace simple `{{ frontmatter.key }}` placeholders inside a traits YAML block
+ * with numeric values from frontmatter. Non-numeric values are treated as 0.
+ */
+export function applyFrontmatterToTraitsYaml(src: string, fm: Frontmatter): string {
+  if (!src || !fm) return src;
+  return src.replace(/\{\{\s*frontmatter\.([a-zA-Z0-9_\-]+)\s*\}\}/g, (_, key: string) => {
+    const val = fm[key];
+    const n = Number(val);
+    if (Number.isFinite(n)) return String(Math.floor(n));
+    return "0";
+  });
+}
+
 export function hasTemplateVariables(t: string){ return typeof t==="string" && t.includes("{{") && t.includes("}}"); }
 
 export function processTemplate(text: string, ctx: TemplateContext): string {
@@ -76,10 +90,14 @@ export function createTemplateContext(el: HTMLElement, app: App, mdctx: Markdown
     const text = section?.text || "";
     const y = extractFirstCodeBlock(text, "traits");
     if (y){
-      const totals = computeAbilities(y);
-      for (const [name, total] of Object.entries(totals as any)) (abilities as any)[String(name).toLowerCase()] = total as number;
+      // Resolve any {{ frontmatter.* }} in the traits YAML before computing totals
+      const yResolved = applyFrontmatterToTraitsYaml(y, fm);
+      const totals = computeAbilities(yResolved);
+      for (const [name, total] of Object.entries(totals as any)) {
+        (abilities as any)[String(name).toLowerCase()] = total as number;
+      }
     }
-  }catch{}
+}catch{}
 
   // Optional skills/moves context, taken directly from frontmatter if present.
   const skills: SkillsContext = {};

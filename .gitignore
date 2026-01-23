@@ -28,3 +28,4 @@ dh_state.json
 # VitePress build output (docs site)
 docs/.vitepress/dist/
 docs/.vitepress/cache/
+docs/css-classes.md

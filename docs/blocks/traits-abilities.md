@@ -33,24 +33,36 @@ The `traits` block expects a small YAML document that describes your Daggerheart
 
 All three accept maps keyed by trait name, and `bonuses`/`trait` can also be arrays of maps that get summed.
 
-## Example – Base abilities + one bonuses map
+You can either **hard-code numbers** or pull them from frontmatter using simple templates like <span v-pre>`{{ frontmatter.agility }}`</span>. Complex helpers (`add`, `multiply`, etc.) are not supported inside the `traits` block YAML; keep those in other blocks (like `badges`) that read from `traits.*`.
+## Example – Base abilities from frontmatter
+
+You can keep numeric values in frontmatter and have the `traits` block read them:
+
 ````yaml
+---
+agility: 0
+strength: -1
+finesse: 1
+instinct: 2
+presence: 1
+knowledge: 0
+---
+
 ```traits
 abilities:
-  Agility: 0
-  Strength: -1
-  Finesse: 1
-  Instinct: 2
-  Presence: 1
-  Knowledge: 0
+  Agility: "{{ frontmatter.agility }}"
+  Strength: "{{ frontmatter.strength }}"
+  Finesse: "{{ frontmatter.finesse }}"
+  Instinct: "{{ frontmatter.instinct }}"
+  Presence: "{{ frontmatter.presence }}"
+  Knowledge: "{{ frontmatter.knowledge }}"
 ```
 ````
 
-### Rendered cards will show:
+### Notes
 
-- **AGI**: base 1 + bonus 1 = `+2`  
-- **PRE**: base 0 + bonus 2 = `+2`  
-- Others use `0` as default if omitted.
+- The `traits` block resolves each <span v-pre>`{{ frontmatter.* }}`</span> to a number (non‑numeric values are treated as 0).  
+- Totals for `traits.*` / `abilities.*` in templates still come from `base + bonuses` inside this block.
 
 ## Example – Multiple trait sources
 

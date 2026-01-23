@@ -38,7 +38,7 @@ value: "{{ frontmatter.name }}"      # → "Thalia"
 
 DH-UI exposes the six core Daggerheart traits from the nearest `traits` block in the same section.
 
-After parsing your `traits` YAML, the plugin computes final totals (`base + bonuses`) for:
+After parsing your `traits` YAML (including any simple <span v-pre>`{{ frontmatter.* }}`</span> references inside the `abilities` / `bonuses` maps), the plugin computes final totals (`base + bonuses`) for:
 
 - Agility
 - Strength
@@ -109,6 +109,8 @@ If a token cannot be parsed as a number, it is treated as 0 for numeric helpers.
 ## Common use cases
 
 ### Trait-based badges
+
+Once your `traits` block has computed totals (whether from hard‑coded numbers or from <span v-pre>`{{ frontmatter.* }}`</span>), you can reference them in other blocks:
 
 ````yaml
 ```badges
