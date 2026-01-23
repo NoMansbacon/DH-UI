@@ -7,6 +7,10 @@ Use simple Markdown + YAML to render traits, vitals, trackers, rest controls, da
 > **Warning**
 > This plugin is under active development. Things may change or break between versions.
 
+Development note (AI-assisted)
+This plugin was built with heavy AI assistance for the initial code generation. I’m a newer TypeScript/Obsidian developer and have been learning by testing, refactoring, and making ongoing TypeScript/CSS changes myself.
+I maintain this repo and will continue improving documentation, stability, and code clarity over time.
+
 ---
 
 ## 📖 Documentation
