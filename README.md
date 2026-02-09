@@ -9,7 +9,10 @@ Use simple Markdown + YAML to render traits, vitals, trackers, rest controls, da
 
 Development note (AI-assisted)
 This plugin was built with heavy AI assistance for the initial code generation. I’m a newer TypeScript/Obsidian developer and have been learning by testing, refactoring, and making ongoing TypeScript/CSS changes myself.
-I maintain this repo and will continue improving documentation, stability, and code clarity over time.
+
+This repository was always intended as a temporary, community stopgap to support Daggerheart in Obsidian until a fully human-developed alternative became available. I maintain this repo primarily for reference, experimentation, and short-term use.
+
+Once a stable, non–AI-assisted Daggerheart plugin is completed and publicly available, this repository will be archived or removed from public use. Anyone is welcome to review the code for design ideas or structural reference in the meantime.
 
 ---
 
